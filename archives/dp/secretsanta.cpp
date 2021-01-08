@@ -5,6 +5,8 @@ typedef long double ld;
 
 int main() {
 
+    // converges to 1-1/e after 10-15 iterations, use dp to calculate first 10-15 iterations.
+
     cout.setf(ios::fixed);
     cout.precision(8);
 
