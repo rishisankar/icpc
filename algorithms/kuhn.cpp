@@ -1,3 +1,5 @@
+// NOTE: use Hopcroft Karp implementation instead!! see hopcroft_karp.cpp
+
 // Kuhn's algorithm for bipartite matches (can be done with maxflow, although this takes a lot of memory)
 // O(nm)
 // faster approach exists: hopcroft-karp-karzanov algorithm: O(sqrt(n) * m)
