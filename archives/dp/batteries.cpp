@@ -1,27 +1,20 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-typedef long long ll;
-
 int main() {
 
-    vector<ll> dp(4712);
-    dp[0] = 0;
-    dp[1] = 1;
+    vector<int> tests(4712, INT_MAX);
+    tests[1] = 0;
 
-    for (int i = 2; i < 4712; ++i) {
-        ll res = LLONG_MAX;
-        for (ll j = 0; j < i; ++j) {
-            res = min(res, 1 + max(j, dp[i-j-1]));
-        }
-        dp[i] = res;
-    }
+    for (int n = 2; n <= 4711; n++)
+        for (int k = 1; k < n; k++)
+            tests[n] = min(tests[n], max(k, 1 + tests[n-k]));
+
 
     while (true) {
         int n; cin >> n;
         if (n == 0) break;
-
-        cout << dp[n-1] << '\n';
+        cout << tests[n] << '\n';
     }
         
 }
