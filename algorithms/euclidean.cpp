@@ -3,15 +3,14 @@
 typedef long long ll; // shouldn't be unsigned bc modular inverse returns -1!
 
 // O(log(min(a,b)))
-ll gcd(ll a, ll b) 
-{ 
+ll gcd(ll a, ll b) {
     if (a == 0) return b; 
     return gcd(b % a, a); 
 } 
 
 
 // return gcd(a,b) and solve for integer x,y: ax+by=gcd(a,b)
-ll euclidean(ll a, ll b, ll &x, ll &y) {\
+ll euclidean(ll a, ll b, ll &x, ll &y) {
 
     if (a == 0) {
         x = 0;
