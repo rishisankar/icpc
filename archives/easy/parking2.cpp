@@ -9,7 +9,7 @@ using namespace std;
 #define RFORI(i, j, k, in) for (int i=j ; i>=k ; i-=in)
 #define REP(i, j) FOR(i, 0, j)
 #define RREP(i, j) RFOR(i, j, 0)
-#define all(cont) cont.begin(), cont.end()
+#define all(vec) vec.begin(), vec.end()
 
 template<typename T> inline T maxe(vector<T> &vec) { return *max_element(all(vec)); }
 template<typename T> inline T mine(vector<T> &vec) { return *min_element(all(vec)); }
@@ -25,6 +25,12 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
-
+    int t; cin >> t;
+    REP(tests, t) {
+        int n; cin >> n;
+        VI v(n);
+        REP(i, n) cin >> v[i];
+        cout << 2 * (maxe(v) - mine(v)) << '\n';
+    }
 
 }
