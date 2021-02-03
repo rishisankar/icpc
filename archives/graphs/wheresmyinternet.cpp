@@ -28,6 +28,35 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
+    int n, m; cin >> n >> m;
+    VVI adj(n+1);
+    REP(i,m) {
+        int a,b; cin >> a >> b;
+        adj[a].push_back(b);
+        adj[b].push_back(a);
+    }
+    VB visited(n+1, false);
+    queue<int> q;
+    q.push(1);
+    while (!q.empty()) {
+        int t = q.front(); q.pop();
+        if (visited[t]) continue;
+        visited[t] = true;
+        for (int a : adj[t]) {
+            q.push(a);
+        }
+    }
 
+    bool connected = true;
+    OREP(i, n) {
+        if (!visited[i]) {connected=false; break;}
+    }
+    if (connected) {
+        cout << "Connected\n";
+    } else {
+        OREP(i, n) {
+            if (!visited[i]) cout << i << "\n";
+        }
+    }
 
 }
