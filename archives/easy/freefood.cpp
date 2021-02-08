@@ -11,29 +11,9 @@ using namespace std;
 #define RREP(i, j) RFOR(i, j, 0)
 #define OREP(i, j) FOR(i, 1, j+1)
 #define all(cont) cont.begin(), cont.end()
-#define PB push_back
 
 template<typename T> inline T maxe(vector<T> &vec) { return *max_element(all(vec)); }
 template<typename T> inline T mine(vector<T> &vec) { return *min_element(all(vec)); }
-
-template<typename T> inline void printV(vector<T> &vec) {
-    cout << "########\n";
-    for (int i = 0; i < vec.size(); ++i) {
-        cout << vec[i] << ' ';
-    }
-    cout << '\n';
-    cout << "########\n";
-}
-template<typename T> inline void printVV(vector<vector<T>> &vec) {
-    cout << "########\n";
-    for (int i = 0; i < vec.size(); ++i) {
-        for (int j = 0; j < vec[i].size(); ++j) {
-            cout << vec[i][j] << ' ';
-        }
-        cout << '\n';
-    }
-    cout << "########\n";
-}
 
 typedef long long ll;
 typedef long double ld;
@@ -41,9 +21,6 @@ typedef vector<int> VI;
 typedef vector<vector<int>> VVI;
 typedef vector<bool> VB;
 typedef vector<vector<bool>> VVB;
-typedef vector<string> VS;
-typedef vector<vector<string>> VVS;
-typedef pair<int, int> PII;
 
 int main() {
     ios_base::sync_with_stdio(false);
@@ -51,6 +28,17 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
-
-
+    int count = 0;
+    VB served(370, false);
+    int N; cin >> N;
+    REP(i, N) {
+        int a,b; cin >> a >> b;
+        for (int j = a; j <= b; ++j) {
+            if (!served[j]) {
+                ++count;
+                served[j] = true;
+            }
+        }
+    }
+    cout << count << '\n';
 }
