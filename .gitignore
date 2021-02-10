@@ -2,3 +2,5 @@
 .vscode/
 f
 input
+*.dSYM/
+*.out
