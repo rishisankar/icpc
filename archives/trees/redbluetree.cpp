@@ -1,10 +1,57 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define PI 3.1415926535897932384626433832795
+#define MOD 1000000007
+#define FOR(i, j, k) for (int i=j ; i<k ; ++i)
+#define FORI(i, j, k, in) for (int i=j ; i<k ; i+=in)
+#define RFOR(i, j, k) for (int i=j ; i>=k ; --i)
+#define RFORI(i, j, k, in) for (int i=j ; i>=k ; i-=in)
+#define REP(i, j) FOR(i, 0, j)
+#define RREP(i, j) RFOR(i, j, 0)
+#define OREP(i, j) FOR(i, 1, j+1)
+#define all(cont) cont.begin(), cont.end()
+#define PB push_back
+
+template<typename T> inline T maxe(vector<T> &vec) { return *max_element(all(vec)); }
+template<typename T> inline T mine(vector<T> &vec) { return *min_element(all(vec)); }
+
+template<typename T> inline void printV(vector<T> &vec) {
+    cout << "########\n";
+    for (int i = 0; i < vec.size(); ++i) {
+        cout << vec[i] << ' ';
+    }
+    cout << '\n';
+    cout << "########\n";
+}
+template<typename T> inline void printVV(vector<vector<T>> &vec) {
+    cout << "########\n";
+    for (int i = 0; i < vec.size(); ++i) {
+        for (int j = 0; j < vec[i].size(); ++j) {
+            cout << vec[i][j] << ' ';
+        }
+        cout << '\n';
+    }
+    cout << "########\n";
+}
+
+typedef long long ll;
+typedef long double ld;
+typedef vector<int> VI;
+typedef vector<vector<int>> VVI;
+typedef vector<bool> VB;
+typedef vector<vector<bool>> VVB;
+typedef vector<string> VS;
+typedef vector<vector<string>> VVS;
+typedef pair<int, int> PII;
+
 // Kruskal's Algorithm for minimum spanning trees
 // uses a DSU for efficiency
 // example: trees/lostmap.cpp, jurassicjigsaw.cpp, islandhopping.cpp
 
 // int kruskal(n, edges, result)
 // n: # of vertices
-// vector<Edge> edges: contains all edges in graph (edge indices are ordered 0 to n-1)
+// vector<Edge> edges: contains all edges in graph
 // vector<Edge> result: empty list to add only mst edges to
 // return: minimum cost 
 
@@ -115,4 +162,36 @@ int kruskal(int n, vector<Edge>& edges, vector<Edge>& result) {
         }
     }
     return cost;
+}
+
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    // cout.setf(ios::fixed);
+    // cout.precision(10);
+
+    int n,m,k;
+    cin >> n >> m >> k;
+
+    vector<Edge> minBlue;
+    vector<Edge> maxBlue;
+
+    REP(i, m) {
+        char c; int f,t;
+        cin >> c >> f >> t;
+        --f; --t;
+        int minc = (c == 'B') ? 1 : 0;
+        int maxc = (c == 'B') ? 0 : 1;
+        Edge mine(f, t, minc);
+        Edge maxe(f, t, maxc);
+        minBlue.PB(mine);
+        maxBlue.PB(maxe);
+    }
+
+    vector<Edge> r1, r2;
+    int mink = kruskal(n, minBlue, r1);
+    int maxk = n-1-kruskal(n, maxBlue, r2);
+    if (mink <= k && k <= maxk) cout << "1\n"; else cout << "0\n";
+
 }
