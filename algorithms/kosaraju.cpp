@@ -1,6 +1,7 @@
 // main func: kosaraju(adj_list, result)
 // result should be empty to start
 // result will contain K vectors, where K = # of strongly connected components, and result[i] is a list of vertices in the ith SCC
+// returns k
 
 // example: graphs/cantinaofbabel.cpp
 
@@ -25,9 +26,9 @@ void reverse_dfs(int vertex, vector<vector<int>>& adj_list, int scc_count, vecto
     }
 }
 
-void kosaraju(vector<vector<int>>& adj_list, vector<vector<int>>& result) {
+int kosaraju(vector<vector<int>>& adj_list, vector<vector<int>>& result) {
     int N = adj_list.size();
-    if (N == 0) return;
+    if (N == 0) return 0;
 
     stack<int> s;
     vector<bool> visited(N, false);
@@ -54,5 +55,7 @@ void kosaraju(vector<vector<int>>& adj_list, vector<vector<int>>& result) {
         ++scc_count;
     }
     result.resize(scc_count);
+
+    return scc_count;
     
 }
