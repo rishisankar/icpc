@@ -21,3 +21,22 @@ int sieve(int n, vector<bool>& is_prime) {
     }
     return count;
 }
+
+
+
+// least prime factor of each number from 1 to n (application of sieve): (untested)
+void least_prime_factor(int N, vector<int> &lpf) {
+    lpf.resize(N+1);
+    fill(lpf.begin(), lpf.end(), 0); 
+    for (int i = 2; i <= N; i++) {
+        // If it is a prime number 
+        if (!lpf[i]) {
+            for (int j = i; j <= N; j += i) {
+                // For all multiples which are not 
+                // visited yet. 
+                if (!lpf[j]) lpf[j] = i; 
+            }
+        }
+    }
+}
+  

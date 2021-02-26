@@ -8,6 +8,7 @@ ll gcd(ll a, ll b) {
     return gcd(b % a, a); 
 } 
 
+// note that lcm(i, j) = ij / gcd(i,j)
 
 // return gcd(a,b) and solve for integer x,y: ax+by=gcd(a,b)
 ll euclidean(ll a, ll b, ll &x, ll &y) {
