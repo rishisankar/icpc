@@ -52,6 +52,39 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
+    ld tf, tr;
+    cin >> tf >> tr;
 
+    vector<int> history;
+    ld s;
+    cin >> s;
+    history.PB(0);
+
+    while (cin >> s) {
+        int i = (int) s;
+        int j = i+1;
+        if (s < 1 && s > 0) {
+            history.PB(1);
+        } else if (s >= i && s < i+tf) {
+            history.PB(i);
+        } else if (s > i+tr && s < j) {
+            history.PB(j);
+        } else {
+            for (int k = history.size() - 1; k >= 0; --k) {
+                int l = history[k];
+                if (l < i+tf) {
+                    history.PB(i);
+                    break;
+                } else if (l > i+tr) {
+                    history.PB(j);
+                    break;
+                }
+            }
+        }
+    }
+
+    for (int i : history) {
+        cout << i << '\n';
+    }
 
 }

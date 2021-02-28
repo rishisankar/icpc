@@ -8,6 +8,7 @@
 // matches (size L+1) will contain final match of each vertex in left set (or 0 if no match).
 
 // source: https://www.geeksforgeeks.org/hopcroft-karp-algorithm-for-maximum-matching-set-2-implementation/
+// time: O(sqrt(V)*E)
 
 // examples: graphs/bookclub_hkk, graphs/historicexhibition
 
