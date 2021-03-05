@@ -1,5 +1,3 @@
-# doesn't work!
-
 black_diagonal=["A1",'B2','C3','D4','E5','F6','G7','H8']
 white_diagonal=['A8','B7','C6','D5','E4','F3','G2','H1']
 black_counts = {'A':1,'B':2,'C':3,'D':4,'E':5,'F':6,'G':7,'H':8}
@@ -36,7 +34,7 @@ for tests in range(t):
             l.append(tmp2)
         if tmp2 != end:
             l.append(end)
-        out = str(len(l))
+        out = str(len(l)-1)
         for st in l:
             out += " "
             out += st[0]

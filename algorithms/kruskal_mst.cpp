@@ -11,6 +11,8 @@
 // important: to change cost to long/double/whatever, 4 changes required:
 // - weight/constructor of Edge struct, cost/return of kruskal function
 
+// time: O(M log N)
+
 struct DSU {
 
     vector<int> parent, rank;
