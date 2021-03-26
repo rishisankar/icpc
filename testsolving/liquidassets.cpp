@@ -62,6 +62,27 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
-
+    int n;
+    cin >> n;
+    string s;
+    REP(i, n) {
+        cin >> s;
+        char prev = '#';
+        REP(j, s.size()) {
+            char ch = s.at(j);
+            bool nonessential = false;
+            if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u') {
+                if (j > 0 && j < s.size()-1) {
+                    nonessential = true;
+                }
+            } else if (ch == prev) {
+                nonessential = true;
+            }
+            if (!nonessential) cout << ch;
+            prev = ch;
+        }
+        cout << " ";
+    }
+    cout << '\n';
 
 }

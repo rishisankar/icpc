@@ -42,7 +42,7 @@ typedef long long ll;
 typedef long double ld;
 typedef unsigned long long ull;
 typedef vector<int> VI;
-typedef vector<int> vi; 
+typedef vector<int> vi;
 typedef vector<vector<int>> VVI;
 typedef vector<long long> VLL;
 typedef vector<vector<long long>> VVLL;
@@ -55,6 +55,15 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+ll countBits(ll i) {
+    ll count = 0;
+    while (i != 0) {
+        count += (i & 1);
+        i >>= 1;
+    }
+    return count;
+}
+
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
@@ -62,6 +71,8 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
-
+    ll n, m;
+    cin >> n >> m;
+    cout << countBits(m) << '\n';
 
 }

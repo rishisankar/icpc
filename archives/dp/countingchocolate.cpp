@@ -4,7 +4,7 @@ using namespace std;
 #define PI 3.1415926535897932384626433832795
 #define MOD 1000000007
 #define FOR(i, j, k) for (int i=j ; i<k ; ++i)
-#define rep(i, a, b) for(int i = a; i < (b); ++i) 
+#define rep(i, a, b) for(int i = a; i < (b); ++i)  // for compatibility with kactl
 #define FORI(i, j, k, in) for (int i=j ; i<k ; i+=in)
 #define RFOR(i, j, k) for (int i=j ; i>=k ; --i)
 #define RFORI(i, j, k, in) for (int i=j ; i>=k ; i-=in)
@@ -18,6 +18,7 @@ using namespace std;
 
 template<typename T> inline T maxe(vector<T> &vec) { return *max_element(all(vec)); }
 template<typename T> inline T mine(vector<T> &vec) { return *min_element(all(vec)); }
+template<typename T> inline T sume(vector<T> &vec) { return accumulate(all(vec), 0LL); }
 
 template<typename T> inline void printV(vector<T> &vec) {
     cout << "########\n";
@@ -42,7 +43,7 @@ typedef long long ll;
 typedef long double ld;
 typedef unsigned long long ull;
 typedef vector<int> VI;
-typedef vector<int> vi; 
+typedef vector<int> vi; // for compatibility with kactl
 typedef vector<vector<int>> VVI;
 typedef vector<long long> VLL;
 typedef vector<vector<long long>> VVLL;
@@ -51,7 +52,7 @@ typedef vector<vector<bool>> VVB;
 typedef vector<string> VS;
 typedef vector<vector<string>> VVS;
 typedef pair<int, int> PII;
-typedef pair<int, int> pii;
+typedef pair<int, int> pii; // for compatibility with kactl
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
@@ -62,6 +63,38 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
+    int n;
+    cin >> n;
+
+    vector<int> inp(n);
+    INP(inp, n);
+
+    int s = sume(inp);
+
+    if (s % 2 != 0) {
+        cout << "NO\n";
+        exit(0);
+    }
+
+    s/=2;
+
+    unordered_set<int> possible;
+    possible.insert(0);
+    REP(i, n) {
+        unordered_set<int> tmp;
+        for (int j : possible) {
+            tmp.insert(inp[i] + j);
+        }
+        for (int j : tmp) {
+            possible.insert(j);
+        }
+    }
+
+    if (possible.find(s) != possible.end()) {
+        cout << "YES\n";
+    } else {
+        cout << "NO\n";
+    }
 
 
 }
