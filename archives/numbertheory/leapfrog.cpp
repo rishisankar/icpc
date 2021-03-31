@@ -1,5 +1,3 @@
-// doesn't work!
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -39,6 +37,8 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
     }
     cout << "########\n";
 }
+template<typename T> inline void print(T obj) { cout << obj << '\n'; }
+template<typename T, typename... Args> inline void print(T t, Args... args) { cout << t << " "; print(args...); }
 
 typedef long long ll;
 typedef long double ld;
@@ -74,35 +74,33 @@ ll crt(ll a, ll m, ll b, ll n) {
     }
 }
 
-void permutations(VI& permSize, VVI& result, int i) {
-    if (i == 0) {
-        REP(j, permSize[0]) {
-            VI tmp;
-            tmp.PB(j);
-            result.PB(tmp);
-        }
-    } else {
-        int n = result.size();
-        REP(k,n) {
-            for (int j = 0; j < permSize[i]; ++j) {
-                if (j == permSize[i]-1) {
-                    result[k].PB(j);
-                } else {
-                    VI asdf = result[k];
-                    asdf.PB(j);
-                    result.PB(asdf);
-                }
+struct S {
+    ll prime;
+    VLL classes;
+};
+
+struct P {
+    ll prime;
+    ll mc; // max count
+    unordered_map<ll, pair<ll, ll>> groups; // equivalence class -> highest #, count
+
+    S convert() {
+        S tmp;
+        tmp.prime = prime;
+        for (auto it = groups.begin(); it != groups.end(); ++it) {
+            if (it->second.second == mc) {
+                tmp.classes.PB(it->second.first);
             }
         }
+        return tmp;
     }
-    if (i < permSize.size() - 1) {
-        permutations(permSize, result, i+1);
-    }
-}
+};
 
-struct S{
-    ll p;
-    vector<pair<ll, ll>> vals;
+struct Q {
+    ll a;
+    ll m;
+    ll maxN;
+    ll ind;
 };
 
 int main() {
@@ -112,91 +110,75 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
-    map<ll, map<ll, ll>> data;
-    int n; cin >> n;
+    int n;
+    cin >> n;
+
+    unordered_map<ll, P> firstData;
+
     REP(i, n) {
-        ll x,d;
+        ll x, d;
         cin >> x >> d;
-        //x %= d;
-        if (data.find(d) == data.end()) {
-            map<ll, ll> tmp;
-            data[d] = tmp;
-        }
-        if (data[d].find(x) == data[d].end()) {
-            data[d][x] = 1;
+        if (firstData.find(d) == firstData.end()) {
+            P tmp;
+            tmp.prime = d;
+            tmp.mc = 1;
+            tmp.groups[x%d] = {x, 1LL};
+            firstData[d] = tmp;
         } else {
-            data[d][x] += 1;
-        }
-    }
-
-    VI permSize(data.size());
-    auto it = data.begin();
-    int i = 0;
-    while (it != data.end()) {
-        permSize[i] = it->second.size();
-        ++it;
-        ++i;
-    }
-
-    VVI perms;
-    permutations(permSize, perms, 0);
-
-    vector<S> data2;
-    for(auto it = data.begin(); it != data.end(); ++it) {
-        S stmp;
-        stmp.p = it->first;
-        for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-            stmp.vals.PB({it2->first, it2->second});
-        }
-        data2.PB(stmp);
-    }
-
-    // cout << "DATAAA\n";
-    // for (S s : data2) {
-    //     cout << s.p;
-    //     for (pair<ll,ll> pll : s.vals) {
-    //         cout << " (" << pll.first << "," << pll.second << ")";
-    //     }
-    //     cout << "\n";
-    // }
-    // cout << "DATAAA\n";
-
-    ll best = 0;
-    ll x = LLONG_MAX;
-
-    for (VI perm : perms) {
-        ll ct = 0;
-        REP(j, perm.size()) {
-            ct += data2[j].vals[perm[j]].second;
-        }
-        if (ct >= best) {
-            
-            ll a = data2[0].vals[perm[0]].first;
-            ll m = data2[0].p;
-            for (int k = 1; k < data2.size(); ++k) {
-                ll b = data2[k].vals[perm[k]].first;
-                ll n = data2[k].p;
-                a = crt(a,m,b,n);
-                m *= n;
+            P tmp = firstData[d];
+            if (tmp.groups.find(x%d) == tmp.groups.end()) {
+                tmp.groups[x%d] = {x, 1LL};
+            } else {
+                pair<ll,ll> tmp2 = tmp.groups[x%d];
+                tmp.groups[x%d] = {max(tmp2.first, x), tmp2.second+1};
+                tmp.mc = max(tmp.mc, tmp2.second+1);
             }
-            ll cx = a;
-            for (int k = 0; k < data2.size(); ++k) {
-                ll tx = data2[k].vals[perm[k]].first;
-                while (cx < tx) {
-                    cx += m;
-                }
-            }
+            firstData[d] = tmp;
+        }
+    }
 
-            //printV(perm);
-            //cout << ":) " <<  ct << " " << cx << '\n';
+    vector<S> data;
+    ll total = 0;
+    for (auto it = firstData.begin(); it != firstData.end(); ++it) {
+        data.PB(it->second.convert());
+        total += it->second.mc;
+    }
 
-            if (ct > best || cx < x) {
-                best = ct;
-                x = cx;
+    ll N = data.size();
+
+    ll best = LLONG_MAX;
+    
+    stack<Q> st;
+    for (ll i : data[0].classes) {
+        Q tmp;
+        tmp.a = (i % data[0].prime);
+        tmp.m = data[0].prime;
+        tmp.maxN = i;
+        tmp.ind = 1;
+        st.push(tmp);
+    }
+    while (!st.empty()) {
+        Q t = st.top();
+        st.pop();
+        if (t.ind == N) {
+            ll v = t.maxN % t.m;
+            ll scl = t.a % t.m;
+            if (scl < v) scl += t.m;
+            v = scl - v;
+            best = min(best, t.maxN+v);
+        } else {
+            for (ll i : data[t.ind].classes) {
+                ll tp = data[t.ind].prime;
+                Q newT;
+                newT.a = crt(t.a, t.m, i%tp, tp);
+                newT.m = t.m*tp;
+                newT.ind = t.ind+1;
+                newT.maxN = max(t.maxN, i);
+                st.push(newT);
             }
         }
     }
 
-    cout << x << ' ' << best << '\n';
+    print(best, total);
 
 }
