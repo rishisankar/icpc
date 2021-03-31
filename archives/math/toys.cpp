@@ -38,7 +38,6 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
     cout << "########\n";
 }
 template<typename T> inline void print(T obj) { cout << obj << '\n'; }
-template<typename T, typename... Args> inline void print(T t, Args... args) { cout << t << " "; print(args...); }
 
 typedef long long ll;
 typedef long double ld;
@@ -57,6 +56,13 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+int josephus(int n, int k) {
+    int res = 0;
+    for (int i = 1; i <= n; ++i)
+      res = (res + k) % i;
+    return res;
+}
+
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
@@ -64,6 +70,8 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
-
+    int t,k;
+    cin >> t >> k;
+    print(josephus(t,k));
 
 }

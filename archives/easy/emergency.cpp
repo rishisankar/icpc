@@ -38,7 +38,6 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
     cout << "########\n";
 }
 template<typename T> inline void print(T obj) { cout << obj << '\n'; }
-template<typename T, typename... Args> inline void print(T t, Args... args) { cout << t << " "; print(args...); }
 
 typedef long long ll;
 typedef long double ld;
@@ -64,6 +63,13 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
-
+    ll n,k;
+    cin >> n >> k;
+    if (2*k > n-1) {
+        print(n-1);
+        return 0;
+    }
+    ll tmp = n-1-((n-1)/k*k);
+    print(k + 1 + tmp);
 
 }
