@@ -37,7 +37,6 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
     }
     cout << "########\n";
 }
-template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 
 typedef long long ll;
 typedef long double ld;
@@ -63,6 +62,33 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
-
+    int t; cin >> t;
+    OREP(tests, t) {
+        int n, c;
+        cin >> n >> c;
+        VI v(n);
+        REP(i, n) {
+            v[i] = i+1;
+        }
+        c -= (n-1);
+        if (c < 0) {
+            cout << "Case #" << tests << ": IMPOSSIBLE\n";
+        } else {
+            for (int i = n-2; i >= 0; --i) {
+                int cut = min(c, n-i-1);
+                reverse(v.begin() + i, v.begin() + i + cut + 1);
+                c -= cut;
+            }
+            if (c == 0) {
+                cout << "Case #" << tests << ":";
+                REP(i, n) {
+                    cout << " " << v[i];
+                }
+                cout << '\n';
+            } else {
+                cout << "Case #" << tests << ": IMPOSSIBLE\n";
+            }
+        }
+    }
 
 }

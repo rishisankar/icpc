@@ -63,6 +63,16 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
-
+    int n;
+    cin >> n;
+    char p = '@';
+    int ct = 0;
+    REP(i,n) {
+        char c;
+        cin >> c;
+        if (c == p) ++ct;
+        p = c;
+    }
+    print(ct);
 
 }

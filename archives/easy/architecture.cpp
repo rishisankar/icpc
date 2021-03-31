@@ -37,7 +37,6 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
     }
     cout << "########\n";
 }
-template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 
 typedef long long ll;
 typedef long double ld;
@@ -63,6 +62,11 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
-
+    int r,c; cin >> r >> c;
+    VI a(r),b(c);
+    INP(a,r);
+    INP(b,c);
+    if (maxe(b) == maxe(a)) cout << "possible\n";
+    else cout << "impossible\n";
 
 }

@@ -37,7 +37,6 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
     }
     cout << "########\n";
 }
-template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 
 typedef long long ll;
 typedef long double ld;
@@ -63,6 +62,19 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
+    int g,n; cin >> g >> n;
 
+    VPII v(n);
+    REP(i,n) cin >> v[i].second >> v[i].first;
+    sort(all(v));
+    PII prev = {-1,-1};
+    int c = 0;
+    REP(i, n) {
+        if (v[i].second >= prev.first) {
+            prev = v[i];
+            ++c;
+        }
+    }
+    if (c >= g) cout << "YES\n"; else cout << "NO\n";
 
 }

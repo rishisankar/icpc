@@ -37,7 +37,6 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
     }
     cout << "########\n";
 }
-template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 
 typedef long long ll;
 typedef long double ld;
@@ -63,6 +62,24 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
-
-
+    int t; cin >> t;
+    OREP(tests, t) {
+        int x, y;
+        cin >> x >> y;
+        string s; cin >> s;
+        string tmp = "";
+        for (int i = 0; i < s.size(); ++i) {
+            if (s[i] != '?') tmp += s[i];
+        }
+        int cost = 0;
+        for (int i = 1; i < tmp.size(); ++i) {
+            if (tmp[i-1] == 'C' && tmp[i] == 'J') {
+                cost += x;
+            }
+            if (tmp[i-1] == 'J' && tmp[i] == 'C') {
+                cost += y;
+            }
+        }
+        cout << "Case #" << tests << ": " << cost << '\n';
+    }
 }

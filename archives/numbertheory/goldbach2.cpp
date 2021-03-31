@@ -37,7 +37,6 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
     }
     cout << "########\n";
 }
-template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 
 typedef long long ll;
 typedef long double ld;
@@ -56,6 +55,22 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+int sieve(int n, vector<bool>& is_prime) {
+    int count = n-1;
+    is_prime[0] = is_prime[1] = false;
+    for (int i = 2; i * i <= n; i++) {
+        if (is_prime[i]) {
+            for (int j = i * i; j <= n; j += i) {
+                if (is_prime[j]) {
+                    is_prime[j] = false;
+                    --count;
+                }
+            }
+        }
+    }
+    return count;
+}
+
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
@@ -63,6 +78,29 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
+    vector<bool> is_prime(35001, true);
+    sieve(35000, is_prime);
+    vector<int> primes;
+    OREP(i, 34000) {
+        if (is_prime[i]) primes.PB(i);
+    }
 
+    int n; cin >> n;
+    REP(tests, n) {
+        int x; cin >> x;
+        VPII res;
+        for (int p : primes) {
+            if (p <= x/2) {
+                if (is_prime[x-p]) {
+                    res.PB({p, x-p});
+                }
+            } else break;
+        }
+        cout << x << " has " << res.size() << " representation(s)\n";
+        for(PII pp : res) {
+            cout << pp.first << "+" << pp.second << '\n';
+        }
+        cout << '\n';
+    }
 
 }

@@ -37,7 +37,6 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
     }
     cout << "########\n";
 }
-template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 
 typedef long long ll;
 typedef long double ld;
@@ -56,6 +55,27 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+int ct, n;
+
+ll readToken(bool add) {
+    ll res = add ? 0 : 1;
+    while (true) {
+        string s;
+        if (ct < n) cin >> s; else s = ")";
+        ++ct;
+        ll i;
+        if (s == ")") return res % MOD;
+        if (s != "(" ) {
+            i = stoll(s);
+        } else {
+            i = readToken(!add);
+        }
+        if (add) res += i; else res *= i;
+        res %= MOD;
+    }
+    return res % MOD;
+}
+
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
@@ -63,6 +83,8 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
-
+    ct = 0;
+    cin >> n;
+    cout << readToken(true) << '\n';
 
 }

@@ -37,7 +37,6 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
     }
     cout << "########\n";
 }
-template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 
 typedef long long ll;
 typedef long double ld;
@@ -56,6 +55,55 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+ll phi(ll n) {
+    ll result = n;
+    for (ll i = 2; i * i <= n; i++) {
+        if (n % i == 0) {
+            while (n % i == 0)
+                n /= i;
+            result -= result / i;
+        }
+    }
+    if (n > 1)
+        result -= result / n;
+    return result;
+}
+
+// O(log(min(a,b)))
+ll gcd(ll a, ll b) {
+    if (a == 0) return b; 
+    return gcd(b % a, a); 
+} 
+
+// note that lcm(i, j) = ij / gcd(i,j)
+
+// return gcd(a,b) and solve for integer x,y: ax+by=gcd(a,b)
+ll euclidean(ll a, ll b, ll &x, ll &y) {
+
+    if (a == 0) {
+        x = 0;
+        y = 1;
+        return b;
+    }
+
+    ll x1,y1;
+    ll gcd_ = euclidean(b%a, a, x1, y1);
+
+    x = y1 - (b/a) * x1;
+    y = x1;
+
+    return gcd_;
+
+}
+
+// only exists if gcd(a,m) = 1 !! otherwise return -1
+ll modularInverse(ll a, ll m) {
+    ll x,y;
+    ll g = euclidean(a, m, x, y);
+    if (g != 1) return -1;
+    return (x % m + m) % m; // shift x to positive in case it is negative
+}
+
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
@@ -63,6 +111,13 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
-
+    int t; cin >> t;
+    REP(tests, t) {
+        ll n, e;
+        cin >> n >> e;
+        ll p = phi(n);
+        ll d = modularInverse(e, p);
+        cout << d << '\n';
+    }
 
 }

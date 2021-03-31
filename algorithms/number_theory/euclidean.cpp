@@ -9,6 +9,10 @@ ll gcd(ll a, ll b) {
 } 
 
 // note that lcm(i, j) = ij / gcd(i,j)
+ll lcm(ll a, ll b) {
+  return a*b/gcd(a,b);
+}
+
 
 // return gcd(a,b) and solve for integer x,y: ax+by=gcd(a,b)
 ll euclidean(ll a, ll b, ll &x, ll &y) {
@@ -35,4 +39,16 @@ ll modularInverse(ll a, ll m) {
     ll g = euclidean(a, m, x, y);
     if (g != 1) return -1;
     return (x % m + m) % m; // shift x to positive in case it is negative
+}
+
+template <typename T>
+T modpow(T base, T exp, T modulus) {
+  base %= modulus;
+  T result = 1;
+  while (exp > 0) {
+    if (exp & 1) result = (result * base) % modulus;
+    base = (base * base) % modulus;
+    exp >>= 1;
+  }
+  return result;
 }

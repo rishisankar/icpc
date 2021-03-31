@@ -37,7 +37,6 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
     }
     cout << "########\n";
 }
-template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 
 typedef long long ll;
 typedef long double ld;
@@ -56,6 +55,33 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+ll euclid(ll a, ll b, ll &x, ll &y) {
+	if (!b) return x = 1, y = 0, a;
+	ll d = euclid(b, a % b, y, x);
+	return y -= a/b * x, d;
+}
+
+ll crt(ll a, ll m, ll b, ll n) {
+	if (n > m) swap(a, b), swap(m, n);
+	ll x, y, g = euclid(m, n, x, y);
+	if ((a - b) % g == 0) {
+	    x = (b - a) % n * x % n / g * m + a;
+	    return x < 0 ? x + m*n/g : x;
+    } else {
+        return -1;
+    }
+}
+
+ll gcd(ll a, ll b) {
+    if (a == 0) return b; 
+    return gcd(b % a, a); 
+} 
+
+
+ll lcm(ll a, ll b) {
+  return a*b/gcd(a,b);
+}
+
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
@@ -63,6 +89,20 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
+    int t; cin >> t;
+    REP(tests, t) {
+        ll a,n,b,m;
+        cin >> a >> n >> b >> m;
 
+        ll L = lcm(n,m);
+
+        ll x = crt(a,n,b,m);
+        if (x == -1) {
+            cout << "no solution\n";
+        } else {
+            cout << (x%L) << " " << L << '\n';
+        }
+
+    }
 
 }

@@ -1,12 +1,12 @@
 // Euler's Totient Function
 // Euler's Theorem: if gcd(a,n) = 1, then a^{phi(n)} = 1 (mod n)
 
-// Complexity: O(sqrt(n))
+// Complexity: O(sqrt(n)) - example numbertheory/crackingrsa
 // Uses the property that phi(n) = n(1-1/p1)(1-1/p2)...(1-1/pk) if n = p1^a1 ... pk^ak
 // factorizes n
-int phi(int n) {
-    int result = n;
-    for (int i = 2; i * i <= n; i++) {
+ll phi(ll n) {
+    ll result = n;
+    for (ll i = 2; i * i <= n; i++) {
         if (n % i == 0) {
             while (n % i == 0)
                 n /= i;

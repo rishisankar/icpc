@@ -37,7 +37,6 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
     }
     cout << "########\n";
 }
-template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 
 typedef long long ll;
 typedef long double ld;
@@ -63,6 +62,34 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
+    int t; cin >> t;
+    // 7 14 21 28 35 42 49 56 63 70
 
-
+    REP(i, t) {
+        int k; cin >> k;
+        int d = k % 10;
+        if (d == 0 && k >= 70) {
+            cout << "10\n";
+        } else if (d == 1 && k >= 21) {
+            cout << "3\n";
+        } else if (d == 2 && k >= 42) {
+            cout << "6\n";
+        } else if (d == 3 && k >= 63) {
+            cout << "9\n";
+        } else if (d == 4 && k >= 14) {
+            cout << "2\n";
+        } else if (d == 5 && k >= 35) {
+            cout << "5\n";
+        } else if (d == 6 && k >= 56) {
+            cout << "8\n";
+        } else if (d == 7 && k >= 7) {
+            cout << "1\n";
+        } else if (d == 8 && k >= 28) {
+            cout << "4\n";
+        } else if (d == 9 && k >= 49) {
+            cout << "7\n";
+        } else {
+            cout << "-1\n";
+        }
+    }
 }
