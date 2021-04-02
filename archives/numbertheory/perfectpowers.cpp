@@ -15,8 +15,6 @@ using namespace std;
 #define sz(x) (int)(x).size()
 #define PB push_back
 #define INP(v, n) for (int i=0; i<n; ++i) { cin >> v[i]; }
-#define ceil(x) (ll)ceil(x)
-#define floor(x) (ll)ceil(x)
 
 template<typename T> inline T maxe(vector<T> &vec) { return *max_element(all(vec)); }
 template<typename T> inline T mine(vector<T> &vec) { return *min_element(all(vec)); }
@@ -59,6 +57,16 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+ll run(ll x, bool neg) {
+    RFOR(i, 35, 1) {
+        if (neg && i %2 == 0) continue;
+        ld t = 1; t/= i;
+        ll test = round(pow(x, t));
+        if (pow(test, i) == x) return i;
+    }
+    return 1;
+}
+
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
@@ -66,6 +74,11 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
-
+    ll x;
+    while (true) {
+        cin >> x;
+        if (x == 0) break;
+        print(run(abs(x), x < 0));
+    }    
 
 }

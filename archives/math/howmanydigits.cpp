@@ -15,6 +15,8 @@ using namespace std;
 #define sz(x) (int)(x).size()
 #define PB push_back
 #define INP(v, n) for (int i=0; i<n; ++i) { cin >> v[i]; }
+
+// to avoid scientific notation ;-;
 #define ceil(x) (ll)ceil(x)
 #define floor(x) (ll)ceil(x)
 
@@ -62,10 +64,21 @@ typedef vector<vector<pair<int, int>>> VVPII;
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    cin.exceptions(cin.failbit);
+    //cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
+    vector<ld> table(1000001);
+    ld res = 0;
+    OREP(i, 1000000) {
+        res += log(i)/log(10);
+        table[i] = res;
+    }
 
+    ll x;
+    while (cin >> x) {
+        if (x <= 3) print(1);
+        else print(ceil(table[x]));
+    }
 
 }
