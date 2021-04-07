@@ -59,6 +59,12 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+// O(log(min(a,b)))
+ll gcd(ll a, ll b) {
+    if (a == 0) return b; 
+    return gcd(b % a, a); 
+} 
+
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
@@ -66,6 +72,11 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
-
+    ll a, b;
+    while (true) {
+        cin >> a >> b;
+        if (a == 0 && b == 0) exit(0);
+        print(a/b,a%b,'/',b);
+    }
 
 }

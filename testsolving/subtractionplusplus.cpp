@@ -59,6 +59,18 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+int N;
+VVI state;
+
+bool lose(int l, int t) {
+    if (state[l][t] != -1) return (state[l][t] == 1);
+    OREP(i, t) {
+        if (l < i) break;
+        if (lose(l-i,t+1)) return state[l][t] = 0;
+    }
+    return state[l][t] = 1;
+}
+
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
@@ -66,6 +78,8 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
-
+    cin >> N;
+    state.resize(N+1, VI(N+1, -1));  // num left, cur turn = is losing
+    if (lose(N, 1)) print("NO"); else print("YES");
 
 }

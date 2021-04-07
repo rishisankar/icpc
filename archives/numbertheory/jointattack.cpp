@@ -66,6 +66,18 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
+    int n; cin >> n;
+    VLL v(n);
+    INP(v,n);
 
+    ll cn = v[n-1];
+    ll cd = 1;
+    for (int i = n-2; i >= 0; --i) {
+        swap(cn,cd);
+        cn += cd*v[i];
+        ll g = __gcd(cn,cd);
+        cn/=g; cd/=g;
+    }
+    cout << cn << '/' << cd << '\n';
 
 }

@@ -59,6 +59,12 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+// O(log(min(a,b)))
+ll gcd(ll a, ll b) {
+    if (a == 0) return b; 
+    return gcd(b % a, a); 
+}
+
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
@@ -66,6 +72,31 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
 
+    int t; cin >> t;
+    REP(tests, t) {
+        ll a,b,c,d;
+        char op;
+        cin >> a >> b >> op >> c >> d;
+        ll num,den;
+        if (op == '+') {
+            num = a*d+b*c;
+            den = b*d;
+        } else if (op == '-') {
+            num = a*d - b*c;
+            den = b*d;
+        } else if (op == '*') {
+            num = a*c;
+            den = b*d;
+        } else if (op == '/') {
+            num = a*d;
+            den = b*c;
+        }
 
+        bool pos = ((num >= 0 && den >= 0) || (num < 0 && den < 0));
+        num = abs(num); den = abs(den);
+        ll g = gcd(num,den);
+        if (!pos) cout << '-';
+        print(num/g,'/',den/g);
+    }
 
 }
