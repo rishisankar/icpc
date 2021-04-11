@@ -59,13 +59,17 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+void run() {
+    
+}
+
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(10);
-
-
-
+    // ll t; cin >> t;
+    ll t=1;
+    REP(tests,t) run();
 }

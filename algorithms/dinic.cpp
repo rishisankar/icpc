@@ -3,15 +3,15 @@
  * Flow algorithm with complexity O(VE logU) where U = max(cap)
  * O(min(E^{1/2}, V^{2/3}) * E) if U = 1
  * O(sqrt(V) * E) for bipartite matching.
- * To use: (see example regionals/ridehailing.cpp)
+ * To use: (see example graphs/maxflow.cpp - recovers flow too)
  *      Dinic flow_graph(n); <- n = number of vertices
  *      flow_graph.addEdge(start, end, capacity, [required_capacity??])
  *      flow_graph.calc() tells you max flow
  * 
  * 
  * Applications of max flow:
- *      - minimum path cover - minimum # of paths that cover all vertices (https://walkccc.me/CLRS/Chap26/Problems/26-2/)
- *      - maximum bipartite matching
+ * - minimum path cover - minimum # of paths that cover all vertices (https://walkccc.me/CLRS/Chap26/Problems/26-2/) socal-regionals-feb-21/ridehailing.cpp
+ * - maximum bipartite matching
  */
 
 struct Dinic {
