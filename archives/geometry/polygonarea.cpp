@@ -59,39 +59,36 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
-int N;
-VVI state;
+void run() {
+    int n;
+    while (true) {
+        cin >> n;
+        if (n == 0) return;
+        VPII v;
+        REP(i, n) {
+            int a,b; cin >> a >> b;
+            v.PB({a,b});
+        }
 
-bool lose(int l, int t) {
-    if (state[l][t] != -1) return (state[l][t] == 1);
-    OREP(i, t) {
-        if (l < i) break;
-        if (lose(l-i,t+1)) return state[l][t] = 0;
+        double area = 0;
+        REP(i, n) {
+            int j = (i+1)%n;
+            area += (v[i].first + v[j].first) * (v[i].second - v[j].second);
+        }
+        area/=2;
+        string s = "CW";
+        if (area < 0) s = "CCW";
+        print(s,abs(area));
     }
-    return state[l][t] = 1;
 }
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cin.exceptions(cin.failbit);
-    // cout.setf(ios::fixed);
-    // cout.precision(10);
-
-    //cin >> N;
-    string prev = "NO";
-    int ct = 0;
-    OREP(i, 2000) {
-        N = i;
-        state.resize(N+1, VI(N+1, -1));  // num left, cur turn = is losing
-        string res = "YES";
-        if (lose(N, 1)) res = "NO";
-        //print(N, res);
-        if (res != prev) {
-            print(prev, ct);
-            ct = 1;
-            prev = res;
-        } else ++ct;
-    }
-    print(prev, ct);
+    cout.setf(ios::fixed);
+    cout.precision(1);
+    // ll t; cin >> t;
+    ll t=1;
+    REP(tests,t) run();
 }

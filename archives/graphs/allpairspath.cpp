@@ -59,16 +59,44 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
-int N;
-VVI state;
 
-bool lose(int l, int t) {
-    if (state[l][t] != -1) return (state[l][t] == 1);
-    OREP(i, t) {
-        if (l < i) break;
-        if (lose(l-i,t+1)) return state[l][t] = 0;
+const ll inf = 1LL << 62;
+void floydWarshall(vector<vector<ll>>& m) {
+	int n = sz(m);
+	rep(i,0,n) m[i][i] = min(m[i][i], 0LL);
+	rep(k,0,n) rep(i,0,n) rep(j,0,n)
+		if (m[i][k] != inf && m[k][j] != inf) {
+			auto newDist = max(m[i][k] + m[k][j], -inf);
+			m[i][j] = min(m[i][j], newDist);
+		}
+	rep(k,0,n) if (m[k][k] < 0) rep(i,0,n) rep(j,0,n)
+		if (m[i][k] != inf && m[k][j] != inf) m[i][j] = -inf;
+}
+
+
+void run() {
+    int n,m,q;
+    cin >> n >> m >> q;
+    while (true) {
+        VVLL a(n, VLL(n, inf));
+        ll u,v,w;
+        REP(i,m) {
+            cin >> u >> v >> w;
+            a[u][v] = min(a[u][v], w);
+        }
+        floydWarshall(a);
+        REP(i,q) {
+            int u,v;
+            cin >> u >> v;
+            if (a[u][v] == inf) print("Impossible");
+            else if (a[u][v] == -inf) print("-Infinity");
+            else print(a[u][v]);
+        }
+        
+        cin >> n >> m >> q;
+        if (n == 0 && m == 0 && q == 0) return;
+        cout << '\n';
     }
-    return state[l][t] = 1;
 }
 
 int main() {
@@ -77,21 +105,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(10);
-
-    //cin >> N;
-    string prev = "NO";
-    int ct = 0;
-    OREP(i, 2000) {
-        N = i;
-        state.resize(N+1, VI(N+1, -1));  // num left, cur turn = is losing
-        string res = "YES";
-        if (lose(N, 1)) res = "NO";
-        //print(N, res);
-        if (res != prev) {
-            print(prev, ct);
-            ct = 1;
-            prev = res;
-        } else ++ct;
-    }
-    print(prev, ct);
+    // ll t; cin >> t;
+    ll t=1;
+    REP(tests,t) run();
 }

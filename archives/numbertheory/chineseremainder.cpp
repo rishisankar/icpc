@@ -58,17 +58,35 @@ typedef pair<int, int> PII;
 typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
+ll euclid(ll a, ll b, ll &x, ll &y) {
+	if (!b) return x = 1, y = 0, a;
+	ll d = euclid(b, a % b, y, x);
+	return y -= a/b * x, d;
+}
 
-int N;
-VVI state;
+/*
 
-bool lose(int l, int t) {
-    if (state[l][t] != -1) return (state[l][t] == 1);
-    OREP(i, t) {
-        if (l < i) break;
-        if (lose(l-i,t+1)) return state[l][t] = 0;
+CRT: find x s.t. x = a (mod m) and x = b (mod n)
+Return -1 if no solution
+Time: log(max(m,n))
+Source: kactl
+Example: numbertheory/generalchineseremainder
+*/
+ll crt(ll a, ll m, ll b, ll n) {
+	if (n > m) swap(a, b), swap(m, n);
+	ll x, y, g = euclid(m, n, x, y);
+	if ((a - b) % g == 0) {
+	    x = (b - a) % n * x % n / g * m + a;
+	    return x < 0 ? x + m*n/g : x;
+    } else {
+        return -1;
     }
-    return state[l][t] = 1;
+}
+
+void run() {
+    ll a,n,b,m;
+    cin >> a >> n >> b >> m;
+    print(crt(a,n,b,m),n*m);
 }
 
 int main() {
@@ -77,21 +95,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(10);
-
-    //cin >> N;
-    string prev = "NO";
-    int ct = 0;
-    OREP(i, 2000) {
-        N = i;
-        state.resize(N+1, VI(N+1, -1));  // num left, cur turn = is losing
-        string res = "YES";
-        if (lose(N, 1)) res = "NO";
-        //print(N, res);
-        if (res != prev) {
-            print(prev, ct);
-            ct = 1;
-            prev = res;
-        } else ++ct;
-    }
-    print(prev, ct);
+    ll t; cin >> t;
+    //ll t=1;
+    REP(tests,t) run();
 }
