@@ -42,3 +42,44 @@ vector<ull> factor(ull n) {
 	l.insert(l.end(), all(r));
 	return l;
 }
+
+
+
+
+/* factor numbers from 1-n 
+O(n loglogn) sieve preprocessing
+O(log n) per query
+Source: https://www.geeksforgeeks.org/prime-factorization-using-sieve-olog-n-multiple-queries/
+NOT CLEAN RN idk
+*/
+void sieve() {
+    spf[1] = 1;
+    for (int i=2; i<MAXN; i++) spf[i] = i;
+    for (int i=4; i<MAXN; i+=2) spf[i] = 2; // process powers of 2
+    for (int i=3; i*i<MAXN; i++) {
+        // checking if i is prime
+        if (spf[i] == i)
+        {
+            // marking SPF for all numbers divisible by i
+            for (int j=i*i; j<MAXN; j+=i)
+  
+                // marking spf[j] if it is not 
+                // previously marked
+                if (spf[j]==j)
+                    spf[j] = i;
+        }
+    }
+}
+  
+// A O(log n) function returning primefactorization
+// by dividing by smallest prime factor at every step
+vector<int> getFactorization(int x)
+{
+    vector<int> ret;
+    while (x != 1)
+    {
+        ret.push_back(spf[x]);
+        x = x / spf[x];
+    }
+    return ret;
+}
