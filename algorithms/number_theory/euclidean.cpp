@@ -1,8 +1,4 @@
-// example: math/fiat.cpp (modular inverse for catalan numbers)
-
-typedef long long ll; // shouldn't be unsigned bc modular inverse returns -1!
-
-// O(log(min(a,b)))
+// O(log(min(a,b))), can use __gcd instead
 ll gcd(ll a, ll b) {
     if (a == 0) return b; 
     return gcd(b % a, a); 
@@ -13,8 +9,8 @@ ll lcm(ll a, ll b) {
   return a*b/gcd(a,b);
 }
 
-
 // return gcd(a,b) and solve for integer x,y: ax+by=gcd(a,b)
+// linear diophantine equations ax+by=c have a solution iff c divides gcd(a,b)
 ll euclidean(ll a, ll b, ll &x, ll &y) {
 
     if (a == 0) {
