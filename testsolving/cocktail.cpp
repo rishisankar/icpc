@@ -59,17 +59,12 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
-ll p, m, c, r;
-bool checkin;
-
-void check(string s) {
-    ++c;
-    if (!checkin) {
-        if (c == m) {
-            checkin = true;
-            cout << s << '\n';
-        }
-    }
+void run() {
+    int n; int t; cin >> n >> t;
+    VI v(n); INP(v,n);
+    sort(all(v));
+    OREP(i, n-1) if (v[i] <= t*i) { print("NO"); exit(0); }
+    print("YES");
 }
 
 int main() {
@@ -78,28 +73,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(10);
-
-    cin >> p >> m;
-    r = 1;
-    c = 0;
-    checkin = false;
-
-    while(true) {
-        REP(i, r) {
-            check("Efficiency");
-        }
-        REP(i, r) {
-            check("Unbreaking");
-        }
-        REP(i, r) {
-            check("Silk");
-            check("Touch");
-        }
-        if (checkin) {
-            if (c%p == 0) print(p); else print(c%p);
-            exit(0);
-        }
-        ++r;
-    }
-
+    // ll t; cin >> t;
+    ll t=1;
+    REP(tests,t) run();
 }
