@@ -62,7 +62,46 @@ typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
 void run() {
-    
+    int n; cin >> n;
+    if (n == 1) {
+        print("! 1");
+        cout.flush();
+        return;
+    }
+    int op;
+    for (int i = 0; i < n; i += 2) {
+        if (i == n-1) --i;
+        print("?", 2, i+1, i+2, 1);
+        cout.flush();
+        int res; cin >> res;
+        if (res == 1) {
+            op = i;
+            break;
+        } else if (res == 2) {
+            print("?", 2, i+2, i+1, 1);
+            cout.flush();
+            cin >> res;
+            if (res == 1) {
+                op = i+1;
+                break;
+            }
+        }
+    }
+    VI perm;
+    for (int i = 0; i < n; ++i) {
+        if (i == op) {
+            perm.PB(1);
+        } else {
+            print("?", 1, op+1, i+1, n-1);
+            cout.flush();
+            int res; cin >> res;
+            perm.PB(res);
+        }
+    }
+    cout << "!";
+    for (int i : perm) cout << ' ' << i;
+    cout << '\n';
+    cout.flush();
 }
 
 int main() {
@@ -71,7 +110,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(10);
-    // ll t; cin >> t;
-    ll t=1;
+    ll t; cin >> t;
+    //ll t=1;
     REP(tests,t) run();
 }

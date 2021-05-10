@@ -62,7 +62,15 @@ typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
 void run() {
-    
+    ll a,b;
+    cin >> a >> b;
+    if (b == 1) {
+        print("NO");
+    } else if (b == 2) {
+        print("YES", a, 2*a, 3*a);
+    } else {
+        print("YES", a, (b-1)*a, b*a);
+    }
 }
 
 int main() {
@@ -71,7 +79,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(10);
-    // ll t; cin >> t;
-    ll t=1;
+    ll t; cin >> t;
+    //ll t=1;
     REP(tests,t) run();
 }

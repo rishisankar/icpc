@@ -61,8 +61,36 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+ll gcd(ll a, ll b) {
+    if (a == 0) return b; 
+    return gcd(b % a, a); 
+} 
+
 void run() {
-    
+    ll n; cin >> n;
+    VLL v(n); INP(v,n);
+
+    if (n == 1) {
+        print(0);
+        return;
+    }
+
+    print(n-1);
+
+    REP(i, n-1) {
+        int j = v[i] < v[i+1] ? i+1 : i;
+        ll f = j == 0 ? v[j+1] : v[j-1];
+        ll s = j == n-1 ? v[j-1] : v[j+1];
+        int mn = min(f,s);
+        int mx = max(f,s);
+        v[j] = min(v[i],v[i+1]);
+        while (gcd(mn, v[j]) != 1 || gcd(mx, v[j]) != 1) {
+            ++v[j];
+        }
+        print(i+1,i+2,v[i],v[i+1]);
+    }
+
+    printV(v);
 }
 
 int main() {
@@ -71,7 +99,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(10);
-    // ll t; cin >> t;
-    ll t=1;
+    ll t; cin >> t;
+    //ll t=1;
     REP(tests,t) run();
 }
