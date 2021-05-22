@@ -62,24 +62,17 @@ typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
 void run() {
-    int n; cin >> n;
-    VVB dp(n+1, VB(n+1, false));
-    OREP(i, n) dp[i][n] = true;
-    for(int turn = n-1; turn >= 1; --turn) {
-        int ptr = 0;
-        for (int left = 1; left <= n; ++left) {
-            while (ptr <= n) {
-                if (left - turn <= ptr && ptr <= left - 1) {
-                    dp[left][turn] = true;
-                    break;
-                } else if (ptr < left - turn) {
-                    ++ptr;
-                    while (ptr <= n && dp[ptr][turn+1]) ++ptr;
-                } else break;
-            }
-        }
+    int n;
+    cin >> n;
+    bool yes = true;
+    int i = 1;
+    int step = 1;
+    while (true) {
+        if (i >= n) {if (yes) print("YES"); else print("NO");exit(0);}
+        if (yes) step+=1;
+        i += step;
+        yes = !yes;
     }
-    if (dp[n][1]) print("YES"); else print("NO");
 }
 
 int main() {
