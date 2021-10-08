@@ -1,5 +1,3 @@
-// doesn't work :(
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -77,7 +75,7 @@ void run() {
     VB taken(n, false);
     int ct = 0;
     while (ct < n) {
-        VI lvl;
+        levels.resize(levels.size() + 1);
         REP(j, n) {
             if (taken[j]) continue;
             bool success = true;
@@ -89,14 +87,13 @@ void run() {
                 }
             }
             if (success) {
-                lvl.PB(j);
+                levels[levels.size()-1].PB(j);
             }
         }
-        for (int i : lvl) {
+        for (int i : levels[levels.size()-1]) {
             taken[i] = true;
             ++ct;
         }
-        levels.PB(lvl);
     }
 
     if (levels.size() > 1) {
@@ -111,7 +108,6 @@ void run() {
                 }
             }
         }
-        printVV(oup);
         for (int sep = 2; sep < levels.size(); ++sep) {
             for (int st = 0; st < levels.size() - sep; ++st) {
                 for (int u : levels[st]) {
@@ -121,32 +117,28 @@ void run() {
                         ll pts = 0;
                         for (int wlvl = st + 1; wlvl < st + sep; ++wlvl) {
                             for (int w : levels[wlvl]) {
-                                if (oup[u][w] != -1) {
-                                    dbg("ASDF", w, counts[w][v], inp[u][w], inp[w][v]);
+                                if (oup[u][w] != -1 && inp[w][v] != -1) {
                                     tot += counts[w][v] * (oup[u][w] + inp[w][v]);
                                     pts += counts[w][v];
                                 }
                             }
                         }
                         counts[u][v] = pts;
-                        dbg(u,v, tot, pts, inp[u][v]);
-                        if (tot != pts * inp[u][v]) {
+                        
+                        if (pts ==0 || tot != pts * inp[u][v]) {
                             oup[u][v] = (pts+1LL) * inp[u][v] - tot;
                             counts[u][v] += 1;
                         }
                     }
                 }
             }
-            dbg(sep);
-            printVV(oup);
+            
         }
-        printVV(counts);
+        
     }
 
     REP(i, n) {
         REP(j, n) {
-            // if (oup[i][j] > 0) cout << oup[i][j] << ' ';
-            // else cout << "-1 ";
             cout << oup[i][j] << ' ';
         }
         cout << '\n';
