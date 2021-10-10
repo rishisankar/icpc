@@ -61,95 +61,198 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
-unordered_map<string, pair<ll,ll>> vars;
+struct Command {
+    char type; // e (=), c (if), a (assert)
+    string assignId;
+    bool isUnknown;
+    bool isSum;
+    string leftId;
+    string rightId;
+    ll value;
+
+    vector<Command> inners;
+};
+
+Command assertionz();
 string s;
 int pos;
 int n;
 
 // always pos should be next char
 
-void assign() {
+Command assign() {
     char id = s.at(pos);
     string st = "";
-    ll lb, ub;
     bool addn = false;
+    Command c;
+    c.assignId = id;
+    c.type = 'e';
     for (pos = pos+2; s.at(pos) != ']'; ++pos) {
         if (s.at(pos == '?')) {
-            vars[id] = {0,1};
-            pos += 2;
-            return;
+            c.isUnknown = true;
+            c.isSum = false;
+            return c;
         }
         if ((s.at(pos)) == '+') {
-            if (addn == false) {
-                if (!vars.count(st)) {
-                    lb = ub = 0;
-                } else {
-                    lb = vars[st].first;
-                    ub = vars[st].second;
-                }
-            } else {
-                if (vars.count(st)) {
-                    lb += vars[st].first;
-                    ub += vars[st].second;
-                }
-            }
+            c.leftId = st;
             addn = true;
+            c.isSum = true;
+            c.isUnknown = false;
             st = "";
         }
-        st += s.at(pos)
+        st += s.at(pos);
     }
 
     if (!addn) {
         ll val = stoll(s);
-        vars[id] = {val,val};
+        c.isUnknown = c.isSum = false;
+        c.value = val;
     } else {
-        if (vars.count(st)) {
-            lb += vars[st].first;
-            ub += vars[st].second;
-        }
-        vars[id] = {lb,ub};
+        c.rightId = st;
     }
     pos++;
+    return c;
 }
 
-bool conditional() {
-    
+Command conditionalz() {
+    Command c;
+    c.type = 'c';
+    c.leftId = s.at(pos);
+    pos += 2;
+    c.rightId = s.at(pos);
+    pos += 2;
+    while (true) {
+        if (s.at(pos) == '}') {
+            pos += 2;
+            return c;
+        } else if (s.at(pos) == '[') {
+            ++pos;
+            Command cx = assign();
+            c.inners.push_back(cx);
+        } else if (s.at(pos) == '<') {
+            ++pos;
+            Command cx = assertionz();
+            c.inners.push_back(cx); 
+        }
+    }
+
+    return c;
 }
 
-void assertion() {
-
+Command assertionz() {
+    Command c;
+    c.type = 'a';
+    c.leftId = s.at(pos);
+    pos += 2;
+    c.rightId = s.at(pos);
+    pos += 2;
+    return c;
 }
 
-void run() {
-    vars.clear();
-    string s;
+bool run() {
     cin >> s;
     pos = 0;
     n = s.size();
+    vector<Command> commands;
     if (n == 0) {
-        print("ASSERTIONS ALWAYS HOLD");
-        return;
+        return true;
     }
-    while (true) {
-        if (pos >= n) {
-            print("ASSERTIONS ALWAYS HOLD");
-            return;   
-        } else {
-            char x = s.at(pos);
-            ++pos;
-            if (x == '[') {
+    while (pos < n) {
+        char x = s.at(pos);
+        ++pos;
+        if (x == '[') {
+            Command c = assign();
+            commands.PB(c);
+        } else if (x == '(') {
+            Command c = conditionalz();
+            commands.PB(c);
+        } else if (x == '<') {
+            Command c  = assertionz();
+            commands.PB(c);
+        }
+    }
 
-            } else if (x == '(') {
 
-            } else if (x == '<') {
-                if (!assertion()) {
-                    print("ASSERTIONS INVALID");
-                    return;
+    for (int i = 0; i < 1024; ++i) {
+        ll ct = 0;
+        cout << i << "\n";
+        cout.flush();
+        unordered_map<string, ll> vars;
+        for (Command c : commands) {
+            if (c.type == 'e') {
+                if (c.isUnknown) {
+                    vars[c.assignId] = ((i >> ct) & 1);
+                    ++ct;
+                } else if (c.isSum) {
+                    ll lft = 0; ll rght = 0;
+                    if (vars.count(c.leftId)) {
+                        lft = vars[c.leftId];
+                    }
+                    if (vars.count(c.rightId)) {
+                        rght = vars[c.rightId];
+                    }
+                    vars[c.assignId] = lft + rght;
+                } else {
+                    vars[c.assignId] = c.value;
+                }
+            } else if (c.type == 'a') {
+                ll lft = 0; ll rght = 0;
+                if (vars.count(c.leftId)) {
+                    lft = vars[c.leftId];
+                }
+                if (vars.count(c.rightId)) {
+                    rght = vars[c.rightId];
+                }
+                if (lft != rght) {
+                    return false;
+                }
+            } else if (c.type == 'c') {
+                ll lft = 0; ll rght = 0;
+                if (vars.count(c.leftId)) {
+                    lft = vars[c.leftId];
+                }
+                if (vars.count(c.rightId)) {
+                    rght = vars[c.rightId];
+                }
+                if (lft >= rght) {
+                    continue;
+                }
+                for (Command cx : c.inners) {
+
+                    if (cx.type == 'e') {
+                        if (cx.isUnknown) {
+                            vars[cx.assignId] = ((i >> ct) & 1);
+                            ++ct;
+                        } else if (cx.isSum) {
+                            ll lft = 0; ll rght = 0;
+                            if (vars.count(cx.leftId)) {
+                                lft = vars[cx.leftId];
+                            }
+                            if (vars.count(cx.rightId)) {
+                                rght = vars[cx.rightId];
+                            }
+                            vars[cx.assignId] = lft + rght;
+                        } else {
+                            vars[cx.assignId] = cx.value;
+                        }
+                    } else if (cx.type == 'a') {
+                        ll lft = 0; ll rght = 0;
+                        if (vars.count(cx.leftId)) {
+                            lft = vars[cx.leftId];
+                        }
+                        if (vars.count(cx.rightId)) {
+                            rght = vars[cx.rightId];
+                        }
+                        if (lft != rght) {
+                            return false;
+                        }
+                    }
+
                 }
             }
         }
     }
-    
+    return true;
 }
 
 int main() {
@@ -160,5 +263,13 @@ int main() {
     // cout.precision(10);
     ll t; cin >> t;
     //ll t=1;
-    REP(tests,t) run();
+    REP(tests,t) {
+        bool res = run();
+        if (res) {
+            print("ASSERTIONS ALWAYS HOLD");
+        } else {
+            print("ASSERTIONS INVALID");
+        }
+    }
+
 }
