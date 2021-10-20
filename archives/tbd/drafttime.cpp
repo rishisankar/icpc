@@ -61,28 +61,18 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
-struct Player {
-    int rank;
-    string name;
-};
-
 void run() {
     int n, m, k;
     cin >> n >> m >> k;
-    unordered_map<string, int> teams;
-    vector<string> tts;
-    unordered_map<string, int> players;
-    vector<string> pplayers;
     unordered_map<string, vector<string>> tpp, ppp;
     unordered_map<string, unordered_map<string, int>>tp, pp;
     unordered_map<string, int> proposals;
     unordered_set<string> unmatched;
     unordered_map<string, priority_queue<pair<int, string>>> matches;
-    //unordered_map<string, vector<string>> matches;
+
     REP(i, n) {
         string s;
         cin >> s;
-        tts.PB(s);
         REP(j, k) {
             string p;
             cin >> p;
@@ -92,8 +82,6 @@ void run() {
     }
     REP(i, k) {
         string pl; cin >> pl;
-        players[pl] = i;
-        pplayers.PB(pl);
         proposals[pl] = 0;
         unmatched.insert(pl);
         REP(j, n) {
@@ -114,32 +102,9 @@ void run() {
         string tm = ppp[plyr][proposals[plyr]];
         ++proposals[plyr];
 
-        // Player player;
-        // player.name = plyr;
-        // player.rank = tp[tm][plyr];
-
         pair<int, string> xx = {tp[tm][plyr], plyr};
         matches[tm].push(xx);
 
-        // int i;
-        // for (i = matches[tm].size() - 1; i >= 0; --i) {
-        //     bool prefers = false;
-        //     for (string s : tp[tm]) {
-        //         if (s == plyr) {
-        //             prefers = true;
-        //             break;
-        //         } else if (s == matches[tm][i]) {
-        //             break;
-        //         }
-        //     }
-        //     if (!prefers) {
-        //         matches[tm].insert(matches[tm].begin()+i+1, plyr);
-        //         break;
-        //     }
-        // }
-        // if (i < 0) {
-        //     matches[tm].insert(matches[tm].begin(), plyr);
-        // }
         if (matches[tm].size() > m) {
             pair<int, string> killed = matches[tm].top();
             matches[tm].pop();
@@ -154,9 +119,6 @@ void run() {
             f.second.pop();
             cout << " " << s;
         }
-        // for (int i = 0; i < f.second.size(); ++i) {
-        //     cout << " " << f.second[i];
-        // }
         cout << '\n';
     }
 

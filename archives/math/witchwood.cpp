@@ -77,7 +77,7 @@ void run() {
 
     OREP(i, n) {
         REP(j, m) {
-            ld fm = (1 - P[j]) * (dp[i-1] * S[j] * S[j] + k * P[j] * S[j] * S[j] + T[j] * S[j] * S[j]);
+            ld fm = S[j] * (dp[i-1] + k * P[j] + T[j]);
             dp[i] = min(dp[i], fm);
         }
     }
