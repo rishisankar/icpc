@@ -11,6 +11,7 @@ Return -1 if no solution
 Time: log(max(m,n))
 Source: kactl
 Example: numbertheory/generalchineseremainder
+Note: not necessarily the smallest nonnegative soln. crt(...) % lcm(m,n) is the smallest.
 */
 ll crt(ll a, ll m, ll b, ll n) {
 	if (n > m) swap(a, b), swap(m, n);
