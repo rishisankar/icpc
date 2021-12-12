@@ -42,7 +42,7 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
 template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 template<typename T, typename... Args> inline void print(T t, Args... args) { cout << t << " "; print(args...); }
 template<typename T> inline void dbg(T obj) { cerr << obj << '\n'; }
-template<typename T, typename... Args> inline void dbg(T t, Args... args) { cerr << t << " "; dbg(args...); }
+template<typename T, typename... Args> inline void dbg(T t, Args... args) { cerr << t << " "; print(args...); }
 
 typedef long long ll;
 typedef long double ld;
@@ -62,7 +62,14 @@ typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
 void run() {
-    
+    ll n;
+    cin >> n;
+    VLL v(n);
+    INP(v,n);
+    sort(all(v));
+    REP(i, n/2) {
+        print(v[n-1-i], v[0]);
+    }
 }
 
 int main() {
@@ -71,7 +78,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(10);
-    // ll t; cin >> t;
-    ll t=1;
+    ll t; cin >> t;
+    // ll t=1;
     REP(tests,t) run();
 }

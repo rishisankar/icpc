@@ -42,7 +42,7 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
 template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 template<typename T, typename... Args> inline void print(T t, Args... args) { cout << t << " "; print(args...); }
 template<typename T> inline void dbg(T obj) { cerr << obj << '\n'; }
-template<typename T, typename... Args> inline void dbg(T t, Args... args) { cerr << t << " "; dbg(args...); }
+template<typename T, typename... Args> inline void dbg(T t, Args... args) { cerr << t << " "; print(args...); }
 
 typedef long long ll;
 typedef long double ld;
@@ -62,7 +62,26 @@ typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
 void run() {
-    
+    ll n,h ; cin >> n >> h;
+    VLL v(n);
+    INP(v,n);
+    v.PB(LLONG_MAX);
+    ll lo = 1, hi = h;
+    while (lo < hi) {
+        ll mid = (lo+hi)/2;
+        ll hlt = h;
+        REP(i, n) {
+            hlt -= min(mid, v[i+1] - v[i]);
+            if (hlt < 0) break;
+        }
+        if (hlt <= 0) {
+            hi = mid;
+        } else {
+            lo = mid+1;
+        }
+    }
+    print(lo);
+
 }
 
 int main() {
@@ -71,7 +90,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(10);
-    // ll t; cin >> t;
-    ll t=1;
+    ll t; cin >> t;
+    //ll t=1;
     REP(tests,t) run();
 }

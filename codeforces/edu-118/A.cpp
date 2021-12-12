@@ -42,7 +42,7 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
 template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 template<typename T, typename... Args> inline void print(T t, Args... args) { cout << t << " "; print(args...); }
 template<typename T> inline void dbg(T obj) { cerr << obj << '\n'; }
-template<typename T, typename... Args> inline void dbg(T t, Args... args) { cerr << t << " "; dbg(args...); }
+template<typename T, typename... Args> inline void dbg(T t, Args... args) { cerr << t << " "; print(args...); }
 
 typedef long long ll;
 typedef long double ld;
@@ -62,7 +62,37 @@ typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
 void run() {
-    
+    ll x1, p1;
+    cin >> x1 >> p1;
+    ll x2, p2;
+    cin >> x2 >> p2;
+
+    string a = to_string(x1);
+    string b = to_string(x2);
+    ll asz = a.size() + p1;
+    ll bsz = b.size() + p2;
+    if (asz > bsz) {
+        print(">");
+        return;
+    }
+    if (asz < bsz) {
+        print("<");
+        return;
+    }
+
+    for (int i = 0; i < max(a.size(), b.size()); ++i) {
+        char ai = (i < a.size()) ? a[i] : '0';
+        char bi = (i < b.size()) ? b[i] : '0';
+        if (ai > bi) {
+            print(">");
+            return;
+        } else if (ai < bi) {
+            print("<");
+            return;
+        }
+    }
+
+    print("=");
 }
 
 int main() {
@@ -71,7 +101,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(10);
-    // ll t; cin >> t;
-    ll t=1;
+    ll t; cin >> t;
+    //ll t=1;
     REP(tests,t) run();
 }
