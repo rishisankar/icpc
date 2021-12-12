@@ -5,4 +5,5 @@ input
 *.dSYM/
 *.out
 /test.cpp
+/test.py
 *.txt
