@@ -61,26 +61,110 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+int minSwaps(vector<int>& arr)
+{
+    int n = arr.size();
+    // Create an array of
+    // pairs where first
+    // element is array element
+    // and second element
+    // is position of first element
+    pair<int, int> arrPos[n];
+    for (int i = 0; i < n; i++)
+    {
+        arrPos[i].first = arr[i];
+        arrPos[i].second = i;
+    }
+ 
+    // Sort the array by array
+    // element values to
+    // get right position of
+    // every element as second
+    // element of pair.
+    sort(arrPos, arrPos + n);
+ 
+    // To keep track of visited elements.
+    // Initialize
+    // all elements as not visited or false.
+    vector<bool> vis(n, false);
+ 
+    // Initialize result
+    int ans = 0;
+ 
+    // Traverse array elements
+    for (int i = 0; i < n; i++)
+    {
+        // already swapped and corrected or
+        // already present at correct pos
+        if (vis[i] || arrPos[i].second == i)
+            continue;
+ 
+        // find out the number of  node in
+        // this cycle and add in ans
+        int cycle_size = 0;
+        int j = i;
+        while (!vis[j])
+        {
+            vis[j] = 1;
+ 
+            // move to next node
+            j = arrPos[j].second;
+            cycle_size++;
+        }
+ 
+        // Update answer by adding current cycle.
+        if (cycle_size > 0)
+        {
+            ans += (cycle_size - 1);
+        }
+    }
+ 
+    // Return result
+    return ans;
+}
+
 void run() {
     int n; cin >> n;
-    vector<int> v(n);
+    VI v(n);
     INP(v,n);
-    ll h = 0;
-    REP(i ,n ) {
-        if (i == 0) {
-            h += v[i];
-        } else {
-            if (v[i] == 1 && v[i-1] == 1) {
-                h += 5;
-            } else if (v[i] == 1) {
-                h += 1;
-            } else if (v[i] == 0 && v[i-1] == 0) {
-                print("-1");
+    VI v2(n);
+    INP(v2, n);
+    unordered_map<int,int> mmp;
+    REP(i, n) {
+        mmp[v2[i]] = i+1;
+    }
+    REP(i, n) {
+        v[i] = mmp[v[i]];
+    }
+
+    if (n <= 2) {
+        for (int i = 0; i < n-1; ++i) {
+            if (v[i] > v[i+1]) {
+                print("Impossible");
                 return;
             }
-        }  
+        }
+        print("Possible");
+        return;
     }
-    print(h+1);
+
+    unordered_set<int> sets;
+    REP(i, n) {
+        if (sets.count(v[i])) {
+            print("Possible");
+            return;
+        }
+        sets.insert(v[i]);
+    }
+
+    int swp = minSwaps(v);
+
+    if (swp % 2 == 1) {
+        print("Impossible");
+    } else {
+        print("Possible");
+    }
+
 }
 
 int main() {
@@ -89,7 +173,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(10);
-    ll t; cin >> t;
-     // ll t=1;
+    //l t; cin >> t;
+    ll t=1;
     REP(tests,t) run();
 }

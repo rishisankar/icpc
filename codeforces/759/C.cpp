@@ -61,26 +61,54 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
-void run() {
-    int n; cin >> n;
-    vector<int> v(n);
-    INP(v,n);
-    ll h = 0;
-    REP(i ,n ) {
-        if (i == 0) {
-            h += v[i];
-        } else {
-            if (v[i] == 1 && v[i-1] == 1) {
-                h += 5;
-            } else if (v[i] == 1) {
-                h += 1;
-            } else if (v[i] == 0 && v[i-1] == 0) {
-                print("-1");
-                return;
-            }
-        }  
+ll solve(VLL& v, ll k, bool last) {
+
+    int n = v.size();
+    if (v.size() == 0) {
+        return 0;
     }
-    print(h+1);
+
+    int st = n-1;
+    if (last) {
+        st = n-1-k;
+    }
+    ll ct = 0;
+    while (st >= 0) {
+        ct += 2*v[st];
+        st -= k;
+    }
+    if (last) {
+        ct += v[n-1];
+    }
+
+    return ct;
+
+
+}
+
+void run() {
+    ll n,k; cin >> n >> k;
+    VLL vp, vn;
+    REP(i, n) {
+        ll x; cin >> x;
+        if (x < 0) {
+            vn.PB(-x);
+        } else if (x > 0) {
+            vp.PB(x);
+        }
+    }
+    sort(all(vn));
+    sort(all(vp));
+
+    int vnn = (vn.size() == 0) ? 0 : vn[vn.size() - 1];
+    int vpn = (vp.size() == 0) ? 0 : vp[vp.size() - 1];
+
+    if (vnn < vpn) {
+        print(solve(vn,k,false) + solve(vp,k,true));
+    } else {
+        print(solve(vn,k,true) + solve(vp,k,false));
+    }
+
 }
 
 int main() {
@@ -90,6 +118,6 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(10);
     ll t; cin >> t;
-     // ll t=1;
+    // ll t=1;
     REP(tests,t) run();
 }

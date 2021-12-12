@@ -62,25 +62,18 @@ typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
 void run() {
-    int n; cin >> n;
-    vector<int> v(n);
+    ll n; cin >> n;
+    VLL v(n);
     INP(v,n);
-    ll h = 0;
-    REP(i ,n ) {
-        if (i == 0) {
-            h += v[i];
-        } else {
-            if (v[i] == 1 && v[i-1] == 1) {
-                h += 5;
-            } else if (v[i] == 1) {
-                h += 1;
-            } else if (v[i] == 0 && v[i-1] == 0) {
-                print("-1");
-                return;
-            }
-        }  
+    ll ct = 0;
+    ll mx = v[n-1];
+    for (int i = n-2; i >= 0; --i) {
+        if (v[i] > mx) {
+            ++ct;
+            mx = v[i];
+        }
     }
-    print(h+1);
+    print(ct);
 }
 
 int main() {
@@ -89,7 +82,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(10);
-    ll t; cin >> t;
-     // ll t=1;
+     ll t; cin >> t;
+    // ll t=1;
     REP(tests,t) run();
 }
