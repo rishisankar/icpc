@@ -190,6 +190,12 @@ void run() {
 
     int ptr = 0;
 
+    VLL pref(n+m);
+    pref[0] = v[0].first;
+    for (int i = 1; i < n+m; ++i) {
+        pref[i] = pref[i-1] + v[i].first;
+    }
+
     unordered_map<int,ll> querymap;
     REP(i, q) {
         int k = queries[i];
@@ -200,10 +206,11 @@ void run() {
             dsu.union_sets(old1, old2);
             int hg = dsu.set_highest(old1);
             int at = dsu.set_amt(old1);
-            ll nsum = 0;
-            REP(ii, at) {
-                nsum += v[hg-ii].first;
-            }
+            ll nsum = pref[hg];
+            if (hg - at >= 0) nsum -= pref[hg-at];
+            // REP(ii, at) {
+            //     nsum += v[hg-ii].first;
+            // }
             sm += nsum;
             vals[dsu.find_set(old1)] = nsum;
             ++ptr;
