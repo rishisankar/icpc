@@ -2,7 +2,6 @@
 using namespace std;
 
 #define PI 3.1415926535897932384626433832795
-#define MOD 998244353
 #define FOR(i, j, k) for (int i=j ; i<k ; ++i)
 #define rep(i, a, b) for(int i = a; i < (b); ++i) 
 #define FORI(i, j, k, in) for (int i=j ; i<k ; i+=in)
@@ -60,56 +59,77 @@ typedef pair<int, int> PII;
 typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
+typedef pair<ll,ll> PLL;
 
-VVLL dp;
-VLL v;
+const ll MOD = 998244353;
 
-ll solve(int i, int k) {
-    if (dp[i][k] != -1) {
-        return dp[i][k];
-    }
+/*
+a1...
 
-    if (i == 0) {
-        if (k == 0) {
-            return dp[i][k] = max(v[i]-v[i+1], 0LL);
-        } else {
-            return dp[i][k] = min(v[i], v[i+1]);
-        }
-    }
+dp[i] = dp[i-1]*ai - dp[i-2]*min(ai,ai-1) + dp[i-3]*min(ai,..,ai-2) - dp[i-4]*min(ai,...,ai-3)...
 
-    
-    ll s = 0;
-    if (k == 0) {
-        if (v[i] <= v[i+1]) {
-            return dp[i][k] = 0;
-        } else {
-            ll c= v[i+1] - v[i];
-            s += c * dp[i-1][0];
-            s%=MOD;
-            s += dp[i-1][1] * (c-1);
-            s%=MOD;
-        }
-    } else {
-        ll c = min(v[i], v[i+1]);
-        s += dp[i-1][0] * c;
-        s %= MOD;
-        s += dp[i-1][1] * (c-1);
-        s %= MOD;
-    }
-    s%= MOD;
-    return dp[i][k] = s;
+= sum_{j=0}^{i-1}  (-1)^(j)  dp[i-1-j]   min(ai, ..., a{i-j})
 
-}
+last term: -1^(i-1) dp[0] 
+
+dp[0]*min(a1...ai) + ... + (-1)^l dp[i-1]*ai 
+= sum_{j=0}^{i-1} (-1)^(j)  dp[j]   min(a{j+1}, ..., a{i})
+
+compute dp[i]
+
+dp[i] = -dp[i-1]
+
+1 3 5 3 7 9 9 4
+
+when find # larger than prev, push to back of stack with val dp[i-1]*ai
+when find # <= prev, combine with last k from stack
+
+
+stack: {minv, term sum for that min}
+
+
+dp[0] = 1
+dp[1] = dp[0]v[1] = 2
+dp[2] = dp[0]min(v[1],v[2]) - dp[1]v[2] = -2
+dp[3] = dp[0]min(v[1..3]) - dp[1]min(v[2..3]) + dp[2]v[3] = 2
+
+*/
 
 void run() {
-
     int n; cin >> n;
-    v.assign(n, 0);
-    dp.assign(n, VLL(2, -1));
-    INP(v,n);
-    v.push_back(pow(10LL,9LL));
-
-    print(solve(n-1, 0) + solve(n-1, 1));
+    VLL v(n+1), dp(n+1);
+    OREP(i,n) cin >> v[i];
+    dp[0] = 1;
+    dp[1] = v[1];
+    stack<PLL> stk;
+    stk.push({v[1], 1});
+    ll fct = -1;
+    for (int i = 2; i <= n; ++i) {
+        // dbg("iter",i,v[i]);
+        ll nt = fct * dp[i-1];
+        dp[i] = -fct*dp[i-1];
+        nt%=MOD;dp[i]%=MOD;
+        while (!stk.empty() && stk.top().first >= v[i]) {
+            // dbg("stack", stk.top().first, stk.top().second, nt);
+            PLL p = stk.top();
+            stk.pop();
+            dp[i] -= (p.first*p.second)%MOD;
+            dp[i]%=MOD;
+            nt += p.second;
+            nt%=MOD;
+        }
+        stk.push({v[i], nt});
+        dp[i] += nt*v[i];
+        dp[i]%=MOD;
+        dp[i] *= fct;
+        dp[i]%=MOD;
+        fct *= -1;
+    }
+    dp[n]%=MOD;
+    dp[n]+=MOD;
+    dp[n]%=MOD;
+    // printV(dp);
+    print(dp[n]);
 }
 
 int main() {
