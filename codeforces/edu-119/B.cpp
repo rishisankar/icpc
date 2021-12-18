@@ -62,16 +62,26 @@ typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
 void run() {
-    // int n; cin >> n ; VLL v(n); INP(v,n);
+    int w,h; cin >> w >> h;
+    ll mx = LLONG_MIN;
+    REP(i, 4) {
+        int k; cin >> k;
+        VLL v(k); INP(v,k);
+        ll wid = w;
+        if (i == 0 || i == 1) wid = h;
+        mx = max(mx, wid * (v[k-1] - v[0]));
+    }
+    print(mx);
 }
+
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
-    // cout.precision(10);
-    // ll t; cin >> t;
-    ll t=1;
+    cout.precision(10);
+    ll t; cin >> t;
+    // ll t=1;
     REP(tests,t) run();
 }

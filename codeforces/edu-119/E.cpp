@@ -61,8 +61,67 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+struct Node {
+    Node* next;
+    int ind;
+
+    Node(int i) {
+        ind = i;
+        next = nullptr;
+    }
+};
+
 void run() {
     // int n; cin >> n ; VLL v(n); INP(v,n);
+    int q; cin >> q;
+    unordered_map<int, Node*> ar;
+    unordered_map<int, Node*> arE;
+    int last = 0;
+    REP(i, q) {
+        int type; cin >> type;
+        if (type == 1) {
+            int x; cin >> x;
+            Node* nn = new Node(last);
+            ++last;
+            if (ar.count(x)) {
+                arE[x]->next = nn;
+                arE[x] = nn;
+            } else {
+                arE[x] = nn;
+                ar[x] = nn;
+            }
+        } else if (type == 2) {
+            int x, y;
+            cin >> x >> y;
+            if (x==y) continue;
+            if (ar.count(x)) {
+                if (!ar.count(y)) {
+                    ar[y] = ar[x];
+                    arE[y] = arE[x];
+                    ar.erase(x);
+                    arE.erase(x);
+                } else {
+                    Node* ptr = arE[y];
+                    arE[y]->next = ar[x];
+                    arE[y] = arE[x];
+                    ar.erase(x);
+                    arE.erase(x);
+                }
+            }
+        }
+    }
+    vector<int> res(last, 555);
+    for (auto pair : ar) {
+        Node* cur = pair.second;
+        while (cur != nullptr) {
+            res[cur->ind] = pair.first;
+            cur = cur->next;
+        }
+    }
+    REP(i, last) {
+        cout << res[i] << ' ';
+    }
+    cout << '\n';
 }
 
 int main() {
@@ -70,8 +129,7 @@ int main() {
     cin.tie(NULL);
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
-    // cout.precision(10);
-    // ll t; cin >> t;
+    cout.precision(10);
     ll t=1;
     REP(tests,t) run();
 }

@@ -61,8 +61,83 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+struct poss {
+    int cost;
+    unordered_set<ll> sums;
+
+    poss(VLL& vals) {
+        cost = vals.size();
+        int n = vals.size();
+        REP(i, (1 << n)) {
+            ll sm = 0;
+            REP(j, vals.size()) {
+                if (((i >> j) & 1) == 1) {
+                    sm += vals[j];
+                }
+            }
+            sums.insert(sm);
+        }
+    }
+};
+
+vector<poss> choices;
+
+// void run() {
+//     int n; cin >> n ; VLL vx(n); INP(vx,n);
+//     unordered_set<ll> v;
+//     bool has1 = false;
+//     for (ll g : vx) {
+//         v.insert(g);
+//         if (g == 1)has1 = true;
+//     }
+//     VLL cts(3,0);
+//     for (ll i : v) {
+//         ++cts[i % 3];
+//     }
+//     bool h1 = false, h2 = false;
+//     if (cts[1] > 0) h1 = true;
+//     if (cts[2] > 0) h2 = true;
+
+//     ll res = 0;
+//     if (h1) ++res; if (h2) ++res;
+//     ll thn = 0;
+//     for (ll x : v) {
+//         if (x % 3 == 0) {
+//             ll nd = x/3;
+//             if (h1 && h2) --nd;
+//             thn = max(thn, nd);
+//         } else {
+//             ll tmp = x - (x % 3);
+//             ll nd = tmp/3;
+//             thn = max(thn, nd);
+//         }
+//     }
+//     print(h1,h2,cts[0],cts[1],cts[2]);
+//     print(res+thn);
+// }
+
 void run() {
-    // int n; cin >> n ; VLL v(n); INP(v,n);
+    int n; cin >> n ; VLL vx(n); INP(vx,n);
+    ll best = LLONG_MAX;
+    for (poss p : choices) {
+        //dbg("cst", p.cost);
+        //for (ll i : p.sums) cerr << i << ' '; cerr << '\n';
+        ll ndd = p.cost;
+        ll mx3 = 0;
+        REP(i, vx.size()) {
+            ll fori = LLONG_MAX - 20;
+            for (ll j : p.sums) {
+                ll d = vx[i] - j;
+                if (d < 0) continue;
+                if (d % 3 != 0) continue;
+                fori = min(fori, d/3);
+            }
+            mx3 = max(mx3, fori);
+        }
+        ndd += mx3;
+        best = min(best, ndd);
+    }
+    print(best);
 }
 
 int main() {
@@ -70,8 +145,26 @@ int main() {
     cin.tie(NULL);
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
-    // cout.precision(10);
-    // ll t; cin >> t;
-    ll t=1;
+
+    VLL v1 = {};
+    VLL v2 = {1};
+    VLL v3 = {2};
+    VLL v4 = {2,2};
+    VLL v5 = {2,1};
+    VLL v6 = {2,2,2};
+    VLL v7 = {2,1,2};
+    VLL v8 = {2,1,1};
+    choices.PB(poss(v1));
+    choices.PB(poss(v2));
+    choices.PB(poss(v3));
+    choices.PB(poss(v4));
+    choices.PB(poss(v5));
+    choices.PB(poss(v6));
+    choices.PB(poss(v7));
+    choices.PB(poss(v8));
+
+    cout.precision(10);
+    ll t; cin >> t;
+    // ll t=1;
     REP(tests,t) run();
 }

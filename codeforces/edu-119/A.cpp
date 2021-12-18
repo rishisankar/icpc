@@ -62,7 +62,16 @@ typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
 void run() {
-    // int n; cin >> n ; VLL v(n); INP(v,n);
+    string s; cin >> s;
+    int ct = 0;
+    REP(i, s.size()) {
+        if (s[i] == 'N') ++ct;
+    }
+    if (ct != 1) {
+        print("YES");
+    } else {
+        print("NO");
+    }
 }
 
 int main() {
@@ -70,8 +79,8 @@ int main() {
     cin.tie(NULL);
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
-    // cout.precision(10);
-    // ll t; cin >> t;
-    ll t=1;
+    cout.precision(10);
+    ll t; cin >> t;
+    // ll t=1;
     REP(tests,t) run();
 }
