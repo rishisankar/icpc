@@ -42,7 +42,7 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
 template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 template<typename T, typename... Args> inline void print(T t, Args... args) { cout << t << " "; print(args...); }
 template<typename T> inline void dbg(T obj) { cerr << obj << '\n'; }
-template<typename T, typename... Args> inline void dbg(T t, Args... args) { cerr << t << " "; print(args...); }
+template<typename T, typename... Args> inline void dbg(T t, Args... args) { cerr << t << " "; dbg(args...); }
 
 typedef long long ll;
 typedef long double ld;
@@ -61,38 +61,49 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+ll n;
+ld p, s, v;
+
+ld f(ld c) {
+    ld term1 = 1;
+    term1 = term1/c + 1;
+    term1 *= s/v;
+    ld term2 = n / p;
+    REP(i,9)term2 /= 10;
+    term2 *= pow(log2(n), sqrt(2)*c);
+    return -term1 - term2;
+}
+
+pair<ld,ld> ternary_search(ld l, ld r) {
+    ld eps = 1e-9;              //set the error limit here
+    while (r - l > eps) {
+        ld m1 = l + (r - l) / 3;
+        ld m2 = r - (r - l) / 3;
+        ld f1 = f(m1);      //evaluates the function at m1
+        ld f2 = f(m2);      //evaluates the function at m2
+        if (f1 < f2)
+            l = m1;
+        else
+            r = m2;
+    }
+    return {l,f(l)};                    //return the maximum of f(x) in [l, r]
+}
+
+
 void run() {
-    int n;
     cin >> n;
-    VLL v(n);
-    REP(i, n) {
-        ll ct = 0;
-        ll nn; cin >> nn;
-        REP(i, nn) {
-            ll x;
-            cin >> x;
-            ct += x;
-        }
-        v[i] = ct;
-    }
-    sort(all(v));
-    ll ct = 0;
-    ll sm = 0;
-    REP(i, n) {
-        sm += v[i];
-        ct += sm;
-    }
-    ld res = ct / (ld) n;
-    print(res);
+    cin >> p >> s >> v;
+    pair<ld,ld> res = ternary_search(0, 10000);
+    print(-res.second, res.first);
 }
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cin.exceptions(cin.failbit);
-    cout.setf(ios::fixed);
+    // cout.setf(ios::fixed);
     cout.precision(15);
-    ll t; cin >> t;
-    //ll t=1;
+    // ll t; cin >> t;
+    ll t=1;
     REP(tests,t) run();
 }

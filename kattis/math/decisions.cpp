@@ -42,7 +42,7 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
 template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 template<typename T, typename... Args> inline void print(T t, Args... args) { cout << t << " "; print(args...); }
 template<typename T> inline void dbg(T obj) { cerr << obj << '\n'; }
-template<typename T, typename... Args> inline void dbg(T t, Args... args) { cerr << t << " "; print(args...); }
+template<typename T, typename... Args> inline void dbg(T t, Args... args) { cerr << t << " "; dbg(args...); }
 
 typedef long long ll;
 typedef long double ld;
@@ -60,49 +60,40 @@ typedef pair<int, int> PII;
 typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
-
-void run() {
-    string s;
-    cin >> s;
-    int n = s.size();
-    VVLL dpL(n, VLL(n, 0));
-    VVLL dpR(n, VLL(n, 0));
-    VVLL dpX(n, VLL(n, 0));
-
-    REP(i, n) {
-        dpL[i][i] = dpR[i][i] = dpX[i][i] = 1;
+string toBinary(ll n) {
+    string r="";
+    while (n!=0) {
+        r = (n%2==0 ? "0" : "1") + r;
+        n/=2;
     }
+    return r;
+}
 
-
-    for (int ln = 2; ln <= n; ++ln) {
-        for (int st = 0; st < n-ln+1; ++st) {
-            int ed = st + ln - 1;
-            if (ln == 2) {
-                if (s.at(st) == s.at(ed)) {
-                    dpL[st][ed] = 2;
-                    dpR[st][ed] = 2;
-                    dpX[st][ed] = 3;
-                } else{
-                    dpL[st][ed] = 1;
-                    dpR[st][ed] = 1;
-                    dpX[st][ed] = 2;
-                }
-            } else {
-                if (s.at(st) == s.at(ed)) {
-                    dpL[st][ed] += dpX[st+1][ed-1] + 1;
-                    dpR[st][ed] += dpX[st+1][ed-1] + 1;
-                    dpX[st][ed] += dpX[st+1][ed-1] + 1;
-                }
-                dpL[st][ed] += dpL[st][ed-1];
-                dpR[st][ed] += dpR[st+1][ed];
-                dpX[st][ed] += dpX[st+1][ed-1] + dpL[st][ed-1] + dpR[st+1][ed];
-            }
-            dpL[st][ed] %= MOD;
-            dpR[st][ed] %= MOD;
-            dpX[st][ed] %= MOD;
+int solve(int l, int r, VI& v) {
+    int gl = v[l];
+    for (int i = l; i <= r; ++i) {
+        if (v[i] != gl) {
+            int dist = (r-l+1)/2;
+            return solve(l, l+dist-1, v) + solve(l+dist, r,v ) + 1;
         }
     }
-    cout << (dpX[0][n-1] % MOD) << '\n';
+    return 1;
+}
+
+void run() {
+    int n;
+    cin >> n;
+    int npr = 1 << n;
+    VI v(npr);
+    REP(i, npr) {
+        int x; cin >> x;
+        string s = toBinary(i);
+        reverse(all(s));
+        while (s.size() < n) s += '0';
+        v[stoi(s,0,2)] = x;
+    }
+
+    print(solve(0, npr-1, v));
 }
 
 int main() {
@@ -111,7 +102,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(10);
-    ll t; cin >> t;
-    //ll t=1;
+    // ll t; cin >> t;
+    ll t=1;
     REP(tests,t) run();
 }

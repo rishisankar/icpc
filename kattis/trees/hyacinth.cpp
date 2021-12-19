@@ -42,7 +42,7 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
 template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 template<typename T, typename... Args> inline void print(T t, Args... args) { cout << t << " "; print(args...); }
 template<typename T> inline void dbg(T obj) { cerr << obj << '\n'; }
-template<typename T, typename... Args> inline void dbg(T t, Args... args) { cerr << t << " "; print(args...); }
+template<typename T, typename... Args> inline void dbg(T t, Args... args) { cerr << t << " "; dbg(args...); }
 
 typedef long long ll;
 typedef long double ld;
@@ -61,24 +61,54 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
-void run(int x) {
-    cout << "Test " << (x+1) << '\n';
+void run() {
+    int n; cin >> n;
+    VVI adjunr(n);
+    REP(i, n-1) {
+        int a,b; cin >> a >> b;
+        a--; b--;
+        adjunr[a].PB(b);
+        adjunr[b].PB(a);
+    }
+    stack<int> st;
+    st.push(0);
+    VVI adj(n);
+    VB visited(n,false);
+    VI parent(n);
+    visited[0] = true;
+    int spec = -1;
+    while (!st.empty()) {
+        int t = st.top();
+        st.pop();
+        for (int i = 0; i < adjunr[t].size();++i) {
+            int a= adjunr[t][i];
+            if (t == 0 && i == 1) {
+                spec = a;
+            }
+            if (visited[a]) continue;
+            adj[t].PB(a);
+            st.push(a);
+            visited[a] = true;
+            parent[a] = t;
+        }
+    }
 
-    int r,c;
-    cin >> r >>c;
-    vector<vector<char>> inp(r, vector<char>(c));
-    REP(i, r) {
-        string s; cin >> s;
-        REP(j, c) {
-            inp[r-1-i][c-1-j] = s.at(j);
+    vector<pair<int,int>> v(n);
+
+    REP(i, n) {
+        if (i == 0) {
+            print(0,1);
+            v[0] = {0,1};
+        } else {
+            int fst = parent[i]+1;
+            if (spec == i) fst = 0;
+            int scd = i+1;
+            if (adj[i].size() == 0) scd = v[parent[i]].first;
+            print(fst, scd);
+            v[i] = {fst,scd};
         }
     }
-    REP(i, r) {
-        REP(j, c) {
-            cout << inp[i][j];
-        }
-        cout << '\n';
-    }
+
 }
 
 int main() {
@@ -87,7 +117,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(10);
-    ll t; cin >> t;
-    //ll t=1;
-    REP(tests,t) run(tests);
+    // ll t; cin >> t;
+    ll t=1;
+    REP(tests,t) run();
 }

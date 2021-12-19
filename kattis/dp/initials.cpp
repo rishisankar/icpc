@@ -42,7 +42,7 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
 template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 template<typename T, typename... Args> inline void print(T t, Args... args) { cout << t << " "; print(args...); }
 template<typename T> inline void dbg(T obj) { cerr << obj << '\n'; }
-template<typename T, typename... Args> inline void dbg(T t, Args... args) { cerr << t << " "; print(args...); }
+template<typename T, typename... Args> inline void dbg(T t, Args... args) { cerr << t << " "; dbg(args...); }
 
 typedef long long ll;
 typedef long double ld;
@@ -61,43 +61,76 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
-ll dmg;
+struct name {
+  string first;
+  string second;
 
-ll compute(ll health) {
-    if (health <= 0) {
-        return 0;
+  string getK(int k) {
+    string res = "";
+    res += tolower(second[0]);
+    int i;
+    for (i = 0; i < k && i+1 < second.size(); ++i) {
+        res += tolower(second[i+1]);
     }
-    return (health+dmg-1)/dmg;
-}
+    k-=i;
+    res += tolower(first[0]);
+    for (i = 0; i < k && i+1 < first.size(); ++i) {
+        res += tolower(first[i+1]);
+    }
+    return res;
+  }  
+};
 
-ll run() {
-    ll n;
-    cin >> n >> dmg;
-    VLL h(n);
-    VLL e(n);
-    INP(h, n);
-    INP(e, n);
-    if (n == 1) {
-        return compute(h[0]);
+void run() {
+    int n; cin >> n;
+    vector<pair<string,int>> markOrder;
+    vector<name> names(n);
+    REP(i, n) {
+        cin >> names[i].first >> names[i].second;
+        string trs = "";
+        REP(j, names[i].second.size()) trs += tolower(names[i].second[j]);
+        REP(j, names[i].first.size()) trs += tolower(names[i].first[j]);
+        // dbg(trs,i);
+        markOrder.PB({trs,i});
     }
-    VVLL dp(n, VLL(2));
-    dp[n-1][0] = compute(h[n-1] - e[n-2]);
-    dp[n-1][1] = compute(h[n-1]);
-    for (int i = n-2; i >= 0; --i) {
-        dp[i][1] = min(
-            dp[i+1][1] + compute(h[i] - e[i+1]),
-            dp[i+1][0] + compute(h[i])
-        );
-        if (i == 0) {
-            dp[i][0] = dp[i][1];
-        } else {
-            dp[i][0] = min(
-                dp[i+1][1] + compute(h[i] - e[i+1] - e[i-1]),
-                dp[i+1][0] + compute(h[i] - e[i-1])
-            );
+    sort(all(markOrder));
+
+    vector<vector<string>> strs(n);
+    REP(i, n) {
+        name nm = names[markOrder[i].second];
+        REP(j, (nm.first.size() + nm.second.size() - 1)) {
+            strs[i].PB(nm.getK(j));
         }
     }
-    return dp[0][0];
+
+    // printVV(strs);
+
+    const int MM = 90;
+    vector<vector<ll>> dp(n, vector<ll>(MM, LLONG_MAX - 10000));
+    REP(i,MM) dp[0][i] = i;
+    OREP(i, n-1) {
+        name curName = names[markOrder[i].second];
+        name prevName = names[markOrder[i-1].second];
+        int maxadd = curName.first.size() + curName.second.size() - 2;
+        for (int j = 0; j <= maxadd; ++j) {
+            int prevmaxadd = prevName.first.size() + prevName.second.size() - 2;
+            for (int k = 0; k <= prevmaxadd; ++k) {
+                if (strs[i-1][k] < strs[i][j]) {
+                    dp[i][j] = min(dp[i][j], dp[i-1][k]+j);
+                }
+            }
+        }
+    }
+
+    ll best = LLONG_MAX;
+    REP(i, MM) {
+        best = min(best, dp[n-1][i]);
+    }
+
+    print(best);
+
+    // printVV(dp);
+
 
 }
 
@@ -107,9 +140,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(10);
-    ll t; cin >> t;
-    //ll t=1;
-    REP(tests,t) {
-        print(run());
-    }
+    // ll t; cin >> t;
+    ll t=1;
+    REP(tests,t) run();
 }
