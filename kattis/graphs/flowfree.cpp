@@ -83,7 +83,6 @@ bool dfs(int x, int y, int ex, int ey, int amt) {
         int nx = x + dir.first;
         int ny = y + dir.second;
         if (nx < 0 || ny < 0 || nx >= 4 || ny >= 4) continue;
-        cerr.flush();
         if (grid[nx][ny] != curColor) continue;
         bool work = dfs(nx,ny, ex,ey,amt+1);
         if (work) {
