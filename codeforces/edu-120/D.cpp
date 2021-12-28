@@ -133,6 +133,7 @@ void run() {
     }
 
     ll sm = 0;
+    bool added = false;
 
     int ones = 0;
     int j = n-1;
@@ -150,6 +151,7 @@ void run() {
                 // can process
                 ll sz = j-i+1;
 
+                added = true;
                 sm += nCrModPFermat(sz,k,mod);
 
                 if (previ != -1) {
@@ -167,8 +169,8 @@ void run() {
         }
     }
 
-    if (sm == 0) sm = 1;
-    print(sm);
+    if (!added) print(1);
+    else print(sm);
 }
 
 int main() {
