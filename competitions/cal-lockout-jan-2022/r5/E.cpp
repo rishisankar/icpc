@@ -66,17 +66,27 @@ typedef vector<vector<pair<int, int>>> VVPII;
 void run() {
     int n,m; cin >> n >> m;
     VVI adj(n);
-    REP(i, n) {
+    REP(i, m) {
         int a,b; cin >> a >> b;
         --a; -- b;
         adj[a].PB(b);
         adj[b].PB(a);
     }
-    unordered_set<int> vis;
-    int cur = 0;
-    cout << 1;
-    vis.insert(0);
-    priority_queue<int> nex;
+    vector<bool> vis(n, false);
+    priority_queue<int,vector<int>,greater<int>> st;
+    st.push(0);
+    vis[0] = true;
+    while (!st.empty()) {
+        int t = st.top();
+        st.pop();
+        cout << (t+1) << ' ';
+        for (int a : adj[t]) {
+            if (vis[a]) continue;
+            st.push(a);
+            vis[a] = true;
+        }
+    }
+    cout << '\n';
 }
 
 int main() {
