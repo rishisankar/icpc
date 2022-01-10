@@ -110,7 +110,7 @@ vector<ull> factor(ull n) {
 
 void run() {
     ull n; cin >> n;
-    vector<ull> fcs = factor(n);
+    vector<ull> facs = factor(n);
     sort(all(facs));
     if (facs.size() < 3) {
         print("NO");
@@ -131,6 +131,15 @@ void run() {
         i = 2;
     }
     ull nm3 = 1;
+    for (; i < facs.size(); ++i) {
+        nm3 *= facs[i];
+    }
+    if (nm3 == nm2 || nm3 == nm1 || nm3 == 1) {
+        print("NO");
+        return;
+    }
+    print("YES");
+    print(nm1,nm2,nm3);
 }
 
 int main() {
