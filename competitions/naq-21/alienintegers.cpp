@@ -64,7 +64,121 @@ typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
 void run() {
-    // int n; cin >> n ; VLL v(n); INP(v,n);
+    ll n; cin >> n;
+    if (n == 0) {
+        print(1);
+        return;
+    }
+    string s = to_string(n);
+    set<int> digits;
+    for (int i = 0; i <= 9; ++i) {
+        digits.insert(i);
+    }
+    int k = s.size();
+    for (int i = 0; i < k; ++i) {
+        int dig = s[i] - '0';
+        digits.erase(dig);
+    }
+
+    vector<int> dd;
+    
+    for (int i : digits) dd.PB(i);
+    sort(all(dd));
+    int M = dd.size();
+
+    if (dd.size() == 0) {
+        print("Impossible");
+        return;
+    }
+
+    string lwr = "0";
+    int d0 = s[0] - '0';
+    if (d0 != 1) {
+        int bst = dd[0];
+        for (int i : dd) {
+            if (i >= d0) break;
+            bst = i;
+        }
+        lwr += to_string(bst);
+    }
+    for (int i = 0; i < k - 1; ++i) {
+        lwr += to_string(dd[M-1]);
+    }
+
+    string hgr = "0";
+    d0 = s[0] - '0';
+    int bst = dd[M-1];
+    for (int i = M-2; i >= 0; --i) {
+        if (dd[i] <= d0) break;
+        bst = dd[i];
+    }
+    hgr += to_string(bst);
+    for (int i = 0; i < k - 1; ++i) {
+        hgr += to_string(dd[0]);
+    }
+
+    printV(dd);
+
+    string hh2 = "0";
+    int lwst = dd[0];
+    if (lwst == 0 && M >= 2) {
+        lwst = dd[1];
+    }
+    dbg(lwst);
+    hh2 += to_string(lwst);
+    REP(i, k) {
+        hh2 += to_string(dd[0]);
+    }
+
+    string ll2 = "0";
+    REP(i, k-1) {
+        ll2 += to_string(dd[M-1]);
+    }
+
+    set<ll> ansz;
+    ansz.insert(stoll(hh2));
+    ansz.insert(stoll(ll2));
+    ansz.insert(stoll(hgr));
+    ansz.insert(stoll(lwr));
+    if (!digits.count(0)) {
+        if (ansz.count(0)){
+            ansz.erase(0);
+        }
+    }
+    VLL ans;
+    for (ll i : ansz) 
+    {
+        ans.PB(i);
+    }
+    sort(all(ans));
+
+    printV(ans);
+    dbg(lwr,hgr,ll2,hh2);
+
+    if (ans.size() == 0) {
+        print("Impossible");
+        return;
+    }
+    ll bestDiff = LLONG_MAX;
+    VLL bstv;
+    for (ll i : ans) {
+        ll dif = abs(n - i);
+        if (dif < bestDiff) {
+            bstv.clear();
+            bestDiff = dif;
+            bstv.PB(i);
+        } else if (dif == bestDiff) {
+            bstv.PB(i);
+        }
+    }
+
+    sort(all(bstv));
+    for (ll l : bstv) {
+        cout << l << ' ';
+    }
+    cout << '\n';
+
+
 }
 
 int main() {
