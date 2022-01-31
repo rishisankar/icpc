@@ -175,7 +175,7 @@ void run() {
     // dbg("asdf",str,end);
     assert(str+ 25 >= end);
     vector<ll> vals;
-    for (int i = str; i <= end; ++i) {
+    for (ll i = str; i <= end; ++i) {
         ll transp = (getNote(i).F - mnn.F) + 24;
         ll cttt = 0;
         REP(j, notes.size()) {
