@@ -121,12 +121,17 @@ bool check(int k) {
         // printV(hv);
         REP(j,n) {
             if (mp.count(hv[j]) && mp[hv[j]].size()>0) {
+                unordered_set<int> kill;
                 for (int ind : mp[hv[j]]) {
                     if (match(ind, j, i, k)) {
                         // dbg("match", ind, j, i, k);
-                        mp[hv[j]].erase(ind);
+                        // mp[hv[j]].erase(ind);
+                        kill.insert(ind);
                         ++ct;
                     }
+                }
+                for (int ind : kill) {
+                    if (mp[hv[j]].count(ind)) mp[hv[j]].erase(ind);
                 }
             }
         }
