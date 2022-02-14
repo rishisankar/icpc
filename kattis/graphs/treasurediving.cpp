@@ -3,41 +3,40 @@ using namespace std;
 
 typedef long long ll;
 
-const int INF = 1000000000;
-vector<vector<pair<int, int>>> adj;
-
-void dijkstra(int s, vector<int> & d, vector<int> & p) {
+const long long INF = 10000000000000LL;
+void dijkstra(int s, vector<long long> & d, vector<int> & p, vector<vector<pair<int,long long>>> &adj) {
     int n = adj.size();
     d.assign(n, INF);
     p.assign(n, -1);
 
     d[s] = 0;
-    set<pair<int, int>> q;
-    q.insert({0, s});
+    using pii = pair<long long, int>;
+    priority_queue<pii, vector<pii>, greater<pii>> q;
+    q.push({0, s});
     while (!q.empty()) {
-        int v = q.begin()->second;
-        q.erase(q.begin());
+        int v = q.top().second;
+        long long d_v = q.top().first;
+        q.pop();
+        if (d_v != d[v])
+            continue;
 
         for (auto edge : adj[v]) {
             int to = edge.first;
-            int len = edge.second;
+            long long len = edge.second;
 
             if (d[v] + len < d[to]) {
-                q.erase({d[to], to});
                 d[to] = d[v] + len;
                 p[to] = v;
-                q.insert({d[to], to});
+                q.push({d[to], to});
             }
         }
     }
 }
 
-
 void run() {
 
   int n, m; cin >> n >> m;
-  adj.clear();
-  adj.resize(n);
+  vector<vector<pair<int,ll>>> adj(n);
   for (int i = 0; i < m; ++i) {
     int a,b; ll w;
     cin >> a >> b >> w;
@@ -58,8 +57,9 @@ void run() {
   for (int i : locs) vlocs.push_back(i);
   sort(vlocs.begin(), vlocs.end());
   for (int i = 0; i < N; ++i) {
-    vector<int> d,p;
-    dijkstra(vlocs[i], d, p);
+    vector<long long> d;
+    vector<int> p;
+    dijkstra(vlocs[i], d, p, adj);
     for (int j = 0; j < N; ++j) {
       cst[i][j] = d[vlocs[j]];
     }
