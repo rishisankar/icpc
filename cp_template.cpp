@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-#define PI 3.1415926535897932384626433832795
 #define FOR(i, j, k) for (int i=j ; i<k ; ++i)
 #define rep(i, a, b) for(int i = a; i < (b); ++i) 
 #define FORI(i, j, k, in) for (int i=j ; i<k ; i+=in)
@@ -62,6 +61,9 @@ typedef pair<int, int> pii;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+const ld pi = 3.1415926535897932384626433832795;
+const ll mod = 1000000007;
+
 void run() {
     // int n; cin >> n ; VLL v(n); INP(v,n);
 }
@@ -71,7 +73,7 @@ int main() {
     cin.tie(NULL);
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
-    // cout.precision(10);
+    // cout.precision(15);
     // ll t; cin >> t;
     ll t=1;
     REP(tests,t) run();
