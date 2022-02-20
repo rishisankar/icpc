@@ -110,6 +110,26 @@ template<class P> vector<P> segInter(P a, P b, P c, P d) {
 	return {all(s)};
 }
 
+typedef Point<double> P;
+double segDist(P& s, P& e, P& p) {
+	if (s==e) return (p-s).dist();
+	auto d = (e-s).dist2(), t = min(d,max(.0,(p-s).dot(e-s)));
+	return ((p-s)*d-(e-s)*t).dist()/d;
+}
+
+
+template<class P>
+bool inPolygon(vector<P> &p, P a, bool strict = true) {
+	int cnt = 0, n = sz(p);
+	rep(i,0,n) {
+		P q = p[(i + 1) % n];
+		if (onSegment(p[i], q, a)) return !strict;
+		//or: if (segDist(p[i], q, a) <= eps) return !strict;
+		cnt ^= ((a.y<p[i].y) - (a.y<q.y)) * a.cross(p[i], q) > 0;
+	}
+	return cnt;
+}
+
 vector<Point<ld>> pts;
 int n;
 
@@ -120,15 +140,9 @@ bool test(int k, ld s, bool inner) {
     poly.push_back(pt);
   }
 
-  Point<ld> orgn(0,0);
   for (int j = 0; j < n; ++j) {
-    bool valid = false;
-    for (int i = 0; i < k; ++i) {
-      vector<Point<ld>> vc = segInter(poly[i], poly[(i+1)%k], orgn, pts[j]);
-      if (inner && vc.size() > 0) valid = true;
-      if (!inner && vc.size() > 0) return false;
-    }
-    if (inner && !valid) return false;
+    if (inner && inPolygon(poly, pts[j])) return false;
+    if (!inner && !inPolygon(poly, pts[j])) return false;
   }
 
   return true;
