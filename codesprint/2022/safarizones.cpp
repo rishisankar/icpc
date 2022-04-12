@@ -243,7 +243,7 @@ void run() {
     //     print(p.x, p.y);
     // }
 
-    print(area(inter));
+    print(area(inter)/s/s);
 }
 
 int main() {
