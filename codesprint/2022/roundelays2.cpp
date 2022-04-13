@@ -107,50 +107,49 @@ vector<P> convexHull(vector<P> pts) {
 	return {h.begin(), h.begin() + t - (t == 2 && h[0] == h[1])};
 }
 
-int n;
-ld x,y;
-vector<P> pts;
-
-ld getangle(P p) {
-    ld dx = p.x - x;
-    ld dy = p.y - y;
-    ld ang = atan2(dy, dx);
-    if (ang < 0) ang += 2*pi;
-    if (ang == 2*pi) ang = 0;
-    return ang;
+void test(vector<P>& s1, vector<P>& s2, int& bst) {
+    if (s1.size() != s2.size()) return;
+    vector<P> s1c = convexHull(s1);
+    vector<P> s2c = convexHull(s2);
+    int res = (s1.size() - s1c.size()) + (s2.size() - s2c.size());
+    bst = min(bst, res);
 }
-
-int run() {
-    sort(pts.begin(), pts.end(), [](P& p1, P& p2) {
-        ld a1 = getangle(p1);
-        ld a2 = getangle(p2);
-        return a1 < a2;
-    });
-
-    int best = INT_MAX;
-
-    REP(i, n-1) {
-        Point pt(x,y);
-        vector<P> s1, s2;
-        s1.PB(pt);
-        s2.PB(pts[i]);
-        ld an = getangle(pts[i]);
-        REP(j, n-1) {
-            if (j == i) continue;
-            ld newa = getangle(pts[j]);
-            ld dif = newa - an;
-            if (dif < 0) dif += 2*pi;
-            if (dif < pi) s2.PB(pts[j]);
-            else s1.PB(pts[j]);
-        }
-        if (s1.size() != s2.size()) continue;
-        vector<P> s1c = convexHull(s1);
-        vector<P> s2c = convexHull(s2);
-        int res = (s1.size() - s1c.size()) + (s2.size() - s2c.size());
-        best = min(res, best);
+void run() {
+    int n; cin >> n;
+    vector<P> pts(n);
+    REP(i, n) {
+        cin >> pts[i].x >> pts[i].y;
     }
+    int bst = INT_MAX;
+    REP(i, n) {
+        REP(j, n) {
+            if (i == j) continue;
+            P v1 = pts[j]-pts[i];
+            vector<P> s1,s2;
+            REP(k, n) {
+                if (k == i || k == j) continue;
+                P v2 = pts[k] - pts[i];
+                if (v1.cross(v2) > 0) s1.PB(pts[k]);
+                else s2.PB(pts[k]);
+            }
+            s1.PB(pts[i]); s2.PB(pts[j]);
+            test(s1,s2,bst);
+            s1.pop_back(); s2.pop_back();
 
-    return best;
+            s1.PB(pts[i]); s1.PB(pts[j]);
+            test(s1,s2,bst);
+            s1.pop_back(); s1.pop_back();
+
+            s2.PB(pts[i]); s2.PB(pts[j]);
+            test(s1,s2,bst);
+            s2.pop_back(); s2.pop_back();
+
+            s2.PB(pts[i]); s1.PB(pts[j]);
+            test(s1,s2,bst);
+            s2.pop_back(); s1.pop_back();
+        }
+    }
+    print(bst);
 }
 
 int main() {
@@ -160,19 +159,6 @@ int main() {
     // cout.setf(ios::fixed);
     // cout.precision(15);
     // ll t; cin >> t;
-    cin >> n;
-    cin >> x >> y;
-    pts.resize(n-1);
-    REP(i, n-1) {
-        ld a,b; cin >> a >> b;
-        pts[i].x = a; pts[i].y = b;
-    }
-    int bst = INT_MAX;
-    for (int i = 0; i < n; ++i) {
-        swap(pts[0].x, x);
-        swap(pts[0].y, y);
-        rotate(pts.begin(), pts.begin()+1, pts.end());
-        bst = min(bst, run());
-    }
-    print(bst);
+    ll t=1;
+    REP(tests,t) run();
 }
