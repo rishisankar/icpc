@@ -1,0 +1,43 @@
+
+Let a_n be the number of partitions of n into parts 1, 2, 4
+Find a closed form for a_n
+
+Closed form for partitions of n into parts 1,2: floor(n/2)+1
+  - why: pick pairs of 1s to make into 2s (can be 0, ..., floor(n/2))
+
+Closed form for partitions of n into parts 1,2,4:
+  - assume even n (other require one 1), same soln for 2n and 2n+1.
+  - even # of 1s always.
+  - 0 -> floor(n/4) + 1
+  - 2 -> floor((n-2)/4) + 1 = floor(n/4) + (1 if n % 4 >= 2 else 0)
+  - 4 -> floor((n-4)/4) + 1 = floor(n/4)
+  - 6 -> floor((n-6)/4) + 1 = floor(n/4) + (0 if n % 4 >= 2 else -1)
+  - 8 -> floor((n-8)/4) + 1 = floor(n/4) - 1
+  - ...
+  - n -> 1
+
+Total: (n/2+1) * floor(n/4) + (if n%4 < 2: +1-(n/4)*(n/4-1) else (n/4)*(n/4+1))
+If high enough power of 2: (n/2+1)*n/4 + 1 - (n/4)*(n/4-1)
+
+Closed form for partitions of n into parts 1,2,4,8 assuming high power of 2:
+  - even # of 1s always
+  - 0 -> f4(n/2) = (n/4+1)*n/8 + 1 - (n/8)*(n/8-1)
+  - 2 -> f4(n/2-1) = ((n/2-1)/2+1)*(n/2-1)/4 + 1 - ((n/2-1)/4)*((n/2-1)/4-1) = (n/4)*(n/8-1) + 1 - (n/8-1)*(n/8-2)
+  - 4 -> f4(n/2-2)
+  - 6 -> f4(n/2-3)
+  - 8 -> f4(n/2-4)
+  - ...
+
+Total: 
+
+5 into 1,2 -> 11111 1112 122 -> 3
+
+partitioning n into 1,2 : floor(N/2)+1
+partition n into 1,2,4: 
+
+
+Goal: partitions of 512 into 1,2,4,8,16
+- fixed power of 2? necessary to get rid of floats idk
+
+
+Print # of partitions of n into 1,2,4,8. n <= 10^7
