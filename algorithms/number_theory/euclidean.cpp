@@ -48,3 +48,28 @@ T modpow(T base, T exp, T modulus) {
   }
   return result;
 }
+
+
+VVI matmul(VVI& v1, VVI& v2, ll mod) {
+  VVI res(90, VI(90, 0));
+  for (int i = 0; i < 90; ++i) {
+    for (int j = 0; j < 90; ++j) {
+      for (int k = 0; k < 90; ++k) {
+        res[i][j] += v1[i][k]*v2[k][j];
+        res[i][j] %= mod;
+      }
+    }
+  }
+  return res;
+}
+
+VVI matmodpow(VVI base, int exp, ll mod) {
+  VVI result(90,VI(90,0));
+  for(int i=0; i<90;++i)result[i][i]=1;
+  while (exp > 0) {
+    if (exp & 1) result = matmul(result,base,mod);
+    base = matmul(base, base,mod);
+    exp >>= 1;
+  }
+  return result;
+}
