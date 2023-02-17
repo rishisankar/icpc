@@ -10,6 +10,7 @@ using namespace std;
 #define PB push_back
 #define F first
 #define S second
+#define mp make_pair
 #define INP(v, n) for (int i=0; i<n; ++i) { cin >> v[i]; }
 #define ceil(x) (ll)ceil(x)
 #define floor(x) (ll)floor(x)
