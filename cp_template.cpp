@@ -3,11 +3,7 @@ using namespace std;
 
 #define FOR(i, j, k) for (int i=j ; i<k ; ++i)
 #define rep(i, a, b) for(int i = a; i < (b); ++i) 
-#define FORI(i, j, k, in) for (int i=j ; i<k ; i+=in)
-#define RFOR(i, j, k) for (int i=j ; i>=k ; --i)
-#define RFORI(i, j, k, in) for (int i=j ; i>=k ; i-=in)
 #define REP(i, j) FOR(i, 0, j)
-#define RREP(i, j) RFOR(i, j, 0)
 #define OREP(i, j) FOR(i, 1, j+1)
 #define all(x) begin(x), end(x)
 #define sz(x) (int)(x).size()
@@ -39,10 +35,23 @@ template<typename T> inline void printVV(vector<vector<T>> &vec) {
     }
     cerr << "########\n";
 }
+
+template<typename T> ostream& operator<<(ostream &os, const vector<T> &v) 
+{ os << '{'; string sep; for (const auto &x: v) os << sep << x, sep = ", "; return os << '}';}
+template<typename A, typename B> ostream& operator<<(ostream &os, const pair<A, B> &p) 
+{ return os << '(' << p.first << ", " << p.second << ')'; }
+
+void dbg_out() { cerr << endl; }
+template<typename Head, typename... Tail> void dbg_out(Head H, Tail... T) { cerr << ' ' << H; dbg_out(T...); }
+
+#ifdef TTL
+#define dbg(...) cerr << "(" << #__VA_ARGS__ << "):", dbg_out(__VA_ARGS__)
+#else
+#define dbg(...)
+#endif
+
 template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 template<typename T, typename... Args> inline void print(T t, Args... args) { cout << t << " "; print(args...); }
-template<typename T> inline void dbg(T obj) { cerr << obj << '\n'; }
-template<typename T, typename... Args> inline void dbg(T t, Args... args) { cerr << t << " "; dbg(args...); }
 
 typedef long long ll;
 typedef long double ld;
