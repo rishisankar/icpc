@@ -10,7 +10,7 @@ bool dfs(int v, vector<vector<int>> &adj, vector<int> &color) {
     color[v] = 1;
     for (int u : adj[v]) {
         if (color[u] == 0) {
-            if (dfs(u))
+            if (dfs(u,adj,color))
                 return true;
         } else if (color[u] == 1) {
             return true;
@@ -20,7 +20,7 @@ bool dfs(int v, vector<vector<int>> &adj, vector<int> &color) {
     return false;
 }
 
-void has_cycle(vector<vector<int>> &adj) {
+bool has_cycle(vector<vector<int>> &adj) {
     int n = adj.size();
     vector<int> color(n, 0);
 
