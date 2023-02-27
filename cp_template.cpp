@@ -1,13 +1,10 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-#define FOR(i, j, k) for (int i=j ; i<k ; ++i)
 #define rep(i, a, b) for(int i = a; i < (b); ++i) 
-#define REP(i, j) FOR(i, 0, j)
-#define OREP(i, j) FOR(i, 1, j+1)
 #define all(x) begin(x), end(x)
 #define sz(x) (int)(x).size()
-#define PB push_back
+#define pb push_back
 #define F first
 #define S second
 #define mp make_pair
@@ -17,25 +14,6 @@ using namespace std;
 
 template<typename T> inline T maxe(vector<T> &vec) { return *max_element(all(vec)); }
 template<typename T> inline T mine(vector<T> &vec) { return *min_element(all(vec)); }
-
-template<typename T> inline void printV(vector<T> &vec) {
-    cerr << "########\n";
-    for (int i = 0; i < vec.size(); ++i) {
-        cerr << vec[i] << ' ';
-    }
-    cerr << '\n';
-    cerr << "########\n";
-}
-template<typename T> inline void printVV(vector<vector<T>> &vec) {
-    cerr << "########\n";
-    for (int i = 0; i < vec.size(); ++i) {
-        for (int j = 0; j < vec[i].size(); ++j) {
-            cerr << vec[i][j] << ' ';
-        }
-        cerr << '\n';
-    }
-    cerr << "########\n";
-}
 
 template<typename T> ostream& operator<<(ostream &os, const vector<T> &v) 
 { os << '{'; string sep; for (const auto &x: v) os << sep << x, sep = ", "; return os << '}';}
@@ -68,11 +46,13 @@ typedef vector<string> VS;
 typedef vector<vector<string>> VVS;
 typedef pair<int, int> PII;
 typedef pair<int, int> pii;
+typedef pair<long long, long long> pll;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
 const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
+// const ll mod = 998244353;
 
 void run() {
     // int n; cin >> n ; VLL v(n); INP(v,n);
