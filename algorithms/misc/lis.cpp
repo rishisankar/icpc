@@ -1,35 +1,16 @@
-// returns length of longest increasing subsequence (given list of ~not necessarily distinct~ integers)
+/*
+Longest Increasing Subsequence in O(nlogn)
+Numbers don't have to be distinct
+*/
+#include <bits/stdc++.h>
+using namespace std;
 
-int lis(vector<int>& sequence) {
-    if (sequence.empty()) return 0;
-
-    vector<int> table;
-    table.push_back(sequence[0]);
-
-    for (int i = 1; i < sequence.size(); ++i) {
-        int goal = sequence[i];
-        if (goal > table[table.size() - 1]) {
-            table.push_back(goal);
-        } else {
-            *lower_bound(table.begin(), table.end(), goal) = goal;
-        }
-    }
-
-    return table.size();
-}
-
-
-
-// ############### LIS with recovering indices of sequence ####
-// prints instead of returning
-
-void lis2(vector<int>& sequence) {
-    if (sequence.empty()) {
-        cout << "0\n\n";
-    }
+// Returns {length, indices of LIS}
+pair<int,vector<int>> lis2(vector<int>& sequence) {
+    vector<int> indices;
+    if (sequence.empty()) return {0,indices};
 
     vector<int> parent(sequence.size(), -1);
-
     vector<int> table;
     vector<int> indexTable;
     table.push_back(sequence[0]);
@@ -49,16 +30,41 @@ void lis2(vector<int>& sequence) {
             parent[i] = index >= 1 ? indexTable[index - 1] : -1;
         }
     }
-
-    cout << table.size() << '\n';
     
-    vector<int> backtrace(table.size());
-    backtrace[table.size() - 1] = indexTable[table.size() - 1];
+    indices.resize(table.size());
+    indices[table.size() - 1] = indexTable[table.size() - 1];
     for (int i = table.size() - 2; i >= 0; --i) {
-        backtrace[i] = parent[backtrace[i+1]];
+        indices[i] = parent[indices[i+1]];
     }
-    for (int i : backtrace) {
-        cout << i << ' ';
+    return {table.size(), indices};
+}
+
+// Returns length only
+int lis(vector<int>& sequence) {
+    if (sequence.empty()) return 0;
+
+    vector<int> table;
+    table.push_back(sequence[0]);
+
+    for (int i = 1; i < sequence.size(); ++i) {
+        int goal = sequence[i];
+        if (goal > table[table.size() - 1]) {
+            table.push_back(goal);
+        } else {
+            *lower_bound(table.begin(), table.end(), goal) = goal;
+        }
     }
-    cout << '\n';
+    return table.size();
+}
+
+// testing / example usage
+int main() {
+    // lis: 5 {1,2,3,5,15}
+    vector<int> v1{1,5,2,-3,5,6,3,1,5,5,-8,15};
+    cout << lis(v1) << '\n';
+    int x; vector<int> res;
+    tie(x,res) = lis2(v1);
+    cout << x << '\n';
+    for (int i : res) cout << i << ' '; cout << '\n';
+    for (int i : res) cout << v1[i] << ' '; cout << '\n';
 }
