@@ -54,8 +54,79 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+vi topoSort(const vector<vi>& gr) {
+	vi indeg(sz(gr)), ret;
+	for (auto& li : gr) for (int x : li) indeg[x]++;
+	queue<int> q; // use priority_queue for lexic. largest ans.
+	rep(i,0,sz(gr)) if (indeg[i] == 0) q.push(i);
+	while (!q.empty()) {
+		int i = q.front(); // top() for priority queue
+		ret.push_back(i);
+		q.pop();
+		for (int x : gr[i])
+			if (--indeg[x] == 0) q.push(x);
+	}
+	return ret;
+}
+
 void run() {
-    // int n; cin >> n ; VLL v(n); INP(v,n);
+    int n,m; cin >> n >> m;
+    vector<int> v(n); INP(v,n);
+    vector<unordered_set<int>> adj(n);
+    vector<int> deg(n,0);
+    VPII edges;
+    rep(i,0,m) {
+        int a,b; cin >> a >> b;
+        --a; --b;
+        adj[a].insert(b);
+        adj[b].insert(a);
+        edges.pb({a,b});
+        ++deg[a]; ++deg[b];
+    }
+    vector<int> remTime(n);
+    vector<int> canR;
+    rep(i,0,n) {
+        if (deg[i] == v[i])canR.pb(i);
+    }
+    int nn = n, t = 0;
+    VPII dg;
+    while (nn > 0) {
+        for (int x : canR) remTime[x]=t;
+        ++t;
+        nn -= canR.size();
+        vector<int> canR2;
+        unordered_set<int> touched;
+        for (int x : canR) {
+            for (int a : adj[x]) {
+                adj[a].erase(adj[a].find(x));
+                --deg[a];
+                touched.insert(a);
+                dg.pb({x,a});
+            }
+            adj[x].clear();
+        }
+        for (int a : touched) {
+            if (deg[a] == v[a]) canR2.pb(a);
+        }
+        canR=canR2;
+    }
+    dbg(remTime);
+    reverse(all(dg));
+    dbg(dg);
+    ll ans = ((ll)n)*(n+1)/2;
+    vector<ull> mask(n);
+    for (int l = 0; l < n; l += 64) {
+        // process 64 at a time via bitmask: 
+        int r = min(n, l + 64);
+        rep(i,0,n) mask[i] = 0;
+        for (int i = l; i < r; ++i) mask[i] = (1ull << (i-l));
+        for (pii edge : dg) {
+            mask[edge.F]|=mask[edge.S];
+        }
+        rep(i,0,n)ans-=__builtin_popcountll(mask[i]);
+        // for each of the n nodes, figure out which of [l,r) is reachable
+    }
+    print(ans);
 }
 
 int main() {
@@ -64,7 +135,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(15);
-    // ll t; cin >> t;
-    ll t=1;
+    ll t; cin >> t;
+    // ll t=1;
     rep(tests,0,t) run();
 }
