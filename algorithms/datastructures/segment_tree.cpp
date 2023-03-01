@@ -43,10 +43,10 @@ struct Tree {
     }
 
     /* update pos (0-indexed) */
-    void update(int pos, int new_val) {
+    void update(int pos, T new_val) {
         return update_(1,0,n-1,pos,new_val);
     }
-    void update_(int v, int tl, int tr, int pos, int new_val) {
+    void update_(int v, int tl, int tr, int pos, T new_val) {
         if (tl == tr) {
             t[v] = new_val;
         } else {
@@ -66,6 +66,7 @@ struct Tree {
     /*
     Return index of first elt >= k (-1 if none)
     (requires max segtree!)
+    Example: cses/range_queries/hotel_queries
     */
     int findFirstGreater(T k) {
         return ffg_(1,0,n-1,k);
@@ -78,6 +79,25 @@ struct Tree {
             return ffg_(v*2, tl, tm, k);
         } else {
             return ffg_(v*2+1, tm+1, tr, k);
+        }
+    }
+
+    /*
+    Find index of kth 1 (k is 1-indexed!)
+    Requires sum segtree containing n 0s and 1s
+    Example: cses/range_queries/list_removals
+    */
+    int indexOfKth(T k) {
+        return iok_(1,0,n-1,k);
+    }
+    int iok_(int v, int tl, int tr, T k) {
+        if (t[v] < k) return -1;
+        if (tl == tr) return tl;
+        int tm = (tl + tr) / 2;
+        if (t[v*2] >= k) {
+            return iok_(v*2, tl, tm, k);
+        } else {
+            return iok_(v*2+1, tm+1, tr, k-t[v*2]);
         }
     }
 
