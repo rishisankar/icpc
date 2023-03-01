@@ -56,7 +56,7 @@ const ll mod = 1000000007;
 
 struct Tree {
 	typedef ll T;
-	static constexpr T unit = LLONG_MIN;
+	static constexpr T unit = 0;
 	T f(T a, T b) { return a+b; } // (any associative fn)
 	vector<T> s; int n;
 	Tree(int n = 0, T def = unit) : s(2*n, def), n(n) {}

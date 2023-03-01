@@ -74,22 +74,57 @@ struct Tree {
 	}
 };
 
+/*
+Idea:
+1) sort queries in decreasing order by a
+2) vector s acts as monotonically increasing stack that you can binary search on
+3) traverse r->l, updating stack
+4) store solns for each section of stack to efficiently rangesum
+*/
 void run() {
-    int n,q; cin >> n >> q;
+    int n, q; cin >> n >> q;
     VLL v(n); INP(v,n);
-    Tree st(n);
-    rep(i,0,n) st.update(i,v[i]);
+    VLL pf(n); pf[0]=v[0]; rep(i,1,n)pf[i]=pf[i-1]+v[i];
+    vector<pair<pii,int>> queries(q);
     rep(i,0,q) {
-			int t; cin >> t;
-			if (t == 1) {
-				int k; ll u; cin >> k >> u;
-				--k;
-				st.update(k,u);
-			} else {
-        int a, b; cin >> a >> b; --a; --b;
-        print(st.query(a,b+1));
-			}
+        int a,b; cin >> a >> b; --a; --b;
+        queries[i] = {{a,b},i};
     }
+    sort(all(queries), greater<pair<pii,int>>());
+    vector<ll> ans(q);
+    Tree st(n);
+    vector<int> s;
+    int curL = n;
+    rep(Q,0,q) {
+        int a = queries[Q].F.F;
+        int b = queries[Q].F.S;
+        while (curL > a) {
+            --curL;
+            while (!s.empty() && v[s.back()] <= v[curL]) {
+                st.update(s.size()-1,0);
+                s.pop_back();
+            }
+            int bk = (s.size() == 0 ? n : s.back());
+            ll cost = (bk-curL) * v[curL] - (pf[bk-1] - (curL==0?0:pf[curL-1]));
+            s.push_back(curL);
+            st.update(s.size()-1,cost);
+        }
+        // answer the query given b
+        // find index in s of largest i <= b
+        int best = s.size()-1;
+        int lo = 0, hi = best;
+        while (lo <= hi) {
+            int mid = (lo+hi)/2;
+            if (s[mid] <= b) {
+                best = mid;
+                hi = mid-1;
+            } else lo = mid+1;
+        }
+        ll res = ((best == s.size()-1) ? 0 : st.query(best+1, s.size()));
+        res += (b-s[best])*v[s[best]] - (pf[b]-pf[s[best]]);
+        ans[queries[Q].S] = res;
+    }
+    for (ll x : ans) cout << x << '\n';
 }
 
 int main() {
