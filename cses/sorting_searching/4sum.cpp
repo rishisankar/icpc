@@ -55,7 +55,30 @@ const ll mod = 1000000007;
 // const ll mod = 998244353;
 
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n; cin >> n;
+    ll x; cin >> x;
+    vector<pll> v(n);
+    rep(i,0,n) {
+        ll x; cin >> x;
+        v[i] = {x,i+1};
+    }
+    sort(all(v));
+    for (int i = 2; i < n; ++i) {
+        for (int j = i+1; j < n; ++j) {
+            int k = 0;
+            int l = i-1;
+            while (k < l) {
+                ll cur = v[i].F + v[j].F + v[k].F + v[l].F;
+                if (cur < x) ++k;
+                else if (cur > x) --l;
+                else {
+                    print(v[i].S,v[j].S,v[k].S,v[l].S);
+                    return;
+                }
+            }
+        }
+    }
+    print("IMPOSSIBLE");
 }
 
 int main() {

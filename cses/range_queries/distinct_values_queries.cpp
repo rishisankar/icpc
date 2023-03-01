@@ -54,8 +54,61 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+struct Tree {
+	typedef int T;
+	static constexpr T unit = 0;
+	T f(T a, T b) { return a+b; } // (any associative fn)
+	vector<T> s; int n;
+	Tree(int n = 0, T def = unit) : s(2*n, def), n(n) {}
+	void update(int pos, T val) {
+		for (s[pos += n] = val; pos /= 2;)
+			s[pos] = f(s[pos * 2], s[pos * 2 + 1]);
+	}
+	T query(int b, int e) { // query [b, e)
+		T ra = unit, rb = unit;
+		for (b += n, e += n; b < e; b /= 2, e /= 2) {
+			if (b % 2) ra = f(ra, s[b++]);
+			if (e % 2) rb = f(s[--e], rb);
+		}
+		return f(ra, rb);
+	}
+};
+
+/*
+You are given an array of n integers and q queries of 
+the form: how many distinct values are there in a range [a,b].
+*/
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n, q; cin >> n >> q;
+    VLL v(n); INP(v,n);
+    vector<pair<pii,int>> quers;
+    rep(Q,0,q) {
+        int a, b; cin >> a >> b; --a; --b;
+        quers.pb({{a,b},Q});
+    }
+    sort(all(quers), greater<pair<pii,int>>());
+    Tree st(n);
+    rep(i,0,n) st.update(i,0);
+    unordered_map<int, int> lastInd;
+    vector<int> ans(q);
+    int cur = n;
+    rep(i,0,q) {
+        int a = quers[i].F.F;
+        int b = quers[i].F.S;
+        while (a < cur) {
+            --cur;
+            int x = v[cur];
+            dbg("cur", cur, x);
+            st.update(cur,1);
+            if (lastInd.count(x)) {
+                dbg("upd", lastInd[x]);
+                st.update(lastInd[x],0);
+            }
+            lastInd[x] = cur;
+        }
+        ans[quers[i].S] = st.query(a, b+1);
+    }
+    rep(i,0,q) cout << ans[i] << '\n';
 }
 
 int main() {

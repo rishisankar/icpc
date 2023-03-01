@@ -55,7 +55,19 @@ const ll mod = 1000000007;
 // const ll mod = 998244353;
 
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n; cin >> n;
+    ll x; cin >> x;
+    VLL v(n); INP(v,n);
+    unordered_map<ll, int> m;
+    VLL pf(n); pf[0] = v[0]; rep(i,1,n) pf[i] = pf[i-1]+v[i];
+    ll ans = 0;
+    rep(i,0,n) { // end of subarray
+        if (pf[i] == x) ++ans;
+        ll gl = pf[i]-x;
+        if (m.count(gl)) ans += m[gl];
+        if (m.count(pf[i]))m[pf[i]]++; else m[pf[i]]=1;
+    }
+    print(ans);
 }
 
 int main() {

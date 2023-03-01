@@ -54,8 +54,42 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+struct Tree {
+	typedef ll T;
+	static constexpr T unit = LLONG_MAX;
+	T f(T a, T b) { return min(a,b); } // (any associative fn)
+	vector<T> s; int n;
+	Tree(int n = 0, T def = unit) : s(2*n, def), n(n) {}
+	void update(int pos, T val) {
+		for (s[pos += n] = val; pos /= 2;)
+			s[pos] = f(s[pos * 2], s[pos * 2 + 1]);
+	}
+	T query(int b, int e) { // query [b, e)
+		T ra = unit, rb = unit;
+		for (b += n, e += n; b < e; b /= 2, e /= 2) {
+			if (b % 2) ra = f(ra, s[b++]);
+			if (e % 2) rb = f(s[--e], rb);
+		}
+		return f(ra, rb);
+	}
+};
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n,q; cin >> n >> q;
+    VLL v(n); INP(v,n);
+    Tree st(n);
+    rep(i,0,n) st.update(i,v[i]);
+    rep(i,0,q) {
+			int t; cin >> t;
+			if (t == 1) {
+				int k; ll u; cin >> k >> u;
+				--k;
+				st.update(k,u);
+			} else {
+        int a, b; cin >> a >> b; --a; --b;
+        print(st.query(a,b+1));
+			}
+    }
 }
 
 int main() {
