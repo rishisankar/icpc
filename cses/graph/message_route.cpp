@@ -56,7 +56,41 @@ const ll mod = 1000000007;
 // const ll mod = 998244353;
 
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n,m; cin >> n >> m;
+    VVI adj(n);
+    rep(i,0,m) {
+        int a,b; cin >> a >> b; --a; --b;
+        adj[a].pb(b); adj[b].pb(a);
+    }
+    vector<int> par(n, -2);
+    par[0] = -1;
+    queue<int> s;
+    s.push(0);
+    while (!s.empty()) {
+        int t = s.front(); s.pop();
+        for (int x : adj[t]) {
+            if (par[x]>-2)continue;
+            par[x] = t;
+            s.push(x);
+        }
+    }
+    if (par[n-1] == -2) {
+        print("IMPOSSIBLE");
+    } else {
+        vector<int> path;
+        int cur = n-1;
+        while (cur != 0) {
+            path.pb(cur);
+            cur = par[cur];
+        }
+        path.pb(0);
+        reverse(all(path));
+        print(path.size());
+        rep(i,0,path.size()) {
+            cout << (path[i]+1) << ' ';
+        }
+        cout << '\n';
+    }
 }
 
 int main() {

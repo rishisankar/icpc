@@ -55,8 +55,33 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+const ll inf = 1LL << 62;
+void floydWarshall(vector<vector<ll>>& m) {
+	int n = sz(m);
+	rep(i,0,n) m[i][i] = min(m[i][i], 0LL);
+	rep(k,0,n) rep(i,0,n) rep(j,0,n)
+		if (m[i][k] != inf && m[k][j] != inf) {
+			auto newDist = max(m[i][k] + m[k][j], -inf);
+			m[i][j] = min(m[i][j], newDist);
+		}
+	rep(k,0,n) if (m[k][k] < 0) rep(i,0,n) rep(j,0,n)
+		if (m[i][k] != inf && m[k][j] != inf) m[i][j] = -inf;
+}
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n,m,q; cin >> n >> m >> q;
+    VVLL dist(n, VLL(n, inf));
+    rep(i,0,m) {
+        int a,b; ll x; cin >> a >> b >> x;
+        --a; --b;
+        dist[a][b] = dist[b][a] = min(dist[a][b],x);
+    }
+    rep(i,0,n) dist[i][i] = 0;
+    floydWarshall(dist);
+    rep(i,0,q) {
+        int a,b; cin >> a >> b; --a; --b;
+        cout << (dist[a][b] == inf ? -1 : dist[a][b]) << '\n';
+    }
 }
 
 int main() {

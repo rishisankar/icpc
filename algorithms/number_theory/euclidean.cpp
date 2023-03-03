@@ -50,11 +50,13 @@ T modpow(T base, T exp, T modulus) {
 }
 
 
-VVI matmul(VVI& v1, VVI& v2, ll mod) {
-  VVI res(90, VI(90, 0));
-  for (int i = 0; i < 90; ++i) {
-    for (int j = 0; j < 90; ++j) {
-      for (int k = 0; k < 90; ++k) {
+// helper func for matmodpow. assumes both are square matrices
+VVLL matmul(VVLL& v1, VVLL& v2, ll mod) {
+  int n = v1.size();
+  VVLL res(n, VLL(n, 0));
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      for (int k = 0; k < n; ++k) {
         res[i][j] += v1[i][k]*v2[k][j];
         res[i][j] %= mod;
       }
@@ -63,9 +65,12 @@ VVI matmul(VVI& v1, VVI& v2, ll mod) {
   return res;
 }
 
-VVI matmodpow(VVI base, int exp, ll mod) {
-  VVI result(90,VI(90,0));
-  for(int i=0; i<90;++i)result[i][i]=1;
+// needs to be square matrix
+// complexity: O(n^3 log(exp))
+VVLL matmodpow(VVLL base, ll exp, ll mod) {
+  int n = base.size();
+  VVLL result(n,VLL(n,0));
+  for(int i=0; i<n;++i)result[i][i]=1;
   while (exp > 0) {
     if (exp & 1) result = matmul(result,base,mod);
     base = matmul(base, base,mod);

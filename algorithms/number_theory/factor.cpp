@@ -43,43 +43,72 @@ vector<ull> factor(ull n) {
 	return l;
 }
 
-
-
-
-/* factor numbers from 1-n 
-O(n loglogn) sieve preprocessing
-O(log n) per query
+/*
+Factor numbers from 1-n using prime sieve
+O(n log(logn)) sieve preprocessing
+O(log n) per query (all queries must be <= MAXN)
 Source: https://www.geeksforgeeks.org/prime-factorization-using-sieve-olog-n-multiple-queries/
-NOT CLEAN RN idk
+Example: cses/math/counting_divisors
 */
-void sieve() {
-    spf[1] = 1;
-    for (int i=2; i<MAXN; i++) spf[i] = i;
-    for (int i=4; i<MAXN; i+=2) spf[i] = 2; // process powers of 2
-    for (int i=3; i*i<MAXN; i++) {
-        // checking if i is prime
-        if (spf[i] == i)
-        {
-            // marking SPF for all numbers divisible by i
-            for (int j=i*i; j<MAXN; j+=i)
-  
-                // marking spf[j] if it is not 
-                // previously marked
-                if (spf[j]==j)
-                    spf[j] = i;
-        }
+void precompute_spf(vector<int>& spf, int MAXN) {
+	MAXN++;
+	spf.assign(MAXN, 0);
+  spf[1] = 1;
+	for (int i=2; i<MAXN; i++) spf[i] = i;
+	for (int i=4; i<MAXN; i+=2) spf[i] = 2; // process powers of 2
+	for (int i=3; i*i<MAXN; i++) {
+		// checking if i is prime
+    if (spf[i] == i) {
+			// marking SPF for all numbers divisible by i
+			for (int j=i*i; j<MAXN; j+=i) {  
+				// marking spf[j] if it is not previously marked
+				if (spf[j]==j) spf[j] = i;
+      }
     }
+	}
 }
   
-// A O(log n) function returning primefactorization
-// by dividing by smallest prime factor at every step
-vector<int> getFactorization(int x)
-{
-    vector<int> ret;
-    while (x != 1)
-    {
-        ret.push_back(spf[x]);
-        x = x / spf[x];
+// return prime factorization in O(logn)
+vector<int> factor(int x, VI& spf) {
+  vector<int> ret;
+  while (x != 1) {
+		ret.push_back(spf[x]);
+      x = x / spf[x];
     }
     return ret;
+}
+
+
+/*
+Convert list of prime factors to list of divisors
+Note that # of divisors is approx btwn O(n^(1/3)) and O(n^(1/2))
+Tested, but easier approach is to just iterate from 1-->sqrt(n)
+*/
+vector<int> divisors(VI factors) {
+    vector<pii> factor_counts;
+    unordered_map<int,int> facs; // factor -> ind in factor_counts
+    for (int i : factors) {
+        if (facs.count(i)) {
+            factor_counts[facs[i]].S++;
+        } else {
+            facs[i] = factor_counts.size();
+            factor_counts.pb({i,1});
+        }
+    }
+    VI divisors;
+    stack<pii> s; // {unprocessed ind, cur val}
+    s.push({0,1});
+    while (!s.empty()) {
+        pii t = s.top(); s.pop();
+        if (t.F == factor_counts.size()) {
+            divisors.pb(t.S);
+            continue;
+        }
+        int scale = 1;
+        rep(i,0,factor_counts[t.F].S+1) {
+            s.push({t.F+1, t.S*scale});
+            scale *= factor_counts[t.F].F;
+        }
+    }
+    return divisors;
 }

@@ -55,8 +55,49 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+const long long INF = 10000000000000000LL;
+void dijkstra(int s, vector<long long> & d, vector<int> & p, vector<vector<pair<int,long long>>> &adj) {
+    int n = adj.size();
+    d.assign(n, INF);
+    p.assign(n, -1);
+
+    d[s] = 0;
+    using pii = pair<long long, int>;
+    priority_queue<pii, vector<pii>, greater<pii>> q;
+    q.push({0, s});
+    while (!q.empty()) {
+        int v = q.top().second;
+        long long d_v = q.top().first;
+        q.pop();
+        if (d_v != d[v])
+            continue;
+
+        for (auto edge : adj[v]) {
+            int to = edge.first;
+            long long len = edge.second;
+
+            if (d[v] + len < d[to]) {
+                d[to] = d[v] + len;
+                p[to] = v;
+                q.push({d[to], to});
+            }
+        }
+    }
+}
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n,m; cin >> n >> m;
+    vector<vector<pair<int,ll>>> adj(n);
+    rep(i,0,m) {
+        int a,b; ll x;
+        cin >> a >> b >> x;
+        --a; --b;
+        adj[a].pb({b,x});
+    }
+    VLL d; VI p;
+    dijkstra(0, d, p, adj);
+    rep(i,0,n) cout << d[i] << ' ';
+    cout << '\n';
 }
 
 int main() {

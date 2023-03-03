@@ -55,8 +55,52 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+
+bool hasOddCycle(vector<vector<int>> adj, VI& colors) {
+    int n = adj.size();
+    colors.assign(n, 0);
+
+    for (int i = 0; i < n; ++i) {
+        if (colors[i] != 0) continue;
+        stack<pair<int,int>> s;
+        s.push({i,1});
+        while(!s.empty()) {
+            int t = s.top().first;
+            int c = s.top().second;
+            s.pop();
+            if (colors[t] != 0) {
+                if (colors[t] != c) {
+                    return true;
+                }
+            } else {
+                colors[t] = c;
+                int nc = (c%2)+1;
+                for (int a : adj[t]) {
+                    s.push({a, nc});
+                }
+            }
+        }
+    }
+    return false;
+}
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n, m; cin >> n >> m;
+    VVI adj(n);
+    rep(i,0,m) {
+        int a,b; cin >> a >> b; --a; --b;
+        adj[a].pb(b); adj[b].pb(a);
+    }
+    VI colors;
+    bool b = hasOddCycle(adj,colors);
+    if (b) {
+        print("IMPOSSIBLE");
+    } else {
+        rep(i,0,n) {
+            cout << (colors[i]) << ' ';
+        }
+        cout << '\n';
+    }
 }
 
 int main() {

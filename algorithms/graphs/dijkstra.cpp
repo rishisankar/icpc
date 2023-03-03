@@ -3,7 +3,7 @@
 // d gives distances to each point, p gives parent in path
 // from cp-algorithms.com
 
-const long long INF = 10000000000000LL;
+const long long INF = 10000000000000000LL;
 void dijkstra(int s, vector<long long> & d, vector<int> & p, vector<vector<pair<int,long long>>> &adj) {
     int n = adj.size();
     d.assign(n, INF);

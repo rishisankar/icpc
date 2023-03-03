@@ -45,7 +45,7 @@ typedef vector<vector<bool>> VVB;
 typedef vector<string> VS;
 typedef vector<vector<string>> VVS;
 typedef pair<int, int> PII;
-typedef pair<int, int> pii;
+using pii = pair<long long, int>;
 typedef pair<long long, long long> pll;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
@@ -55,8 +55,73 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+// O( (m+n) log n )
+// define VLL d, VI p; (don't size)
+// d gives distances to each point, p gives parent in path
+// from cp-algorithms.com
+
+const long long INF = 10000000000000000LL;
+void dijkstra(int s, vector<long long> & d, vector<vector<pair<int,long long>>> &adj) {
+    int n = adj.size();
+    d.assign(n, INF);
+
+    d[s] = 0;
+    
+    priority_queue<pii, vector<pii>, greater<pii>> q;
+    q.push({0, s});
+    while (!q.empty()) {
+        int v = q.top().second;
+        long long d_v = q.top().first;
+        q.pop();
+        if (d_v != d[v])
+            continue;
+
+        for (auto edge : adj[v]) {
+            int to = edge.first;
+            long long len = edge.second;
+
+            if (d[v] + len < d[to]) {
+                d[to] = d[v] + len;
+                q.push({d[to], to});
+            }
+        }
+    }
+}
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n,m; cin >> n >> m;
+    vector<vector<pair<int,ll>>> adj(n);
+    rep(i,0,m) {
+        int a,b; cin >> a >> b; --a; --b; ll c; cin >> c;
+        adj[a].pb({b,c});
+    }
+    vector<ll> d;
+    dijkstra(0, d, adj);
+    vector<ll> d2(n, INF);
+    d2[0] = 0;
+
+    priority_queue<pii, vector<pii>, greater<pii>> q;
+    q.push({0, 0});
+    while (!q.empty()) {
+        int v = q.top().second;
+        long long d_v = q.top().first;
+        q.pop();
+        if (d_v != d2[v])
+            continue;
+
+        for (auto edge : adj[v]) {
+            int to = edge.first;
+            long long len = edge.second;
+            ll better = min(d[v]+len/2, d2[v]+len);
+
+            if (better < d2[to]) {
+                d2[to] = better;
+                q.push({d2[to], to});
+            }
+        }
+    }
+
+    print(d2[n-1]);
 }
 
 int main() {

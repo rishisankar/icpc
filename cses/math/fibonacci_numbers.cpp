@@ -55,8 +55,41 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+
+// helper func for matmodpow. assumes both are square matrices
+VVLL matmul(VVLL& v1, VVLL& v2, ll mod) {
+  int n = v1.size();
+  VVLL res(n, VLL(n, 0));
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      for (int k = 0; k < n; ++k) {
+        res[i][j] += v1[i][k]*v2[k][j];
+        res[i][j] %= mod;
+      }
+    }
+  }
+  return res;
+}
+
+// needs to be square matrix
+// complexity: O(n^3 log(exp))
+VVLL matmodpow(VVLL base, ll exp, ll mod) {
+  int n = base.size();
+  VVLL result(n,VLL(n,0));
+  for(int i=0; i<n;++i)result[i][i]=1;
+  while (exp > 0) {
+    if (exp & 1) result = matmul(result,base,mod);
+    base = matmul(base, base,mod);
+    exp >>= 1;
+  }
+  return result;
+}
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    ll n; cin >> n;
+    VVLL matrix{{0,1},{1,1}};
+    VVLL ans = matmodpow(matrix, n, mod);
+    print(ans[0][1]);
 }
 
 int main() {

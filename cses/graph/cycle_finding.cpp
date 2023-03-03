@@ -55,8 +55,64 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+struct Edge {
+    int a, b;
+    ll cost;
+};
+
+const ll INF = 1LL << 62;
+VI find_negative_cycle(vector<Edge>& edges, int n) {
+    int m = edges.size();
+    vector<ll> d(n);
+    vector<int> p(n, -1);
+    int x;
+    for (int i = 0; i < n; ++i) {
+        x = -1;
+        for (Edge e : edges) {
+            if (d[e.a] + e.cost < d[e.b]) {
+                d[e.b] = d[e.a] + e.cost;
+                p[e.b] = e.a;
+                x = e.b;
+            }
+        }
+    }
+
+    vector<int> cycle;
+    if (x == -1) {
+        return cycle;
+    } else {
+        for (int i = 0; i < n; ++i)
+            x = p[x];
+        vector<int> cycle;
+        for (int v = x;; v = p[v]) {
+            cycle.push_back(v);
+            if (v == x && cycle.size() > 1)
+                break;
+        }
+        reverse(cycle.begin(), cycle.end());
+        return cycle;
+    }
+}
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n,m; cin >> n >> m;
+    vector<Edge> edges;
+    rep(i,0,m) {
+        int a,b; ll x; cin >> a >> b >> x;
+        --a; --b;
+        Edge e; e.a = a; e.b = b; e.cost = x;
+        edges.pb(e);
+    }
+    VI ans = find_negative_cycle(edges,n);
+    if (ans.size() == 0) {
+        print("NO");
+    } else {
+        print("YES");
+        rep(i,0,ans.size()) {
+            cout << (ans[i]+1) << ' ';
+        }
+        cout << '\n';
+    }
 }
 
 int main() {

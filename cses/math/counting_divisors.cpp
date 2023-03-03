@@ -55,8 +55,57 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+/*
+Factor numbers from 1-n using prime sieve
+O(n log(logn)) sieve preprocessing
+O(log n) per query (all queries must be <= MAXN)
+Source: https://www.geeksforgeeks.org/prime-factorization-using-sieve-olog-n-multiple-queries/
+*/
+void precompute_spf(vector<int>& spf, int MAXN) {
+	MAXN++;
+	spf.assign(MAXN, 0);
+  spf[1] = 1;
+	for (int i=2; i<MAXN; i++) spf[i] = i;
+	for (int i=4; i<MAXN; i+=2) spf[i] = 2; // process powers of 2
+	for (int i=3; i*i<MAXN; i++) {
+		// checking if i is prime
+    if (spf[i] == i) {
+			// marking SPF for all numbers divisible by i
+			for (int j=i*i; j<MAXN; j+=i) {  
+				// marking spf[j] if it is not previously marked
+				if (spf[j]==j) spf[j] = i;
+      }
+    }
+	}
+}
+  
+// return prime factorization in O(logn)
+vector<int> factor(int x, VI& spf) {
+  vector<int> ret;
+  while (x != 1) {
+		ret.push_back(spf[x]);
+      x = x / spf[x];
+    }
+    return ret;
+}
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n; cin >> n;
+    VI spf; precompute_spf(spf, 1000001);
+    rep(i,0,n) {
+        int x; cin >> x;
+        VI factors = factor(x, spf);
+        unordered_map<int,int> pfs;
+        for (int i : factors) {
+            if (pfs.count(i))pfs[i]++; else pfs[i]=1;
+        }
+        ll ans = 1;
+        for (pii p : pfs) {
+            ans*=(p.S+1);
+        }
+        print(ans);
+    }
+
 }
 
 int main() {

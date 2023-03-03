@@ -55,8 +55,25 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+template <typename T>
+T modpow(T base, T exp, T modulus) {
+  base %= modulus;
+  T result = 1;
+  while (exp > 0) {
+    if (exp & 1) result = (result * base) % modulus;
+    base = (base * base) % modulus;
+    exp >>= 1;
+  }
+  return result;
+}
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n; cin >> n;
+    rep(i,0,n) {
+        ll a,b,c; cin >> a >> b >> c;
+        ll ex = modpow(b,c,mod-1);
+        print(modpow(a, ex,mod));
+    }
 }
 
 int main() {

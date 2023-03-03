@@ -56,7 +56,22 @@ const ll mod = 1000000007;
 // const ll mod = 998244353;
 
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n; cin >> n;
+    VLL v(n); INP(v,n);
+    VI cts(1000001,0);
+    for (int x : v) cts[x]++;
+    int bd = maxe(v);
+    for (int i = bd; i >= 2; --i) {
+        int ct = 0;
+        for (int j = i; j <= bd; j += i) {
+            ct+=cts[j];
+        }
+        if (ct>1) {
+            print(i);
+            return;
+        }
+    }
+    print(1);
 }
 
 int main() {

@@ -50,13 +50,54 @@ typedef pair<long long, long long> pll;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
-VPII dirs{mp(-1,0),mp(1,0),mp(0,-1),mp(0,1)};
 const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+// # of digits in representation up to and including x
+// 9 less than 10, 90 less than 100, 900 less than 1000, ...
+ll amtDigits(ll x) {
+    ll ans = 0;
+    int ct = 1;
+    ll pw = 10;
+    while (true) {
+        if (x >= pw) {
+            ans += pw/10*9*ct;
+            pw *= 10;
+            ct++;
+        } else break;
+    }
+    pw/=10;
+    ans += (x-pw+1)*ct;
+    return ans;
+}
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    ll mx = 59477124183006536LL;
+    // dbg(amtDigits(mx));
+    int q; cin >> q;
+    rep(Q,0,q) {
+        ll k; cin >> k;
+        ll lo = 1;
+        ll hi = mx;
+        ll best = lo; // largest # whose digit representation requires less than k digits
+        while (lo <= hi) {
+            ll mid = lo + (hi-lo)/2;
+            ll r = amtDigits(mid);
+            if (r < k) {
+                best = mid;
+                lo = mid+1;
+            } else {
+                hi = mid-1;
+            }
+        }
+        ll amt = amtDigits(best);
+        dbg(best, amt);
+        ll req = k - amt - 1;
+        string s = to_string(best+1);
+        char ans = s[req];
+        print(ans);
+    }
 }
 
 int main() {

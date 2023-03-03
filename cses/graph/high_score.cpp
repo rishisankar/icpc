@@ -55,8 +55,43 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+const ll inf = LLONG_MAX;
+struct Ed { int a, b, w, s() { return a < b ? a : -a; }};
+struct Node { ll dist = inf; int prev = -1; };
+
+void bellmanFord(vector<Node>& nodes, vector<Ed>& eds, int s) {
+	nodes[s].dist = 0;
+	sort(all(eds), [](Ed a, Ed b) { return a.s() < b.s(); });
+
+	int lim = sz(nodes) / 2 + 2; // /3+100 with shuffled vertices
+	rep(i,0,lim) for (Ed ed : eds) {
+		Node cur = nodes[ed.a], &dest = nodes[ed.b];
+		if (abs(cur.dist) == inf) continue;
+		ll d = cur.dist + ed.w;
+		if (d < dest.dist) {
+			dest.prev = ed.a;
+			dest.dist = (i < lim-1 ? d : -inf);
+		}
+	}
+	rep(i,0,lim) for (Ed e : eds) {
+		if (nodes[e.a].dist == -inf)
+			nodes[e.b].dist = -inf;
+	}
+}
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n,m; cin >> n >> m;
+    vector<Node> nodes(n);
+    vector<Ed> edges;
+    rep(i,0,m) {
+        int a,b; ll x; cin >> a >> b >> x;
+        --a; --b; x*=-1;
+        Ed e; e.a = a; e.b = b; e.w = x;
+        edges.pb(e);
+    }
+    bellmanFord(nodes,edges,0);
+    ll ans = -nodes[n-1].dist;
+    print(ans == inf ? -1 : ans);
 }
 
 int main() {

@@ -54,9 +54,40 @@ VPII dirs{mp(-1,0),mp(1,0),mp(0,-1),mp(0,1)};
 const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
+ll x;
+vector<ll> sums_le_x(VLL& v, int L, int R) {
+    int siz=R-L;
+    VLL cts;
+    rep(i,0,(1<<siz)) {
+        ll ct = 0;
+        rep(j,L,R) {
+            if (((i>>(j-L)) & 1) == 1) ct+=v[j];
+        }
+        if (ct <= x) {
+            cts.pb(ct);
+        }
+    }
+    sort(all(cts));
+    return cts;
+}
 
-void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+ll run() {
+    int n; cin >> n;
+    cin >> x;
+    VLL v(n); INP(v,n);
+    if (n == 1) return (v[0] == x ? 1 : 0);
+    int mid = n/2;
+    VLL c1 = sums_le_x(v,0,mid);
+    VLL c2 = sums_le_x(v,mid,n);
+    ll ans = 0;
+    for (ll x1 : c1) {
+        ll gl = x-x1;
+        auto it1 = lower_bound(c2.begin(),c2.end(),gl);
+        auto it2 = upper_bound(c2.begin(),c2.end(),gl);
+        ll dif = it2-it1;
+        ans += dif;
+    }
+    return ans;
 }
 
 int main() {
@@ -67,5 +98,5 @@ int main() {
     // cout.precision(15);
     // ll t; cin >> t;
     ll t=1;
-    rep(tests,0,t) run();
+    rep(tests,0,t) print(run());
 }

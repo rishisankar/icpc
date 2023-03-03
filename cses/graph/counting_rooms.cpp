@@ -50,13 +50,43 @@ typedef pair<long long, long long> pll;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
-VPII dirs{mp(-1,0),mp(1,0),mp(0,-1),mp(0,1)};
 const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n,m; cin >> n >> m;
+    vector<vector<bool>> graph(n, VB(m));
+    rep(i,0,n) {
+        string s; cin >> s;
+        rep(j,0,m) {
+            graph[i][j] = (s[j] == '#' ? false : true);
+        }
+    }
+    vector<vector<bool>> vis(n, VB(m, false));
+    dbg(vis,"x");
+    int ct = 0;
+    VPII dirs{mp(-1,0),mp(1,0),mp(0,-1),mp(0,1)};
+    rep(i,0,n) {
+        rep(j,0,m) {
+            if (!graph[i][j]) continue;
+            if (vis[i][j]) continue;
+            ++ct;
+            vis[i][j] = true;
+            stack<pii> s;
+            s.push({i,j});
+            while (!s.empty()) {
+                pii t = s.top(); s.pop();
+                for (pii d : dirs) {
+                    int x = d.F+t.F; int y = d.S+t.S;
+                    if (x < 0 || y < 0 || x >= n || y >=m || !graph[x][y] || vis[x][y]) continue;
+                    s.push({x,y});
+                    vis[x][y] = true;
+                }
+            }
+        }
+    }
+    print(ct);
 }
 
 int main() {

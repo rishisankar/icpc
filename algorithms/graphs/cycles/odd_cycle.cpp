@@ -3,6 +3,7 @@
 // color each vertex either 1 or 2, if you try to recolor a vertex then there's an odd cycle
 
 // given: undirected graph (adjacency list)
+// example: cses/graphs/building_teams
 
 bool hasOddCycle(vector<vector<int>> adj) {
     int n = adj.size();
@@ -29,4 +30,6 @@ bool hasOddCycle(vector<vector<int>> adj) {
             }
         }
     }
+
+    return false;
 }

@@ -55,8 +55,48 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+/*
+Find all connected components in a undirected graph
+(returns vector of nodes in each component)
+*/
+VVI components(VVI adj) {
+    int n = adj.size();
+    vector<bool> vis(n,false);
+    VVI comps;
+    rep(i,0,n) {
+        if (!vis[i]) {
+            vis[i] = true;
+            comps.resize(comps.size()+1);
+            comps.back().pb(i);
+            stack<int> s;
+            s.push(i);
+            while (!s.empty()) {
+                int t = s.top(); s.pop();
+                for (int x : adj[t]) {
+                    if (vis[x]) continue;
+                    vis[x] = true;
+                    comps.back().pb(x);
+                    s.push(x);
+                }
+            }
+        }
+    }
+    return comps;
+}
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n,m; cin >> n >>m;
+    VVI adj(n);
+    rep(i,0,m) {
+        int a,b; cin >> a >> b;
+        --a;--b;
+        adj[a].pb(b);adj[b].pb(a);
+    }
+    VVI c = components(adj);
+    print(c.size()-1);
+    rep(i,0,c.size()-1){
+        print(c[i][0]+1,c[i+1][0]+1);
+    }
 }
 
 int main() {

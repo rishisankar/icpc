@@ -55,8 +55,45 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+/*
+If n even:
+if k <=n/2: return k*2
+else:
+  ans = solve(n/2)
+  return ans*2-1
+
+If n odd:
+if k <=n//2 return k*2
+else:
+  ans = solve(n//2 + 1) - 1 (0 => n//2+1)
+  return ans*2-1
+
+*/
+
+ll solve(ll n, ll k) {
+    if (n == 1) return 1;
+    if (n%2 == 0) {
+        if (k <= n/2) return k*2;
+        else {
+            ll ans = solve(n/2, k-n/2);
+            return ans*2-1;
+        }
+    } else {
+        if (k <= n/2) return k*2;
+        else {
+            ll ans = solve(n/2+1, k-n/2) - 1;
+            if (ans == 0) ans = n/2+1;
+            return ans*2-1;
+        }
+    }
+}
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    ll q; cin >> q;
+    rep(i,0,q) {
+        ll n,k; cin >> n >> k;
+        print(solve(n,k));
+    }
 }
 
 int main() {
