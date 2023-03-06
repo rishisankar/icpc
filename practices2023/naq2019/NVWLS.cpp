@@ -119,7 +119,8 @@ struct AhoCorasick {
 		rep(i,0,sz(word)) {
 			int ind = r[i];
 			while (ind != -1) {
-				res[i - sz(pat[ind]) + 1].push_back(ind);
+				// res[i - sz(pat[ind]) + 1].push_back(ind);
+                res[i].push_back(ind);
 				ind = backp[ind];
 			}
 		}
@@ -171,15 +172,8 @@ void run() {
     int m = s.size();
 
     AhoCorasick ac(patterns);
-    vector<vi> vv = ac.findAll(patterns, s);
+    vector<vi> matches = ac.findAll(patterns, s);
     vector<string>().swap(patterns); // deallocate patterns
-    VVI matches(m, vector<int>(0));
-    rep(i,0,vv.size()) {
-        for (int j : vv[i]) {
-            // there is a match of pattern j at location i in s
-            matches[i+patSize[j]-1].pb(j);
-        }
-    }
 
     vector<pair<ll,int>> dp(m, {-1,-1});
     rep(i,0,m) {
@@ -212,7 +206,6 @@ void run() {
     reverse(all(soln));
     for (int i : soln) {
         cout << orig[i] << ' ';
-        cout.flush();
     }
     cout << '\n';
 }

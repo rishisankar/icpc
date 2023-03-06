@@ -48,7 +48,11 @@ T modpow(T base, T exp, T modulus) {
   }
   return result;
 }
-
+// for prime mods
+ll inv(ll x) {
+    x%=mod;
+    return modpow(x, mod-2, mod);
+}
 
 // helper func for matmodpow. assumes both are square matrices
 VVLL matmul(VVLL& v1, VVLL& v2, ll mod) {
