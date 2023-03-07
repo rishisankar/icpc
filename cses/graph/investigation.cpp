@@ -1,0 +1,156 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define rep(i, a, b) for(int i = a; i < (b); ++i) 
+#define all(x) begin(x), end(x)
+#define sz(x) (int)(x).size()
+#define pb push_back
+#define F first
+#define S second
+#define mp make_pair
+#define INP(v, n) for (int i=0; i<n; ++i) { cin >> v[i]; }
+#define ceil(x) (ll)ceil(x)
+#define floor(x) (ll)floor(x)
+
+template<typename T> inline T maxe(vector<T> &vec) { return *max_element(all(vec)); }
+template<typename T> inline T mine(vector<T> &vec) { return *min_element(all(vec)); }
+
+template<typename T> ostream& operator<<(ostream &os, const vector<T> &v) 
+{ os << '{'; string sep; for (const auto &x: v) os << sep << x, sep = ", "; return os << '}';}
+template<typename A, typename B> ostream& operator<<(ostream &os, const pair<A, B> &p) 
+{ return os << '(' << p.first << ", " << p.second << ')'; }
+
+void dbg_out() { cerr << endl; }
+template<typename Head, typename... Tail> void dbg_out(Head H, Tail... T) { cerr << ' ' << H; dbg_out(T...); }
+
+#ifdef TTL
+#define dbg(...) cerr << "(" << #__VA_ARGS__ << "):", dbg_out(__VA_ARGS__)
+#else
+#define dbg(...)
+#endif
+
+template<typename T> inline void print(T obj) { cout << obj << '\n'; }
+template<typename T, typename... Args> inline void print(T t, Args... args) { cout << t << " "; print(args...); }
+
+typedef long long ll;
+typedef long double ld;
+typedef unsigned long long ull;
+typedef vector<int> VI;
+typedef vector<int> vi; 
+typedef vector<vector<int>> VVI;
+typedef vector<long long> VLL;
+typedef vector<vector<long long>> VVLL;
+typedef vector<bool> VB;
+typedef vector<vector<bool>> VVB;
+typedef vector<string> VS;
+typedef vector<vector<string>> VVS;
+typedef pair<int, int> PII;
+typedef pair<int, int> pii;
+typedef pair<long long, long long> pll;
+typedef vector<pair<int, int>> VPII;
+typedef vector<vector<pair<int, int>>> VVPII;
+
+VPII dirs{mp(-1,0),mp(1,0),mp(0,-1),mp(0,1)};
+const ld pi = 3.1415926535897932384626433832795;
+const ll mod = 1000000007;
+// const ll mod = 998244353;
+
+// O( (m+n) log n )
+// define VLL d, VI p; (don't size)
+// d gives distances to each point, p gives parent in path
+// from cp-algorithms.com
+
+const long long INF = 10000000000000000LL;
+void dijkstra(int s, vector<long long> & d, vector<int> & p, vector<vector<pair<int,long long>>> &adj) {
+    int n = adj.size();
+    d.assign(n, INF);
+    p.assign(n, -1);
+
+    d[s] = 0;
+    using pii = pair<long long, int>;
+    priority_queue<pii, vector<pii>, greater<pii>> q;
+    q.push({0, s});
+    while (!q.empty()) {
+        int v = q.top().second;
+        long long d_v = q.top().first;
+        q.pop();
+        if (d_v != d[v])
+            continue;
+
+        for (auto edge : adj[v]) {
+            int to = edge.first;
+            long long len = edge.second;
+
+            if (d[v] + len < d[to]) {
+                d[to] = d[v] + len;
+                p[to] = v;
+                q.push({d[to], to});
+            }
+        }
+    }
+}
+
+vector<int> restore_path(int s, int t, vector<int> const& p) {
+    vector<int> path;
+
+    for (int v = t; v != s; v = p[v])
+        path.push_back(v);
+    path.push_back(s);
+
+    reverse(path.begin(), path.end());
+    return path;
+}
+
+
+ll countPaths(int i, vector<ll>& d, vector<vector<pair<int,ll>>>& radj, vector<ll>& paths, VLL& minNodes, VLL& maxNodes) {
+    if (paths[i] != -1) return paths[i];
+    minNodes[i] = LLONG_MAX;
+    maxNodes[i] = LLONG_MIN;
+    ll ans = 0;
+    for (pair<int,ll> p : radj[i]) {
+        int x = p.F;
+        if (d[x] + p.S == d[i]) {
+            // going through x marks a path
+            ans += countPaths(x,d,radj,paths,minNodes,maxNodes);
+            ans %= mod;
+            minNodes[i] = min(minNodes[i], minNodes[x]+1);
+            maxNodes[i] = max(maxNodes[i], maxNodes[x]+1);
+        }
+    }
+    return paths[i] = ans;
+}
+
+void run() {
+    int n,m; cin >> n >> m;
+    vector<vector<pair<int,ll>>> adj(n), radj(n);
+    rep(i,0,m) {
+        int a,b; cin >> a >> b; ll c; cin >> c;
+        --a; --b;
+        adj[a].pb({b,c});
+        radj[b].pb({a,c});
+    }
+    vector<ll> d;
+    vector<int> p;
+    dijkstra(0, d, p, adj);
+    ll ans1 = d[n-1];
+    vector<ll> paths(n,-1);
+    vector<ll> minNodes(n,-1);
+    vector<ll> maxNodes(n,-1);
+    paths[0] = 1;
+    minNodes[0] = 0;
+    maxNodes[0] = 0;
+    ll ans2 = countPaths(n-1,d,radj,paths,minNodes,maxNodes);
+
+    print(ans1, ans2, minNodes[n-1], maxNodes[n-1]);
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cin.exceptions(cin.failbit);
+    // cout.setf(ios::fixed);
+    // cout.precision(15);
+    // ll t; cin >> t;
+    ll t=1;
+    rep(tests,0,t) run();
+}
