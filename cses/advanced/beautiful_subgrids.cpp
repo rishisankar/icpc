@@ -56,60 +56,41 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
-vi topoSort(const vector<vi>& gr) {
-	vi indeg(sz(gr)), ret;
-	for (auto& li : gr) for (int x : li) indeg[x]++;
-	queue<int> q; // use priority_queue for lexic. largest ans.
-	rep(i,0,sz(gr)) if (indeg[i] == 0) q.push(i);
-	while (!q.empty()) {
-		int i = q.front(); // top() for priority queue
-		ret.push_back(i);
-		q.pop();
-		for (int x : gr[i])
-			if (--indeg[x] == 0) q.push(x);
-	}
-	return ret;
-}
-
-vector<pii> edgesInReverseTopo(vector<vi>& radj) {
-    int n = radj.size();
-    vi ts = topoSort(radj);
-    vector<pii> edges;
-    for (int i : ts) {
-        for (int j : radj[i]) edges.pb({j,i});
-    }
-    return edges;
-}
-
-vi countReachablePairs(int n, int m, vector<pii>& dg) {
-  vector<ull> mask(n);
-  vector<int> ans(n,0);
-  for (int l = 0; l < n; l += 64) {
-    // process 64 at a time via bitmask: 
-    int r = min(n, l + 64);
-    rep(i,0,n) mask[i] = 0;
-    for (int i = l; i < r; ++i) mask[i] = (1ull << (i-l));
-    for (pii edge : dg) {
-        mask[edge.F]|=mask[edge.S];
-    }
-    // for each of the n nodes, figure out how many of [l,r) is reachable
-    rep(i,0,n)ans[i]+=__builtin_popcountll(mask[i]);
-  }
-  return ans;
-}
+/*
+For every two rows, want to know # of 1s that appear in both (i.e. builtin_popcount(r1 & r2))
+- if 1, 0 subgrids
+- if k>=2: k choose 2 subgrids
+*/
 
 void run() {
-    int n,m; cin >> n >> m;
-    vector<vi> radj(n);
-    rep(i,0,m) {
-        int a,b; cin >> a >> b;
-        radj[b-1].pb(a-1);
+    int n; cin >> n;
+    ull rows[3000][47];
+    // vector<vector<ull>> rows(n);
+    rep(i,0,n) {
+        string s; cin >> s;
+        for (int j = 0; j < n; j+=64) {
+            ull cur = 0;
+            rep(k,0,min(64,n-j)) {
+                cur <<= 1;
+                cur += (s[j+k]=='1');
+            }
+            rows[i][j/64] = cur;
+        }
     }
-    vector<pii> v = edgesInReverseTopo(radj);
-    vi crp = countReachablePairs(n,m,v);
-    for (int i : crp) cout << i << ' ';
-    cout << '\n';
-    
+    int D = (n-1)/64 + 1;
+    // dbg(rows);
+    ll ans = 0;
+    rep(i,0,n) {
+        rep(j,i+1,n) {
+            int amt = 0;
+            rep(k,0,D) {
+                amt += __builtin_popcountll(rows[i][k]&rows[j][k]);
+            }
+            ans += (amt)*(amt-1);
+        }
+    }
+    ans/=2;
+    print(ans);
 }
 
 int main() {

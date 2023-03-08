@@ -18,6 +18,8 @@ n = # nodes, m = # edges
 dg = edge list in reverse topological order
 Example: cses/advanced/reachable_nodes
 */
+
+#pragma GCC target("popcnt")
 vi countReachable(int n, int m, vector<pii>& dg) {
   vector<ull> mask(n);
   vector<int> ans(n,0);
