@@ -16,7 +16,7 @@ Returns vector v (v[i] = # nodes reachable from i, including i itself)
 O(n/64 * (n+m))
 n = # nodes, m = # edges
 dg = edge list in reverse topological order
-Example: cses/advanced/reachable_nodes
+Example: cses/advanced/reachable_nodes (can also look at cses/advanced/reachability_queries)
 */
 
 #pragma GCC target("popcnt")
