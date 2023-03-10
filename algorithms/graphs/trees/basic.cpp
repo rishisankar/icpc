@@ -23,3 +23,27 @@ pair<vector<vi>,vi> rootTree(vector<vi>& adj, int r) {
     }
     return {childs,parent};
 }
+
+/*
+Convert tree to array with each subtree contiguous (DFS)
+Return vector<pii> d(n), where d[i] = {a,b} indicates 
+subtree rooted at node i is at indices [a,b) of the array.
+(root of subtree always at index a)
+Time: O(n)
+Tested on cses/trees/subtree_queries
+*/
+vector<pii> subtreeArrayDecomp(VVI& adj, int root) {
+    int n = adj.size();
+    int ct = 0;
+    vector<pii> decomp(n);
+    function<void (int,int)> dfs = [&](int t, int p) {
+        decomp[t].F = ct++;
+        for (int x : adj[t]) {
+            if (x == p) continue;
+            dfs(x,t);
+        }
+        decomp[t].S = ct;
+    };
+    dfs(root,-1);
+    return decomp;
+}
