@@ -1,3 +1,5 @@
+// slower than new_roads_queries_mst
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -61,12 +63,12 @@ struct UF {
 	bool sameSet(int a, int b) { return find(a) == find(b); }
 	int size(int x) { return -e[find(x)]; }
 	int find(int x) { return e[x] < 0 ? x : e[x] = find(e[x]); }
-	bool join(int a, int b) {
+	int join(int a, int b) {
 		a = find(a), b = find(b);
 		if (a == b) return false;
 		if (e[a] > e[b]) swap(a, b);
 		e[a] += e[b]; e[b] = a;
-		return true;
+		return a;
 	}
 };
 
@@ -93,16 +95,14 @@ void run() {
         int s1 = u.find(edges[i].F);
         int s2 = u.find(edges[i].S);
         if (s1 == s2) continue;
-        u.join(s1,s2);
-        int sn = u.find(s1);
+        int sn = u.join(s1,s2);
+        // int sn = u.find(s1);
         int so = (s1 == sn ? s2 : s1);
         if (quers[so].size() > quers[sn].size()) swap(quers[sn],quers[so]);
         for (int x : quers[so]) {
-            if (quers[sn].count(x)) {
+            if (!quers[sn].insert(x).S) {
                 ans[x] = i+1;
                 quers[sn].erase(quers[sn].find(x));
-            } else {
-                quers[sn].insert(x);
             }
         }
     }
