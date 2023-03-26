@@ -7,7 +7,10 @@ Time: O(2^N * N^2)
 
 Note: mask uses ints ==> N < 31 (complexity too slow otherwise anyway)
 Example: https://codeforces.com/contest/1804/problem/E (tested on this)
+-> can be optimized using bitmasks to 2^n * n (see cf editorial comments)
 */
+#pragma GCC target("lzcnt,popcnt")
+
 pair<VVI, VI> hamiltonian(VVI& adj, VVB& adjm) {
     int n = adj.size();
     vector<int> masks;
