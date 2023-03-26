@@ -55,93 +55,82 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+struct TwoSat {
+	int N;
+	vector<vi> gr;
+	vi values; // 0 = false, 1 = true
 
-/*
+	TwoSat(int n = 0) : N(n), gr(2*n) {}
 
-// https://codeforces.com/blog/entry/45223
-xi <= 10^6 ==> # bits <= 20
+	int addVar() { // (optional)
+		gr.emplace_back();
+		gr.emplace_back();
+		return N++;
+	}
 
-query 1: x | y = x
-query 2: x & y = x
-query 3: x & y != 0
+	void either(int f, int j) {
+		f = max(2*f, -1-2*f);
+		j = max(2*j, -1-2*j);
+		gr[f].push_back(j^1);
+		gr[j].push_back(f^1);
+	}
+	void setValue(int x) { either(x, x); }
 
-query 1: 1 --> *, 0 --> 0
-query 2: 1 --> 1, 0 --> *
+	void atMostOne(const vi& li) { // (optional)
+		if (sz(li) <= 1) return;
+		int cur = ~li[0];
+		rep(i,2,sz(li)) {
+			int next = addVar();
+			either(cur, ~li[i]);
+			either(cur, next);
+			either(~li[i], next);
+			cur = ~next;
+		}
+		either(cur, ~li[1]);
+	}
 
+	vi val, comp, z; int time = 0;
+	int dfs(int i) {
+		int low = val[i] = ++time, x; z.push_back(i);
+		for(int e : gr[i]) if (!comp[e])
+			low = min(low, val[e] ?: dfs(e));
+		if (low == val[i]) do {
+			x = z.back(); z.pop_back();
+			comp[x] = low;
+			if (values[x>>1] == -1)
+				values[x>>1] = x&1;
+		} while (x != i);
+		return val[i] = low;
+	}
 
-query 1:
-- for a bitstring x, consider all subsets ie 1s can become 0s, 0s must stay 0s
-   - run SOS over all subsets i of x, A[i] = # of values with value i
-
-query 2: similar but in reverse
-
-query 3:
-==> at all pts where x is 1, y = 0
-==> by negating x, (~x | y) will give 0 at all points where x is 1 (since y is also 0)
-    at points where x was 0, ~x becomes 1 ==> we get 1 at all points where x was 0
-    ==> places where x&y == 0 are equivalent to places where ~x | y == ~x
-
-*/
-
-unordered_map<int,int> cts;
-
-const int NB = 20;
-
-pair<VLL,VLL> f1(VLL& v) {
-    int n = sz(v);
-    VVLL dp((1<<NB), VLL(NB));
-    for (auto p : cts) {
-        dp[p.F][0] += p.S;
-        if (!(p.F&1)) dp[(p.F^1)][0] += p.S;
-    }
-    for (int i = 0; i < (1 << NB); ++i) {
-        rep(k,1,NB) {
-            if ((i>>k)&1) dp[i][k] += dp[i ^ (1 << k)][k-1];
-            dp[i][k] += dp[i][k-1];
-        }
-    }
-    VLL ans(n);
-    rep(i,0,n) {
-        ans[i] = dp[v[i]][NB-1];
-    }
-    VLL ans2(n);
-    rep(i,0,n) {
-        ans2[i] = n - dp[v[i] ^ ((1 << NB)-1)][NB-1];
-    }
-    return {ans,ans2};
-}
-
-VLL f2(VLL& v) {
-    int n = sz(v);
-    VVLL dp((1<<NB), VLL(NB));
-    for (auto p : cts) {
-        dp[p.F][0] += p.S;
-        if ((p.F&1)) dp[(p.F^1)][0] += p.S;
-    }
-    for (int i = (1<<NB)-1; i >= 0; --i) {
-        rep(k,1,NB) {
-            if (!((i>>k)&1)) dp[i][k] += dp[i ^ (1 << k)][k-1];
-            dp[i][k] += dp[i][k-1];
-        }
-    }
-    VLL ans(n);
-    rep(i,0,n) {
-        ans[i] = dp[v[i]][NB-1];
-    }
-    return ans;
-}
+	bool solve() {
+		values.assign(N, -1);
+		val.assign(2*N, 0); comp = val;
+		rep(i,0,2*N) if (!comp[i]) dfs(i);
+		rep(i,0,N) if (comp[2*i] == comp[2*i+1]) return 0;
+		return 1;
+	}
+};
 
 void run() {
-    int n; cin >> n;
-    VLL v(n); INP(v,n);
+    int n,m; cin >> n >> m;
+    TwoSat ts(m);
     rep(i,0,n) {
-        cts[v[i]] ++;
+        char c1, c2;
+        int a,b;
+        cin >> c1  >> a >> c2 >> b;
+        --a; --b;
+        if (c1 == '-') a = ~a;
+        if (c2 == '-') b = ~b;
+        ts.either(a,b);
     }
-    VLL a1,a3;
-    tie(a1,a3) = f1(v);
-    VLL a2 = f2(v);
-    rep(i,0,n) {
-        print(a1[i],a2[i],a3[i]);
+    if (ts.solve()) {
+        for (int i : ts.values) {
+            cout << (i ? '+' : '-') << ' ';
+        }
+        cout << '\n';
+    } else {
+        print("IMPOSSIBLE");
     }
 }
 

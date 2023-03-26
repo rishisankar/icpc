@@ -55,94 +55,48 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+vi val, comp, z, cont;
+int Time, ncomps;
+template<class G, class F> int dfs(int j, G& g, F& f) {
+	int low = val[j] = ++Time, x; z.push_back(j);
+	for (auto e : g[j]) if (comp[e] < 0)
+		low = min(low, val[e] ?: dfs(e,g,f));
 
-/*
-
-// https://codeforces.com/blog/entry/45223
-xi <= 10^6 ==> # bits <= 20
-
-query 1: x | y = x
-query 2: x & y = x
-query 3: x & y != 0
-
-query 1: 1 --> *, 0 --> 0
-query 2: 1 --> 1, 0 --> *
-
-
-query 1:
-- for a bitstring x, consider all subsets ie 1s can become 0s, 0s must stay 0s
-   - run SOS over all subsets i of x, A[i] = # of values with value i
-
-query 2: similar but in reverse
-
-query 3:
-==> at all pts where x is 1, y = 0
-==> by negating x, (~x | y) will give 0 at all points where x is 1 (since y is also 0)
-    at points where x was 0, ~x becomes 1 ==> we get 1 at all points where x was 0
-    ==> places where x&y == 0 are equivalent to places where ~x | y == ~x
-
-*/
-
-unordered_map<int,int> cts;
-
-const int NB = 20;
-
-pair<VLL,VLL> f1(VLL& v) {
-    int n = sz(v);
-    VVLL dp((1<<NB), VLL(NB));
-    for (auto p : cts) {
-        dp[p.F][0] += p.S;
-        if (!(p.F&1)) dp[(p.F^1)][0] += p.S;
-    }
-    for (int i = 0; i < (1 << NB); ++i) {
-        rep(k,1,NB) {
-            if ((i>>k)&1) dp[i][k] += dp[i ^ (1 << k)][k-1];
-            dp[i][k] += dp[i][k-1];
-        }
-    }
-    VLL ans(n);
-    rep(i,0,n) {
-        ans[i] = dp[v[i]][NB-1];
-    }
-    VLL ans2(n);
-    rep(i,0,n) {
-        ans2[i] = n - dp[v[i] ^ ((1 << NB)-1)][NB-1];
-    }
-    return {ans,ans2};
+	if (low == val[j]) {
+		do {
+			x = z.back(); z.pop_back();
+			comp[x] = ncomps;
+			cont.push_back(x);
+		} while (x != j);
+		f(cont); cont.clear();
+		ncomps++;
+	}
+	return val[j] = low;
 }
-
-VLL f2(VLL& v) {
-    int n = sz(v);
-    VVLL dp((1<<NB), VLL(NB));
-    for (auto p : cts) {
-        dp[p.F][0] += p.S;
-        if ((p.F&1)) dp[(p.F^1)][0] += p.S;
-    }
-    for (int i = (1<<NB)-1; i >= 0; --i) {
-        rep(k,1,NB) {
-            if (!((i>>k)&1)) dp[i][k] += dp[i ^ (1 << k)][k-1];
-            dp[i][k] += dp[i][k-1];
-        }
-    }
-    VLL ans(n);
-    rep(i,0,n) {
-        ans[i] = dp[v[i]][NB-1];
-    }
-    return ans;
+template<class G, class F> void scc(G& g, F f) {
+	int n = sz(g);
+	val.assign(n, 0); comp.assign(n, -1);
+	Time = ncomps = 0;
+	rep(i,0,n) if (comp[i] < 0) dfs(i, g, f);
 }
 
 void run() {
-    int n; cin >> n;
-    VLL v(n); INP(v,n);
-    rep(i,0,n) {
-        cts[v[i]] ++;
+    int n,m; cin >> n >> m;
+    VVI adj(n);
+    rep(i,0,m) {
+        int a,b; cin >> a >> b; --a; --b;
+        adj[a].pb(b);
     }
-    VLL a1,a3;
-    tie(a1,a3) = f1(v);
-    VLL a2 = f2(v);
-    rep(i,0,n) {
-        print(a1[i],a2[i],a3[i]);
-    }
+    int nd = -1;
+    scc(adj, [&](vi& c) {
+        if (nd != -1) {
+            print("NO");
+            print(nd, c[0]+1);
+            exit(0);
+        }
+        nd = c[0]+1;
+    });
+    print("YES");
 }
 
 int main() {
