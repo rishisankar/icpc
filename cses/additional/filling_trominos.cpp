@@ -1,5 +1,3 @@
-// fails!
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -52,17 +50,33 @@ typedef pair<long long, long long> pll;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+VPII dirs{mp(-1,0),mp(1,0),mp(0,-1),mp(0,1)};
 const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
-const pii fail = {-1,-1};
-const pii unsolved = {-2,-2};
-const pii nopar = {-3,-3};
-// stores parent dp state
-vector<vector<pii>> dp(105, vector<pii>(105, unsolved));
-vector<pii> dirs;
-void printSol(int n, int m, VVI& sol) {
+/*
+at least one of n,m must be divisible by 3 (assume n wlog)
+possible small fillings: 2x3, 5x9
+
+(1) m=1: impossible
+(2) m even: doable (use many 2x3s)
+(3) m odd, n even: fill first three cols with 2x3s repeatedly, remaining cols reduce to (2)
+(4) m odd, n odd, n >= 9, m >= 5: 9x5, 9x(m-5) by case (2), (n-9)xm by case (3)
+(5) n = 3, m odd: impossible (think abt where to place top left corner tromino)
+
+GGIIFGGII
+GMMIFFGIN
+QQMTTQQNN
+QVXTUQWXX
+VVXXUUWWX
+*/
+
+VVI sol;
+int cur = 0;
+
+void printSol(VVI& ans) {
+    int n = sz(ans), m = sz(ans[0]);
     int k = n*m/3;
     VVI adj(k);
     rep(i,0,n) {
@@ -70,9 +84,9 @@ void printSol(int n, int m, VVI& sol) {
             for (pii d : dirs) {
                 int nx = i+d.F; int ny = j+d.S;
                 if (nx >= 0 && ny >= 0 && nx < n && ny < m) {
-                    if (sol[nx][ny] != sol[i][j]) {
-                        adj[sol[nx][ny]].pb(sol[i][j]);
-                        adj[sol[i][j]].pb(sol[nx][ny]);
+                    if (ans[nx][ny] != ans[i][j]) {
+                        adj[ans[nx][ny]].pb(ans[i][j]);
+                        adj[ans[i][j]].pb(ans[nx][ny]);
                     }
                 }
             }
@@ -91,11 +105,10 @@ void printSol(int n, int m, VVI& sol) {
             }
         }
     }
-
     vector<vector<char>> newSol(n, vector<char>(m));
     rep(i,0,n) {
         rep(j,0,m) {
-            newSol[i][j] = ('A' + colors[sol[i][j]]);
+            newSol[i][j] = ('A' + colors[ans[i][j]]);
         }
     }
     rep(i,0,n) {
@@ -104,90 +117,90 @@ void printSol(int n, int m, VVI& sol) {
         }
         cout << '\n';
     }
-
 }
 
-void makeSol(int n, int m, VVI& sol, int val) {
-    if (dp[n][m] == nopar) {
-        // 2x3 or 3x2 case
-        if (n == 2 && m == 3) {
-            sol[0][0] = sol[1][0] = sol[1][1] = val;
-            sol[0][1] = sol[0][2] = sol[1][2] = val+1;
-        } else {
-            sol[0][0] = sol[1][0] = sol[0][1] = val;
-            sol[2][0] = sol[2][1] = sol[1][1] = val+1;
-        }
-        return;
-    }
-    if (dp[n][m] == mp(n-2,m)) {
-        int rects = m/3;
-        rep(i,0,rects) {
-            sol[n-1][i*3] = sol[n-1][i*3+1] = sol[n-2][i*3] = val;
-            sol[n-1][i*3+2] = sol[n-2][i*3+1] = sol[n-2][i*3+2] = val+1;
-            val+=2;
-        }
-    } else if (dp[n][m] == mp(n-3,m)) {
-        int rects = m/2;
-        rep(i,0,rects) {
-            sol[n-1][i*2] = sol[n-1][i*2+1] = sol[n-2][i*2] = val;
-            sol[n-2][i*2+1] = sol[n-3][i*2] = sol[n-3][i*2+1] = val+1;
-            val+=2;
-        }
-    } else if (dp[n][m] == mp(n,m-3)) {
-        int rects = n/2;
-        rep(i,0,rects) {
-            sol[i*2][m-1] = sol[i*2+1][m-1] = sol[i*2][m-2] = val;
-            sol[i*2+1][m-2] = sol[i*2][m-3] = sol[i*2+1][m-3] = val+1;
-            val+=2;
-        }
-    } else { // n, m-2
-        int rects = n/3;
-        rep(i,0,rects) {
-            sol[i*3][m-1] = sol[i*3+1][m-1] = sol[i*3][m-2] = val;
-            sol[i*3+2][m-1] = sol[i*3+1][m-2] = sol[i*3+2][m-2] = val+1;
-            val+=2;
+void solve95(int xi, int yi) {
+    VS v{"GGAAFBBII", 
+         "GMMAFFBIN", 
+         "CCMTTQQNN", 
+         "CVDTUQWXX", 
+         "VVDDUUWWX"};
+    VVI ans(9,VI(5));
+    map<char,int> mz;
+    rep(i,0,9) {
+        rep(j,0,5) {
+            char c = v[j][i];
+            if (!mz.count(c)) mz[c] = sz(mz);
+            ans[i][j] = mz[c];
         }
     }
-    makeSol(dp[n][m].F, dp[n][m].S, sol, val);
+    rep(i,0,9) {
+        rep(j,0,5) {
+            sol[xi+i][yi+j] = cur + ans[i][j];
+        }
+    }
+    cur += sz(mz);
 }
 
-bool solve(int n, int m) {
-    if (dp[n][m] != unsolved) return dp[n][m] != fail;
-    if (n > 2 && m%3==0 && solve(n-2,m)) {
-        dp[n][m] = {n-2,m};
-        return true;
+// solve region starting at (xi,yi) of size nxm (assume case 2)
+void solve2(int xi, int yi, int n, int m) {
+    rep(i,0,m/2) {
+        rep(j,0,n/3) {
+            // x,y of cur 3x2
+            int nx = xi + 3*j;
+            int ny = yi + 2*i;
+            sol[nx][ny] = sol[nx+1][ny] = sol[nx][ny+1] = cur++;
+            sol[nx+2][ny] = sol[nx+1][ny+1] = sol[nx+2][ny+1] = cur++;
+        }
     }
-    if (n > 3 && m%2==0 && solve(n-3,m)) {
-        dp[n][m] = {n-3,m};
-        return true;
+}
+
+// solve region starting at (xi,yi) of size nxm (assume case 3)
+void solve3(int xi, int yi, int n, int m) {
+    rep(i,0,n/2) {
+        int nx = xi + 2*i;
+        sol[nx][yi] = sol[nx][yi+1] = sol[nx+1][yi] = cur++;
+        sol[nx+1][yi+1] = sol[nx+1][yi+2] = sol[nx][yi+2] = cur++;
     }
-    if (m > 3 && n%2==0 && solve(n,m-3)) {
-        dp[n][m] = {n,m-3};
-        return true;
-    }
-    if (m > 2 && n%3==0 && solve(n,m-2)) {
-        dp[n][m] = {n,m-2};
-        return true;
-    }
-    dp[n][m] = fail;
-    return false;
+    solve2(xi, yi+3, n, m-3);
 }
 
 void run() {
-    dp[2][3] = dp[3][2] = nopar;
-    int t; cin >> t;
-    rep(i,0,t) {
-        int n,m;
-        cin >> n >> m;
-        dbg(n,m);
-        if (solve(n,m)) {
-            print("YES");
-            // VVI v(n, VI(m,0));
-            // makeSol(n,m,v,0);
-            // printSol(n,m,v);
-        } else print("NO");
-        cout.flush();
+    int n,m; cin >> n >> m;
+    bool tp = false;
+    if (n%3 != 0) {
+        swap(n,m);
+        tp = true;
     }
+    if (n%3 != 0 || m == 1 || (n == 3 && (m&1))) {
+        // base + (1) + (5)
+        print("NO");
+        return;
+    }
+    cur = 0;
+    sol.assign(n, VI(m,-1));
+    if (m%2 == 0) solve2(0,0,n,m);
+    else if (n%2 == 0) solve3(0,0,n,m);
+    else {
+        if (m < 5) {
+            print("NO");
+            return;
+        }
+        solve95(0,0);
+        solve2(0,5,9,m-5);
+        solve3(9,0,n-9,m);
+    }
+    VVI ans;
+    if (tp) {
+        ans.resize(m, VI(n));
+        rep(i,0,n) {
+            rep(j,0,m) {
+                ans[j][i] = sol[i][j];
+            }
+        }
+    } else ans = sol;
+    print("YES");
+    printSol(ans);
 }
 
 int main() {
@@ -196,11 +209,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(15);
-    // ll t; cin >> t;
-    dirs.pb({-1,0});
-    dirs.pb({1,0});
-    dirs.pb({0,-1});
-    dirs.pb({0,1});
-    ll t=1;
+    ll t; cin >> t;
+    // ll t=1;
     rep(tests,0,t) run();
 }
