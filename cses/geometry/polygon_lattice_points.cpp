@@ -50,16 +50,71 @@ typedef pair<long long, long long> pll;
 typedef vector<pair<int, int>> VPII;
 typedef vector<vector<pair<int, int>>> VVPII;
 
+VPII dirs{mp(-1,0),mp(1,0),mp(0,-1),mp(0,1)};
 const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+template <class T> int sgn(T x) { return (x > 0) - (x < 0); }
+template<class T>
+struct Point {
+	typedef Point P;
+	T x, y;
+	explicit Point(T x=0, T y=0) : x(x), y(y) {}
+	bool operator<(P p) const { return tie(x,y) < tie(p.x,p.y); }
+	bool operator==(P p) const { return tie(x,y)==tie(p.x,p.y); }
+	P operator+(P p) const { return P(x+p.x, y+p.y); }
+	P operator-(P p) const { return P(x-p.x, y-p.y); }
+	P operator*(T d) const { return P(x*d, y*d); }
+	P operator/(T d) const { return P(x/d, y/d); }
+	T dot(P p) const { return x*p.x + y*p.y; }
+	T cross(P p) const { return x*p.y - y*p.x; }
+	T cross(P a, P b) const { return (a-*this).cross(b-*this); }
+	T dist2() const { return x*x + y*y; }
+	double dist() const { return sqrt((double)dist2()); }
+	// angle to x-axis in interval [-pi, pi]
+	double angle() const { return atan2(y, x); }
+	P unit() const { return *this/dist(); } // makes dist()=1
+	P perp() const { return P(-y, x); } // rotates +90 degrees
+	P normal() const { return perp().unit(); }
+	// returns point rotated 'a' radians ccw around the origin
+	P rotate(double a) const {
+		return P(x*cos(a)-y*sin(a),x*sin(a)+y*cos(a)); }
+	friend ostream& operator<<(ostream& os, P p) {
+		return os << "(" << p.x << "," << p.y << ")"; }
+};
+
+template<class T>
+T polygonArea2(vector<Point<T>>& v) {
+	T a = v.back().cross(v[0]);
+	rep(i,0,sz(v)-1) a += v[i].cross(v[i+1]);
+	return a;
+}
+
+typedef Point<ll> P;
+
+ll gcd(ll a, ll b) {
+    if (a == 0) return b; 
+    return gcd(b % a, a); 
+} 
+
 void run() {
     int n; cin >> n;
-    set<int> s;
-    rep(i,0,n) { int x; cin >> x; s.insert(x); }
-    print(s.size());
-
+    vector<P> pts;
+    rep(i,0,n) {
+        ll a,b; cin >> a >> b;
+        pts.emplace_back(a,b);
+    }
+    ll ar = polygonArea2(pts);
+    if (ar<0)ar=-ar;
+    ll b = 0;
+    rep(i,0,n) {
+        ll dx = llabs(pts[i].x - pts[(i+1)%n].x);
+        ll dy = llabs(pts[i].y - pts[(i+1)%n].y);
+        b += gcd(dx,dy);
+    }
+    ll I = (ar + 2 - b) / 2; // pick's theorem
+    print(I,b);
 }
 
 int main() {
