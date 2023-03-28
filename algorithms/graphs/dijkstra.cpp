@@ -48,13 +48,13 @@ vector<int> restore_path(int s, int t, vector<int> const& p) {
 
 
 /*
-Compute number of shortest paths to each node (tested on directed graph)
+Compute number of shortest paths to each node (directed/undirected)
 Edge weights must be > 0 (if 0, could be infinite ways...)
-Need both adj and reverse adj list
-(in undirected graph, these are the same i think? haven't tested on undirected)
-Time complexity same as dijsktra O(E log V)?
+Need both adj and reverse adj list (in undirected graph, use adj for both)
+Time complexity same as dijsktra O(E log V)
 
-Tested on cses/additional/visiting_cities
+Tested (directed) on cses/additional/visiting_cities
+Tested (undirected) on https://leetcode.com/problems/number-of-ways-to-arrive-at-destination/
 */
 const long long INF = 10000000000000000LL;
 void dijkstra(int s, VLL& d, vector<vector<pair<int,ll>>>& adj) {
