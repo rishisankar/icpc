@@ -39,7 +39,7 @@ pair<int,vector<int>> lis2(vector<int>& sequence) {
     return {table.size(), indices};
 }
 
-// Returns length only
+// Returns length only (tested on cses/dp/increasing_subsequence)
 int lis(vector<int>& sequence) {
     if (sequence.empty()) return 0;
 
