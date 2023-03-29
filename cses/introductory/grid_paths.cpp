@@ -55,39 +55,85 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
-const vector<char> dz{'U','D','L','R'};
-vector<string> paths;
+int path[48];
+bool vis[9][9] = {};
 
-const ull one = 1;
-void test(ull mask, int x, int y, string s) {
-    // dbg(__builtin_popcountll(mask),mask);
-    if (__builtin_popcountll(mask) == 49) {
-        if (x == 6 && y == 0) {
-            paths.pb(s);
-            if (paths.size()%100 == 0) dbg(paths.size());
-        }
-        return;
-    }
-    if (x == 6 && y == 0) {
-        return;
-    }
+int ct = 0;
+int chk(int d, int x, int y);
+
+inline bool is_dead_end(int x, int y) {
+    int nv = 0;
     rep(i,0,4) {
-        pii d = dirs[i];
-        int nx = x+d.F; int ny = y+d.S;
-        if (nx < 0 || ny < 0 || nx >= 7 || ny >= 7) continue;
-        int p = nx*7+ny;
-        if ((mask >> p)&1) continue;
-        s.pb(dz[i]);
-        test((mask ^ (one<<p)), nx, ny, s);
-        s.pop_back();
+        int nx = x+dirs[i].F, ny = y+dirs[i].S;
+        if (vis[nx][ny])++nv;
     }
+    return nv>=3;
+}
+
+// ct paths. d = current path iter, (x,y) = current.
+inline int chk_(int& d, int& x, int& y) {  
+    if (d == 48) {
+        if (x == 7 && y == 1) return 1;
+        else return 0;
+    } else if (x == 7 && y == 1) {
+        return 0;
+    }
+    if (path[d] < 4) {
+        // path is already determined
+        auto dir = dirs[path[d]];
+        int nx = x+dir.F, ny = y+dir.S;
+        if (vis[nx][ny]) return 0;
+        return chk(d+1,nx,ny);
+    }
+    int ans = 0;
+    int dir = -1;
+    // check if any dirs are dead ends
+    rep(i,0,4) {
+        int nx = x+dirs[i].F, ny = y+dirs[i].S;
+        if (vis[nx][ny]) continue;
+        if (nx == 7 && ny == 1) continue; // dest can be dead end
+        if (is_dead_end(nx,ny)) {
+            if (dir != -1) return 0; // multiple dead ends
+            else dir = i;
+        }
+    }
+    int rlb = (dir == -1 ? 0 : dir);
+    int rub = (dir == -1 ? 4 : dir+1);
+    rep(i,rlb,rub) {
+        // try each direction
+        auto dir = dirs[i];
+        int nx = x+dir.F, ny = y+dir.S;
+        if (vis[nx][ny]) continue;
+        int nnx = nx+dir.F, nny = ny+dir.S;
+        if (vis[nnx][nny]) {
+            int vc = 0;
+            int lb = (i < 2 ? 2 : 0);
+            int ub = (i < 2 ? 4 : 2);
+            rep(j,lb,ub) {
+                int xp = nx+dirs[j].F, yp = ny+dirs[j].S;
+                if (!vis[xp][yp]) ++vc;
+            }
+            if (vc == 2) continue;
+        }
+        ans += chk(d+1,nx,ny);
+    }
+    return ans;
+}
+
+int chk(int d, int x, int y) {
+    vis[x][y] = true;
+    int ans = chk_(d,x,y);
+    vis[x][y] = false;
+    return ans;
 }
 
 void run() {
-    test(1,0,0,"");
-    for (string s : paths) {
-        print(s);
-    }
+    map<char,int> m{{'U',0},{'D',1},{'L',2},{'R',3},{'?',4}};
+    string s; cin >> s;
+    rep(i,0,48) path[i] = m[s[i]];
+    rep(i,0,9) vis[i][0] = vis[0][i] = vis[i][8] = vis[8][i] = 1;
+    int ans = chk(0, 1, 1);
+    print(ans);
 }
 
 int main() {

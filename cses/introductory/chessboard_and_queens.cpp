@@ -55,43 +55,31 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
-// ll test(VVB& g2, int c, int fr2) {
-//     ll ans = 0;
-//     rep(i,0,8) {
-//         rep(j,0,8) {
-//             if (!g2[i][j]) {
-//                 // try placing
-//                 VVB g(g2);
-//                 int fr = fr2;
-//                 rep(k,0,8) if (!g[i][k]) { --fr; g[i][k] = 1; }
-//                 rep(k,0,8) if (!g[k][j]) { --fr; g[k][j] = 1; }
-//                 rep(k,0,8) if (!g[(i+k)%8][(j+k)%8]) { --fr; g[(i+k)%8][(j+k)%8] = 1; }
-//                 rep(k,0,8) if (!g[(i-k+32)%8][(j+k)%8]) { --fr; g[(i-k+32)%8][(j+k)%8] = 1; }
-//                 if (fr >= c-1) ans += test(g,c-1,fr);
-//             }
-//         }
-//     }
-//     return ans;
-// }
+VVB res(8, VB(8));
 
-ll test2(VPII& v, int c) {
-    if (c > v.size()) return 0;
-    // tbd...
+bool chk(vi& v) {
+    VB ld(15), rd(15);
+    rep(i,0,8) {
+        if (res[i][v[i]-1]) return 0;
+        int l = i + v[i] - 1;
+        int r = i + (8-v[i]);
+        if (ld[l] || rd[r]) return 0;
+        ld[l] = rd[r] = 1;
+    }
+    return 1;
 }
 
 void run() {
-    int fr = 64;
-    VVB z(8, VB(8));
-    vector<pii> val;
     rep(i,0,8) {
         string s; cin >> s;
-        rep(j,0,8) {
-            if (s[j] == '*') { z[i][j] =1; --fr; }
-            else val.pb({i,j});
-        }
+        rep(j,0,8) res[i][j] = (s[j] == '*');
     }
-    // print(test(z, 8, fr));
-    print(test2(val,8));
+    int ct = 0;
+    vi v(8); iota(all(v),1);
+    do {
+        if (chk(v)) ++ct;
+    } while (next_permutation(all(v)));
+    print(ct);
 }
 
 int main() {
