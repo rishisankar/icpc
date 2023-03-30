@@ -1,3 +1,5 @@
+// broken idk
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -56,37 +58,93 @@ const ll mod = 1000000007;
 // const ll mod = 998244353;
 
 /*
+(v, bitset<6>(i).to_string()): {4, 5, 2, 1, 3, 6} 000001
+4 5 2 1 c1 c2 3 c3 c4 c5 6 c6
 
-Observations:
-- can never place a number on top of something smaller
-- if 1...k are all placed, they are all cleared from the stack
-
-Need to maintain:
-- priority queue of numbers in both stacks (each # is popped at most once!)
-
-For each number:
-    - identify k s.t. 1...k are solved (segment tree etc)
-    - pop as much of 1..k as possible from both stacks' pq
-    - place on stack (greedily pick smaller of the two) *** wrong
-    - if can't put on either stack, fail
-Succeed if all numbers placed on stacks
-
-place on stack (greedily pick smaller of the two):
-
-5 10 --> 2 10 (place 2 on lower) --> 2 4 (place 4 on only choice) --> 1 (2 gets cleared) --> 5 4
-5 10 --> 5 2 (place 2 on higher) --> 4 2 (place 4 on only chocie) --> 1 (2 gets cleared) --> 4 10 (better...)
-
-
-instead: when placing a #, need to know when it will be cleared + is it possible to build two sequences until then
-(maybe largest LIS?)
-
-
-for each # can u find the point where all previous #s are included
+idea: augment with clear operations (asap) then work in reverse
+clear corresponds to pushing to stack
+- can place u on top of v if u appears after v in perm
+- greedy: 
+    1) prefer placing on top of something else than empty stack
+    2) if something in both + can place on either, place on the later one
 
 */
 
+void fail() {
+    print("IMPOSSIBLE");
+    exit(0);
+}
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n; cin >> n;
+    vi v(n); INP(v,n);
+    vi tm(n);
+    rep(i,0,n) {
+        v[i]--;
+        tm[v[i]] = i;
+    }
+    vector<pair<bool,int>> ops; // true = regular, false = clear
+    int cur = 0;
+    VB vis(n,0);
+    rep(i,0,n) {
+        ops.pb({1,v[i]});
+        vis[v[i]] = 1;
+        while (cur < n && vis[cur]) {
+            ops.pb({0,cur++});
+        }
+    }
+    vi stack_id(n,-1);
+    stack<int> s1,s2;
+    assert(sz(ops)==2*n);
+    s1.push(-1); s2.push(-1); // -1 for empty
+    for (int i = sz(ops)-1; i >= 0; --i) {
+        auto p = ops[i];
+        if (p.F) {
+            dbg("reg", p.S, stack_id[p.S]);
+            // regular --> pop from stack!
+            assert(stack_id[p.S] != -1);
+            if (stack_id[p.S] == 1) s1.pop();
+            else s2.pop();
+            dbg(s1.top(),s2.top());
+        } else {
+            int t = tm[p.S];
+            dbg("clr",p.S, t, s1.top(), s2.top());
+            if (s1.top() < s2.top()) {
+                // s2 is later
+                if (t > s2.top()) {
+                    s2.push(t);
+                    stack_id[p.S] = 2;
+                } else if (t > s1.top()) {
+                    s1.push(t);
+                    stack_id[p.S] = 1;
+                } else {
+                    dbg("fail case 1");
+                    dbg(s1.top(), s2.top());
+                    dbg(t, p.F, p.S);
+                    fail();
+                }
+            } else {
+                // s1 is later
+                if (t > s1.top()) {
+                    s1.push(t);
+                    stack_id[p.S] = 1;
+                } else if (t > s2.top()) {
+                    s2.push(t);
+                    stack_id[p.S] = 2;
+                } else {
+                    dbg("fail case 2");
+                    dbg(s1.top(), s2.top());
+                    dbg(t, p.F, p.S);
+                    fail();
+                }
+            }
+            dbg(s1.top(),s2.top());
+        }
+    }
+    rep(i,0,n) {
+        cout << (stack_id[v[i]]) << ' ';
+    }
+    cout << '\n';
 }
 
 int main() {
