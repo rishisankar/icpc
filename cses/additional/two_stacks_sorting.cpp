@@ -1,4 +1,4 @@
-// broken idk
+// broken on {2, 6, 4, 1, 5, 3}
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -96,6 +96,7 @@ void run() {
     vi stack_id(n,-1);
     stack<int> s1,s2;
     assert(sz(ops)==2*n);
+    dbg(ops);
     s1.push(-1); s2.push(-1); // -1 for empty
     for (int i = sz(ops)-1; i >= 0; --i) {
         auto p = ops[i];
