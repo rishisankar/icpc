@@ -240,6 +240,104 @@ bool chk(vi& v) {
     return false;
 }
 
+template<class T>
+struct RMQ {
+	vector<vector<T>> jmp;
+	RMQ(const vector<T>& V) : jmp(1, V) {
+		for (int pw = 1, k = 1; pw * 2 <= sz(V); pw *= 2, ++k) {
+			jmp.emplace_back(sz(V) - pw * 2 + 1);
+			rep(j,0,sz(jmp[k]))
+				jmp[k][j] = max(jmp[k - 1][j], jmp[k - 1][j + pw]);
+		}
+	}
+	T query(int a, int b) {
+		assert(a < b); // or return inf if a == b
+		int dep = 31 - __builtin_clz(b - a);
+		return max(jmp[dep][a], jmp[dep][b - (1 << dep)]);
+	}
+};
+
+bool run4(vi v) {
+    int n = sz(v);
+    rep(i,0,n) v[i]--; // make 0-indexed
+    int cur = 0;
+    VB vis(n,0);
+    vector<pair<bool,int>> ops;
+    rep(i,0,n) {
+        ops.pb({1,v[i]});
+        vis[v[i]] = 1;
+        while (cur < n && vis[cur]) {
+            ops.pb({0,cur++});
+        }
+    }
+    VPII ranges(n);
+    vector<int> rmqVals(2*n);
+    rep(i,0,2*n) {
+        // populate ranges
+        if (ops[i].F) ranges[ops[i].S].F = i;
+        else ranges[ops[i].S].S = i;
+        // populate rmq vector (can optimize)
+        rmqVals[i] = ops[i].S;
+    }
+    RMQ rmq(rmqVals);
+    VB is1(n); // is assigned to stack 1?
+    stack<int> s1,s2;
+    s1.push(n); s2.push(n+1);
+    rep(i,0,2*n) {
+        if (ops[i].F) {
+            // push operation
+            int t = ops[i].S;
+            if (s1.top() > s2.top()) {
+                if (s2.top() > t) {
+                    if (ranges[t].F+1 == ranges[t].S) {
+                        s1.push(t);
+                        is1[t] = true;
+                    } else {
+                        int K = rmq.query(ranges[t].F+1, ranges[t].S);
+                        if (s2.top() > K) {
+                            s1.push(t);
+                            is1[t] = true;
+                        } else {
+                            s2.push(t);
+                            is1[t] = false;
+                        }
+                    }
+                } else if (s1.top() > t) {
+                    s1.push(t);
+                    is1[t] = true;
+                } else {
+                    return false;
+                }
+            } else {
+                if (s1.top() > t) {
+                    if (ranges[t].F+1 == ranges[t].S) {
+                        s1.push(t);
+                        is1[t] = true;
+                    } else {
+                        int K = rmq.query(ranges[t].F+1, ranges[t].S);
+                        if (s1.top() > K) {
+                            s2.push(t);
+                            is1[t] = false;
+                        } else {
+                            s1.push(t);
+                            is1[t] = true;
+                        }
+                    }
+                } else if (s2.top() > t) {
+                    s2.push(t);
+                    is1[t] = false;
+                } else {
+                    return false;
+                }
+            }
+        } else {
+            // clear operation
+            if (is1[ops[i].S]) s1.pop(); else s2.pop();
+        }
+    }
+    return true;
+}
+
 void run() {
     int n; cin >> n;
     vi v(n);
@@ -247,12 +345,14 @@ void run() {
     do {
         // dbg(v);
         bool b1 = chk(v);
-        bool b2 = run2(v);
-        bool b3 = run3(v);
+        // bool b2 = run2(v);
+        // bool b3 = run3(v);
+        bool b4 = run4(v);
         // dbg(v,b1,b2,b3);
-        if (!(b1 == (b2||b3))) {
+        if (!(b1 == b4)) {
+        // if (!(b1 == (b2||b3))) {
             dbg(v);
-            dbg(b1,b2,b3);
+            dbg(b1,b4);
         }
         // assert(b1==(b2||b3));
     } while (next_permutation(all(v)));

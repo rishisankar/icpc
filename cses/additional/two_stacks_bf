@@ -46,3 +46,32 @@
 
 (v, bitset<6>(i).to_string()): {4, 5, 2, 3, 1, 6} 000101
 4 5 2 3 1 c1 c2 c3 c4 c5 6 c6
+
+
+
+new approach learnings
+
+{7, 2, 4, 1, 6, 3, 8, 5}
+
+
+7 2 4 1 c1 c2 6 3 c3 c4 8 5 c5 c6 c7 c8
+
+Start by putting a 7
+
+focusing on the range between 7, c7: (first thing pushed)
+- if everything is less than 7, the state is equivalent to empty stack ==> can put 2 on either, doesn't matter
+- if anything is larger than 7, first thing larger must go on other stack; nothing prior uncleared may go on other stack
+
+=> by using this logic for each range
+7.8 must be diff
+2,4 must be diff
+4,6 must be diff
+6,8 must be diff
+does anything else matter? maybe not
+  - for remainder stuff, either do same greedy; or just pick arbitrarily
+
+first larger <=> largest rmq (just test soln at the end to verify when u use rmq instead)
+
+if you pick arbitrarily, approach is easy:
+- for each node, join all adjacent
+- for each node, assert that in different thing than 
