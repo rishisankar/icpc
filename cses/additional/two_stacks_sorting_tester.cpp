@@ -256,6 +256,20 @@ struct RMQ {
 		return max(jmp[dep][a], jmp[dep][b - (1 << dep)]);
 	}
 };
+struct UF {
+	vi e;
+	UF(int n) : e(n, -1) {}
+	bool sameSet(int a, int b) { return find(a) == find(b); }
+	int size(int x) { return -e[find(x)]; }
+	int find(int x) { return e[x] < 0 ? x : e[x] = find(e[x]); }
+	bool join(int a, int b) {
+		a = find(a), b = find(b);
+		if (a == b) return false;
+		if (e[a] > e[b]) swap(a, b);
+		e[a] += e[b]; e[b] = a;
+		return true;
+	}
+};
 
 bool run4(vi v) {
     int n = sz(v);
@@ -338,6 +352,122 @@ bool run4(vi v) {
     return true;
 }
 
+
+// complement set
+inline int compzl(VVI& adj, UF& dsu, int c) {
+    if (sz(adj[c]) > 0) return dsu.find(adj[c][0]);
+    else return -1;
+}
+
+bool rundsu(vi v) {
+    int n = sz(v);
+    rep(i,0,n) v[i]--; // make 0-indexed
+    int cur = 0;
+    VB vis(n,0);
+    vector<pair<bool,int>> ops;
+    rep(i,0,n) {
+        ops.pb({1,v[i]});
+        vis[v[i]] = 1;
+        while (cur < n && vis[cur]) {
+            ops.pb({0,cur++});
+        }
+    }
+    VPII ranges(n);
+    vector<int> rmqVals(2*n);
+    rep(i,0,2*n) {
+        // populate ranges
+        if (ops[i].F) ranges[ops[i].S].F = i;
+        else ranges[ops[i].S].S = i;
+        // populate rmq vector (can optimize)
+        rmqVals[i] = ops[i].S;
+    }
+    RMQ rmq(rmqVals);
+    VB is1(n); // is assigned to stack 1?
+    VB assgn(n);
+    // constraint graph
+    VVI adj(n);
+    rep(i,0,n) {
+        // if (ranges[i].F+1 < ranges[i].S) {
+        //     int K = rmq.query(ranges[i].F+1, ranges[i].S);
+        //     if (K > i) {
+        //         adj[i].pb(K);
+        //         adj[K].pb(i);
+        //     }
+        // }
+        int rf = ranges[i].F+1;
+        while (rf < ranges[i].S) {
+            int K = rmq.query(rf, ranges[i].S);
+            if (K > i) {
+                adj[i].pb(K);
+                adj[K].pb(i);
+                rf = ranges[K].F+1;
+            } else break;
+        }
+    }
+    UF dsu(n);
+    rep(i,0,n) {
+        for (int x : adj[i]) dsu.join(adj[i][0], x);
+    }
+
+    stack<int> s1,s2;
+    s1.push(n); s2.push(n+1);
+    rep(i,0,2*n) {
+        if (ops[i].F) {
+            // push operation
+            int t = ops[i].S;
+            if (s1.top() > s2.top()) {
+                if (s2.top() > t) {
+                    if (is1[dsu.find(t)]) {
+                        s1.push(t);
+                        int cm = compzl(adj,dsu,dsu.find(t));
+                        if (cm != -1) is1[cm] = false;
+                        assgn[t] = true;
+                    } else {
+                        s2.push(t);
+                        int cm = compzl(adj,dsu,dsu.find(t));
+                        if (cm != -1) is1[cm] = true;
+                        assgn[t] = false;
+                    }
+                } else if (s1.top() > t) {
+                    s1.push(t);
+                    is1[dsu.find(t)] = true;
+                    int cm = compzl(adj,dsu,dsu.find(t));
+                    if (cm != -1) is1[cm] = false;
+                    assgn[t] = true;
+                } else {
+                    return false;
+                }
+            } else {
+                if (s1.top() > t) {
+                    if (is1[dsu.find(t)]) {
+                        s1.push(t);
+                        int cm = compzl(adj,dsu,dsu.find(t));
+                        if (cm != -1) is1[cm] = false;
+                        assgn[t] = true;
+                    } else {
+                        s2.push(t);
+                        int cm = compzl(adj,dsu,dsu.find(t));
+                        if (cm != -1) is1[cm] = true;
+                        assgn[t] = false;
+                    }
+                } else if (s2.top() > t) {
+                    s2.push(t);
+                    is1[dsu.find(t)] = false;
+                    int cm = compzl(adj,dsu,dsu.find(t));
+                    if (cm != -1) is1[cm] = true;
+                    assgn[t] = false;
+                } else {
+                    return false;
+                }
+            }
+        } else {
+            // clear operation
+            if (assgn[ops[i].S]) s1.pop(); else s2.pop();
+        }
+    }
+    return true;
+}
+
 void run() {
     int n; cin >> n;
     vi v(n);
@@ -347,7 +477,8 @@ void run() {
         bool b1 = chk(v);
         // bool b2 = run2(v);
         // bool b3 = run3(v);
-        bool b4 = run4(v);
+        // bool b4 = run4(v);
+        bool b4 = rundsu(v);
         // dbg(v,b1,b2,b3);
         if (!(b1 == b4)) {
         // if (!(b1 == (b2||b3))) {
