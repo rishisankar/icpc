@@ -1,5 +1,3 @@
-// broken on {2, 6, 4, 1, 5, 3}
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -58,94 +56,89 @@ const ll mod = 1000000007;
 // const ll mod = 998244353;
 
 /*
-(v, bitset<6>(i).to_string()): {4, 5, 2, 1, 3, 6} 000001
-4 5 2 1 c1 c2 3 c3 c4 c5 6 c6
+Approach: reduce to 2-coloring a graph based on constraints
 
-idea: augment with clear operations (asap) then work in reverse
-clear corresponds to pushing to stack
-- can place u on top of v if u appears after v in perm
-- greedy: 
-    1) prefer placing on top of something else than empty stack
-    2) if something in both + can place on either, place on the later one
+For each node, we need an edge from it to any node that is larger and appears btwn the
+first node being pushed and popped.
 
+DSU to store nodes that are connected already, as well as second DSU to compute next largest
+    - DSU needs to figure out max elt of set
+
+see two-stack-sorting tests/ for previous impls / tests
 */
 
-void fail() {
-    print("IMPOSSIBLE");
-    exit(0);
-}
+struct UF {
+	vi e,mx;
+	UF(int n) : e(n, -1), mx(n) {
+        iota(all(mx),0);
+    }
+	bool sameSet(int a, int b) { return find(a) == find(b); }
+    int smax(int x) { return mx[find(x)]; }
+	int size(int x) { return -e[find(x)]; }
+	int find(int x) { return e[x] < 0 ? x : e[x] = find(e[x]); }
+	bool join(int a, int b) {
+		a = find(a), b = find(b);
+		if (a == b) return false;
+        int amx = mx[a], bmx = mx[b];
+		if (e[a] > e[b]) swap(a, b);
+		e[a] += e[b]; e[b] = a;
+        mx[a] = max(amx,bmx);
+		return true;
+	}
+};
+
+/*
+example:
+1 4 0 6 3 5 2 (v)
+2 0 6 4 1 5 3 (tms)
+*/
 
 void run() {
     int n; cin >> n;
-    vi v(n); INP(v,n);
-    vi tm(n);
+    vi v(n);
+    vi tms(n);
     rep(i,0,n) {
-        v[i]--;
-        tm[v[i]] = i;
+        cin >> v[i]; --v[i];
+        tms[v[i]] = i;
     }
-    vector<pair<bool,int>> ops; // true = regular, false = clear
-    int cur = 0;
-    VB vis(n,0);
+    UF nge(n+1); // one larger to accommodate no greater elt
+    UF mgd(n); // already merged larger elts (so we can avoid adding edges to all)
+    int clt = -1; // clear time of element i
+    VVI adj(n);
     rep(i,0,n) {
-        ops.pb({1,v[i]});
-        vis[v[i]] = 1;
-        while (cur < n && vis[cur]) {
-            ops.pb({0,cur++});
+        int p = tms[i]; 
+        clt = max(clt, p);
+        // invariant: max of (p+1)s set is larger than i ==> allows finding next greatest elt
+        nge.join(p, p+1);
+        int cur = nge.smax(p), prev = -1;
+        while (cur <= clt) {
+            adj[p].pb(cur);
+            adj[cur].pb(p);
+            dbg(p,cur);
+            if (prev != -1) mgd.join(prev,cur);
+            prev = cur;
+            cur = mgd.smax(cur); // jump alr merged elts
+            cur = nge.smax(cur+1); // go to next greater
         }
     }
-    vi stack_id(n,-1);
-    stack<int> s1,s2;
-    assert(sz(ops)==2*n);
-    dbg(ops);
-    s1.push(-1); s2.push(-1); // -1 for empty
-    for (int i = sz(ops)-1; i >= 0; --i) {
-        auto p = ops[i];
-        if (p.F) {
-            dbg("reg", p.S, stack_id[p.S]);
-            // regular --> pop from stack!
-            assert(stack_id[p.S] != -1);
-            if (stack_id[p.S] == 1) s1.pop();
-            else s2.pop();
-            dbg(s1.top(),s2.top());
-        } else {
-            int t = tm[p.S];
-            dbg("clr",p.S, t, s1.top(), s2.top());
-            if (s1.top() < s2.top()) {
-                // s2 is later
-                if (t > s2.top()) {
-                    s2.push(t);
-                    stack_id[p.S] = 2;
-                } else if (t > s1.top()) {
-                    s1.push(t);
-                    stack_id[p.S] = 1;
-                } else {
-                    dbg("fail case 1");
-                    dbg(s1.top(), s2.top());
-                    dbg(t, p.F, p.S);
-                    fail();
-                }
-            } else {
-                // s1 is later
-                if (t > s1.top()) {
-                    s1.push(t);
-                    stack_id[p.S] = 1;
-                } else if (t > s2.top()) {
-                    s2.push(t);
-                    stack_id[p.S] = 2;
-                } else {
-                    dbg("fail case 2");
-                    dbg(s1.top(), s2.top());
-                    dbg(t, p.F, p.S);
-                    fail();
-                }
-            }
-            dbg(s1.top(),s2.top());
+    // graph 2 coloring
+    vi colors(n,-1);
+    function<bool(int,int)> dfs = [&](int t, int c) {
+        if (colors[t] != -1) return colors[t] == c;
+        colors[t] = c;
+        for (int x : adj[t]) {
+            if (!dfs(x,(c^1))) return false;
+        }
+        return true;
+    };
+    rep(i,0,n) {
+        if (colors[i] == -1 && !dfs(i,0)) {
+            print("IMPOSSIBLE");
+            return;
         }
     }
-    rep(i,0,n) {
-        cout << (stack_id[v[i]]) << ' ';
-    }
-    cout << '\n';
+    for (int i : colors) cout << (i+1) << ' ';
+    cout << "\n";
 }
 
 int main() {
