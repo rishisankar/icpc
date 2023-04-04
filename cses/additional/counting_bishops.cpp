@@ -56,41 +56,68 @@ const ll mod = 1000000007;
 // const ll mod = 998244353;
 
 /*
-Binary search on answer
-Test(k):
-    Each n adds n,n,2n,2n,...,(n-1)(n), (n-1)(n), n^2 elts to the table
-        ex 4 adds 4,4,8,8,12,12,16
-    Test k involves storing amt #s < k and > k
-        then check if k is the middle
+Rotate 45 degrees + process black/white squares independently
+For each color, we have some # of rows, each row has some width
+Sort the rows by width to get pattern: 1 1 3 3 ... (black), 2 2 4 4 ... (white)
+dp[i][j] = # ways to place j pieces in first i (sorted) rows -- note that no col or row can have multiple pieces
+    1) don't place piece in ith row ==> dp[i-1][j]
+    2) place piece in ith row.
+        total ways to do this: width(i) * dp[i-1][j-1]
+        but some are invalid. for each of dp[i-1][j-1], there are j-1 cols occupied already
+            ==> dp[i-1][j-1] * (j-1) invalid ways
+        ==> dp[i-1][j-1] * (width(i) - (j-1))
+    Recurrence: dp[i][j] = dp[i-1][j] + dp[i-1][j-1] * (width(i) - (j-1))
+
+note: can place at most 2n-1 bishops (there are only that many diagonals), so don't need to assume k=O(n^2)
 */
 
-ll n;
-
-void run() {
-    cin >> n;
-    ll lo = 1, hi = n*n;
-    while (lo <= hi) {
-        ll k = (lo+hi)/2;
-        ll L = 0, R = 0;
-        for (ll i = 1; i <= n; ++i) {
-            if (k > i*(i-1)) L += 2*(i-1);
-            else {
-                ll z = (k-1)/i * 2;
-                L += z;
-                R += 2*(i-1) - z - 2*(k%i == 0 ? 1 : 0);
-            }
-            if (k > i*i) L++;
-            else if (k < i*i) R++;
-        }
-        if (L <= n*n/2 && R <= n*n/2) {
-            print(k);
-            return;
-        } else if (L <= n*n/2) {
-            lo = k+1;
-        } else {
-            hi = k-1;
+VVLL solve(vi& widths, int k) {
+    int n = sz(widths);
+    VVLL dp(n, VLL(k+1));
+    dp[0][0] = 1;
+    dp[0][1] = widths[0];
+    rep(i,1,n) {
+        dp[i][0] = 1;
+        rep(j,1,k+1) {
+            dp[i][j] = dp[i-1][j] + dp[i-1][j-1] * (widths[i] - j + 1);
+            dp[i][j] %= mod;
         }
     }
+    return dp;
+}
+
+void run() {
+    int n,k; cin >> n >> k;
+    if (k > 2*n-1) {
+        print(0);
+        return;
+    }
+    if (n == 1) {
+        // handle separately so we can assume sz(w_w)>0
+        print(1);
+        return;
+    }
+    // compute widths by pattern (note that white has 1 fewer row)
+    vi b_w, w_w;
+    int c = 1;
+    rep(i,0,n) {
+        b_w.pb(c);
+        if (i&1) c+=2;
+    }
+    c = 2;
+    rep(i,0,n-1) {
+        w_w.pb(c);
+        if (i&1) c+=2;
+    }
+    VVLL db = solve(b_w,k);
+    VVLL dw = solve(w_w,k);
+    ll ans = 0;
+    rep(i,0,k+1) {
+        // i = # of pieces placed on black squares
+        ans += db[n-1][i]*dw[n-2][k-i];
+        ans %= mod;
+    }
+    print(ans);
 }
 
 int main() {
