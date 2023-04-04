@@ -56,30 +56,64 @@ const ll mod = 1000000007;
 // const ll mod = 998244353;
 
 /*
-binary search + digit dp
+Binary search: for a given number, how many times do you press {max dig 1?} typing 1...n
 
-dp[# digits so far][dig] = # of occurrences of dig when # is already smaller in first i digits
-dp2[# digits so far]: # of ways of picking digits s.t # is already smaller in first i digits
+examples:
 
-dp[i][1][d] = dp[i-1][d]*10 + dp2[i-1] + {first i-1 #s match, last is less than actual}
-dp2[i] = x[i] + 10*dp2[i-1]
+69394
+    how many times does 1 appear in digit 1: 10000 - 19999 = 10000 times
+    how many times does 1 appear in digit 2: 1000-1999, 11000-11999, ..., 61000-61999 ==> 1000*7 = 7000 times
+    how many times does 1 appear in digit 3: 00100-00199, ..., 69100-69199 ==> 70*100 = 7000 times
+    how many times does 1 appear in digit 4: 00010-00019, ..., 69310-69319 ==> 694*10 = 6940 times
+    how many times does 1 appear in digit 5: 00001, ..., 69391 ==> 6940*1 = 6940 times
 
-leading zeros... separate flag for nonzero or not in each
+
+603
+    how many times does 1 appear in digit 1: 100-199 ==> 100 times
+    how many times does 1 appear in digit 2: 010-019, ..., 510-519 ==> 6*10 = 60 times
+    how many times does 1 appear in digit 3: 001, ..., 601 ==> 61 times
+
+611
+    how many times does 1 appear in digit 1: 100-199 ==> 100 times
+    how many times does 1 appear in digit 2: 010-019, ..., 510-519, 610,611 ==> 6*10+2 = 62 times
+    how many times does 1 appear in digit 3: 001, ..., 611 ==> 62 times
+
+
+for each digit l-->r:
+    if digit > 1: ans += (prev digits+1) * 10^k
+    if digit = 1: ans += (prev digits)*10^k + 1 + remaining digits
+    if digit = 0: ans += (prev digits) * 10^k
 */
 
-ll test(ll n) {
-    string ns = to_string(n);
-    int D = sz(ns);
-    vector<VVLL> dp(D+1, VVLL(2, VLL(10, 0)));
-    rep(nd,1,D+1) {
-        rep(lst,0,10) {
-
-        }
+/*
+count number of times 1 appears in 1...n
+*/
+ll ct(ll n) {
+    ll ans = 0;
+    ll p = 1;
+    while (n/p) {
+        int dig = (n/p)%10;
+        if (dig > 1) ans += (n/p/10 +1) * p;
+        else if (dig == 1) ans += (n/p/10)*p + 1 + (n%p);
+        else ans += (n/p/10)*p;
+        p*=10;
     }
+    return ans;
 }
 
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    ll n; cin >> n;
+    ll lo = 1, hi = 1000000000000000000LL;
+    ll bst = -1;
+    while (lo <= hi) {
+        ll mid = lo + (hi-lo)/2;
+        if (ct(mid) > n) hi = mid-1;
+        else {
+            bst = mid;
+            lo = mid+1;
+        }
+    }
+    print(bst);
 }
 
 int main() {
