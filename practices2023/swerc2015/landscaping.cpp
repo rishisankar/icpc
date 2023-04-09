@@ -105,16 +105,18 @@ void run() {
     rep(i,0,n) {
         string s; cin >> s;
         rep(j,0,m) {
-            if (s[i][j] == '#') d.addEdge(i*m+j, n*m+1, b);
+            if (s[j] == '#') d.addEdge(i*m+j, n*m+1, b);
             else {
                 d.addEdge(n*m, i*m+j, b);
-                for (pii p : dirs) {
-                    int nx = i+p.F, ny = j+p.S;
-                    if (nx < 0 || ny < 0 || nx >= n || ny >= m) continue;
-                }
             }
+						for (pii p : dirs) {
+								int nx = i+p.F, ny = j+p.S;
+								if (nx < 0 || ny < 0 || nx >= n || ny >= m) continue;
+								d.addEdge(i*m+j, nx*m+ny, a);
+						}
         }   
     }
+		print(d.calc(n*m,n*m+1));
 }
 
 int main() {
