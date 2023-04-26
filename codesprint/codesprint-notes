@@ -1,0 +1,20 @@
+Codesprint
+
+tmux attach-session -t server
+export PATH="/home/ec2-user/.nvm/versions/node/v16.13.2/bin:$PATH"
+serve -s build -l 80
+
+docker pull finnlidbetter/problemtools-icpc-arm
+docker run -d -it -v ~/testing:/codesprint finnlidbetter/problemtools-icpc-arm
+docker run -d -it -v ~/server/shared/problems:/problems finnlidbetter/problemtools-icpc-arm
+docker run --rm -it -v /Users/rsankar/code/codesprint/CodeSprint2022:/kattis_work_dir problemtools/icpc
+
+df -hT
+
+docker system prune -a -f
+
+docker rm -vf $(docker ps -aq)  // deletes all imgs :(
+https://forums.docker.com/t/some-way-to-clean-up-identify-contents-of-var-lib-docker-overlay/30604
+
+
+g++ -Wl,-stack_size,0x100000000 rishi.cpp

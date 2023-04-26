@@ -1,0 +1,40 @@
+Bread First Search:
+
+- Figure out distance from root, anything that appears earlier than something with smaller distance must have bread
+
+
+
+0 1 
+
+
+multiple things have bread in same
+
+
+
+Valid sequence if 000 111 222… ? No
+
+
+For each node, assign a “priority” (i.e. order in which it is visited by parent)
+	- this can be computed by looking at index of each child?
+
+Validate sequence: simulate the BFS (accounting for any bread already existing), each time you expand a node sort the expanded nodes by their position in the original sequence (also sort bread nodes if multiple)
+- If new sequence matches original, valid
+- Otherwise, need to add bread
+	- Run node by node comparison of original and simulated sequence
+	- If a node appears earlier than it should it is a problem
+		- previous nodes were plausibly visited in that order ==> this node must have bread?
+
+
+1
+
+2  3
+
+4 5   6 7
+
+
+
+
+1 2 5 3 4 6 7
+
+
+

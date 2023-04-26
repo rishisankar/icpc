@@ -1,0 +1,51 @@
+Caving:
+
+“value” of a node: max amount you can get assuming you visit it and all branches (B) out of it (that go away from root?)
+
+For each node, store sum across all B S(B) (max w 0)
+
+For each heavy path, store a segment tree across the nodes that does max subarray (ie pref, suff, max, sum)
+
+To answer a query: print max(max subarray on heavy path containing root, best overall)
+
+To update a value:
+- logn heavy paths that need updating (iterate from deepest to shallowest)
+
+update in heavy path containing node:
+- update the node n:
+  - if n has B:
+	- val(n) = S(B)
+  - else val(n) = 0
+  - max subarray segtree update in logn
+
+update in heavy path that branches into updated node:
+- Let M = node w n in B(M), let K = heavy path thats updated
+- S(B(M)) -= old sum from K (can do this in one direction of dfs)
+- S(B(M)) += new sum from K given by pref (can do this in other direction)
+- val(M) is changed —> max subarray segtree updates
+
+==> total complexity of query is O(logn), total complexity of update is O(log^2 n)
+
+==>O(n log^2 n)
+
+
+IMPLEMENTATION:
+
+struct HeavyPath {
+  - segment tree (max subarray)
+  - nodes (store in map?)
+  - vector<vector<HeavyPath*>> B (for each node — basically adjacency list)
+  - vector<int> S (for each node)
+  - HeavyPath* parent (ideally know node index too)
+  - int best  // stores best over each child branch in B
+};
+
+for each node, know which Heavy path it is in
+
+update(n)
+- update segtree for corresponding HP to n (by looking at S)
+- for each parent HP:
+  - update best: (this can be done w segtree and RMQ or wtv)
+  - update S through pref segtree query (might need to store old sum)
+  - update segtree
+  
