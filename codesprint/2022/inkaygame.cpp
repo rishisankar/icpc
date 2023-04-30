@@ -45,7 +45,7 @@ template<typename T> inline void dbg(T obj) { cerr << obj << '\n'; }
 template<typename T, typename... Args> inline void dbg(T t, Args... args) { cerr << t << " "; dbg(args...); }
 
 typedef long long ll;
-typedef long double ld;
+typedef double ld;
 typedef unsigned long long ull;
 typedef vector<int> VI;
 typedef vector<int> vi; 
