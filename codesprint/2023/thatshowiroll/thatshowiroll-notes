@@ -1,0 +1,62 @@
+suppose u don't pick 6 distinct characters that are first: (only pick 5)
+- max EV is 5/6 * 2 = 5/3...
+- otherwise guaranteed at least 1
+
+else max EV is 5/3
+  5/6 * 2=  5/3
+
+1 + 5
+
+suppose optimal solution needs multiple As. then input looks like:
+- need at least 4/6 chance to roll again
+
+
+is there ever a case where 1<k<6 of a letter L is an optimal solution but 6 Ls isn't?
+
+
+ab
+
+2 As 4 Bs:
+
+4/6 * 0 + 2/6*4/6*2 = 4/9
+6 As = 1
+
+
+ba 
+
+3 As 
+
+
+next question: is there a case where optimal solutions that contain only a single letter L appearing more than once aren't equivalent to having that letter L appear 6x
+
+A A B C D E
+
+ab
+ac
+ba
+bc
+ca
+cb
+
+duplicated letter should be first? probably?
+
+w {a,x,y,z}
+x {a,w,y,z}
+y {a,w,x,z}
+z {a,w,x,y}
+
+optimal: aawxyz? no
+
+aawxyz --> 2/6 * 0 + 4/6*5/6 * 2 = 1.1111
+wwxxyz --> (4/6*4/6 + 2/6*5/6)*2 = 1.4444
+
+suppose aawxyz is optimal. can EV be more than 1?
+
+ab
+ac 
+ad
+b
+c
+d
+ae
+e
