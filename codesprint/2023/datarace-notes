@@ -1,0 +1,28 @@
+visualize as segments (segment identified by x intercept), cut circular / length too long
+handle any overlaps (line sweep)
+sort by decreasing time and fill (01 lazy segtree sum)
+
+complexity: O(T (logT + logN))
+
+
+ex: n=4
+
+t = 7, b = 9, p = 1
+7 8 9 10 11 12 13 14 15
+1 2 3 0  1  2  3  0  1
+
+relevant time: t+b-n to t+b-1
+
+==> p = (p + b%n)%n
+
+last position touched: (p + b - 1)
+
+n 5
+pi 4
+bi 3
+
+--> seg1: pi, ti, n-pi, 
+--> seg2: 0, ti+n-pi, bi-n+pi
+
+
+create segment if: open->close on same, or different

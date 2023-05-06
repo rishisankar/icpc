@@ -55,43 +55,41 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
-VVI dp;
-int n;
-string s;
-
-int solve(int i, int j);
-int solve_(int i, int j) {
-    if (s[i] == '.') {
-        int rs = solve(i+1,j); if (rs==-2) return rs;
-        return (j == 0 ? 1 : 2) + rs;
-    } else if (s[i] == 'S') {
-        if (j == 0) return -2;
-        int rs = solve(i+1,j-1);
-        if (rs == -2) return rs;
-        return (j-1 == 0 ? 1 : 2) + rs;
-    } else {
-        int rz1 = solve(i+1,j), rz2 = -2;
-        if (rz1 != -2) rz1 += (j == 0 ? 1 : 2);
-        if (j != 2) {
-            rz2 = solve(i+1, j+1);
-            if (rz2 != -2) rz2 += 2;
-        }
-        if (rz1 == -2) return rz2;
-        else if (rz2 == -2) return rz1;
-        else return min(rz1, rz2);
-    }
-}
-int solve(int i, int j) {
-    if (i == n-1) return 0;
-    if (dp[i][j] != -1) return dp[i][j];
-    else return dp[i][j] = solve_(i,j);
-}
-
 void run() {
+    int n; string s;
     cin >> n >> s;
-    dp.assign(n, VI(3,-1));
+    VVI dp(n, VI(3,-1));
+    for (int i = n-1; i >= 0; i--) {
+        rep(j,0,3) {
+            if (i == n-1) dp[i][j] = 0;
+            else {
+                if (s[i] == '.') {
+                    int rs = dp[i+1][j];
+                    if (rs==-2) dp[i][j]=rs;
+                    else dp[i][j] = (j == 0 ? 1 : 2) + rs;
+                } else if (s[i] == 'S') {
+                    if (j == 0) dp[i][j] = -2;
+                    else {
+                        int rs = dp[i+1][j-1];
+                        if (rs == -2) dp[i][j]=rs;
+                        else dp[i][j] = (j-1 == 0 ? 1 : 2) + rs;
+                    }
+                } else {
+                    int rz1 = dp[i+1][j], rz2 = -2;
+                    if (rz1 != -2) rz1 += (j == 0 ? 1 : 2);
+                    if (j != 2) {
+                        rz2 = dp[i+1][j+1];
+                        if (rz2 != -2) rz2 += 2;
+                    }
+                    if (rz1 == -2) dp[i][j] = rz2;
+                    else if (rz2 == -2) dp[i][j] = rz1;
+                    else dp[i][j] = min(rz1, rz2);
+                }
+            }
+        }
+    }
     set<int> st;
-    rep(i,0,3) st.insert(solve(0,i));
+    rep(i,0,3) st.insert(dp[0][i]);
     if (st.count(-2))st.erase(st.find(-2));
     if (sz(st) == 0) print(-1);
     else print(*(st.begin()));
