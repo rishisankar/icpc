@@ -152,83 +152,45 @@ ld find_px(P p1, P p2, P z) {
     return ans;
 }
 
-void printAns(vector<ld>& props, VLL& r) {
-    dbg(props);
-    int n = sz(props);
-    vector<ld> ans(n);
-    ll sm = 0;
-    rep(i,0,n) sm += r[i];
-    rep(i,0,n) {
-        ans[i] += (r[i] / (ld)100);
-        ans[i] += props[i] / 100.L * (100-sm);
-    }
+void printAns(vector<ld>& props) {
     print("Yes");
-    for (ld l : ans) cout << setprecision(20) << l << ' ';
+    for (ld l : props) cout << setprecision(20) << l << ' ';
     cout << '\n';
 }
 
-void solveSeg(P p1, P p2, P gl, vector<ld>& props, VLL& r, map<pll, int>& nm) {
+void solveSeg(P p1, P p2, P gl, vector<ld>& props, map<pll, int>& nm) {
     int x = nm[{p1.x, p1.y}], y = nm[{p2.x, p2.y}];
     props[x] = find_px(p1,p2,gl);
     props[y] = 1 - props[x];
-    printAns(props, r);
+    printAns(props);
 }
 
 void run() {
     int n; cin >> n;
-    VLL a(n), b(n), r(n);
-    INP(a,n); INP(b,n); INP(r,n);
+    VLL a(n), b(n);
+    INP(a,n); INP(b,n);
     ll x,y; cin >> x >> y;
-    ll sr = 0;
-    rep(i,0,n) sr += r[i];
-    if (sr == 100) {
-        ll sx = 0, sy = 0;
-        rep(i,0,n) {
-            sx += r[i]*a[i];
-            sy += r[i]*b[i];
-        }
-        if (sx == x*100 && sy == y*100) {
-            print("Yes");
-            rep(i,0,n) cout << setprecision(20) << (r[i]/(ld)100) << ' ';
-            cout << '\n';
-        } else {
-            print("No");
-        }
-        return;
-    }
-    x*=100; y*=100;
     vector<P> origPts;
-    ll glx = 0, gly = 0;
-    rep(i,0,n) {
-        glx += r[i] * a[i];
-        gly += r[i] * b[i];
-    }
-    rep(i,0,n) {
-        a[i] *= (100-sr);
-        b[i] *= (100-sr);
-    }
     rep(i,0,n) origPts.emplace_back(a[i],b[i]);
     vector<P> hull = convexHull(origPts);
     map<pll, int> nm;
     rep(i,0,n) nm[{a[i], b[i]}] = i;
-    ll nx = x - glx;
-    ll ny = y - gly;
-    P gl(nx,ny);
-    dbg(nx,ny);
+    P gl(x,y);
+    dbg(x,y);
     vector<ld> props(n);
     int sh = sz(hull);
     if (sh == 1) {
         if (hull[0] == gl) {
             int x = nm[{hull[0].x, hull[0].y}];
             props[x] = 1;
-            printAns(props, r);
+            printAns(props);
         } else {
             print("No");
         }
         return;
     } else if (sh == 2) {
         if (onSegment(hull[0], hull[1], gl)) {
-            solveSeg(hull[0], hull[1], gl, props, r, nm);
+            solveSeg(hull[0], hull[1], gl, props, nm);
         } else {
             print("No");
         }
@@ -240,14 +202,15 @@ void run() {
     }
     rep(i,1,sh-1) {
         vector<P> tri{hull[0], hull[i], hull[i+1]};
-        if (inHull(hull, gl, false)) {
+        vector<P> triH = convexHull(tri);
+        if (inHull(triH, gl, false)) {
             // solve within hull
             vi is{nm[{hull[0].x, hull[0].y}], nm[{hull[i].x, hull[i].y}], nm[{hull[i+1].x, hull[i+1].y}]};
-            ld scl = 100000000.L;
-            Point<ld> p1(hull[0].x/scl,hull[0].y/scl), p2(hull[i].x/scl,hull[i].y/scl), p3(hull[i+1].x/scl, hull[i+1].y/scl), gp(nx/scl,ny/scl);
+            ld scl = 1;
+            Point<ld> p1(hull[0].x/scl,hull[0].y/scl), p2(hull[i].x/scl,hull[i].y/scl), p3(hull[i+1].x/scl, hull[i+1].y/scl), gp(x/scl,y/scl);
             rep(x,0,3) {
                 if (onSegment(tri[x], tri[(x+1)%3], gl)) {
-                    return solveSeg(tri[x], tri[(x+1)%3], gl, props, r, nm);
+                    return solveSeg(tri[x], tri[(x+1)%3], gl, props, nm);
                 }
             }
             pair<int,Point<ld>> insc = lineInter(p1,p2,p3,gp);
@@ -255,6 +218,13 @@ void run() {
             rep(i,0,3) dbg(tri[i].x,tri[i].y);
             dbg(insc.S.x, insc.S.y);
             ld prop1 = find_px(p1,p2,insc.S);
+            if (prop1 < 0) {
+                dbg(p1.x,p1.y);
+                dbg(p2.x,p2.y);
+                dbg(p3.x,p3.y);
+                dbg(gp.x,gp.y);
+                dbg(insc.S.x, insc.S.y);
+            }
             assert(prop1 >= 0);
             ld prop3 = find_px(p3,insc.S,gp);
             assert(prop3 >= 0);
@@ -262,7 +232,7 @@ void run() {
             props[is[2]] = prop3;
             props[is[0]] = prop1 * (1-prop3);
             props[is[1]] = (1-prop1) * (1-prop3);
-            printAns(props, r);
+            printAns(props);
             return;
         }
     }
