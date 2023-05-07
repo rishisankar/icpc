@@ -1,0 +1,4 @@
+at least one side needs to get licked L/N times - best to give it to the largest side length
+  more specifically, 1+ (L-1)//N
+L -= L/N each time
+or L *= (N-1)/N each time (log amt of time to get to L = 1)
