@@ -190,7 +190,7 @@ void run() {
         else lo = mid+1;
     }
     dbg("guess");
-    string ans = (lo == hi ? q2(lo) : ((rand()&1) ? "YES" : "NO"));
+    string ans = (lo == hi ? q2(lo) : ((rand()&1) ? "MARIO" : "LUIGI"));
     dbg(ans);
     guess(ans);
 }
