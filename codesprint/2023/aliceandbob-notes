@@ -46,3 +46,22 @@ heuristic (stop at 10):
 untested:
 idea: only guess 4x for a query. if inconsistent, guess more than 7 times
 idea: can we overlap ranges?
+
+
+
+new version: 
+
+P(lie) = 1/13
+  P(success) = 599984/600000
+  P(>= 248 / 250) = 0.999999951448696
+  P(ac in 20 cases) = 0.9999990289743683
+
+228974 / 229000
+P(lie) = 1/12
+  P(success) = 278965 / 279000
+  P(>= 248 / 250) = 0.9999854858753311
+  P(ac in 20 cases) = 0.9997097575285013
+
+
+P(lie) = 1/11
+  P(success) = 9988 / 10000 (too low)

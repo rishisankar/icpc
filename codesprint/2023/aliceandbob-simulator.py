@@ -62,3 +62,12 @@ def success_rate(query_failure):
         success_over_248 += comb(250,i) * success_in_approach**i * (1-success_in_approach)**(250-i)
     print(success_over_248)
 success_rate(fails/num_samples)
+
+
+def get_stats(case_success):
+    print("Probability of success", case_success)
+    success_over_248 = 0
+    for i in range(248,251):
+        success_over_248 += comb(250,i) * case_success**i * (1-case_success)**(250-i)
+    print("Probability of passing a case", success_over_248)
+    print("Probability of AC with 20 cases", success_over_248**20)
