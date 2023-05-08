@@ -135,13 +135,18 @@ void guess(string ans) {
 }
 */
 
+int numQueries;
+const int MAXQ = 419;
+
 string q1(ll a, ll b) {
+    ++numQueries;
     print(1,a,b); cout.flush();
     string ans; cin >> ans;
     return ans;
 }
 
 string q2(ll x) {
+    ++numQueries;
     print(2,x); cout.flush();
     string ans; cin >> ans;
     return ans;
@@ -154,6 +159,7 @@ void guess(string ans) {
 
 bool smallQuery(ll a, ll b) {
     for (ll pos = b; pos >= a; pos--) {
+        if (numQueries >= MAXQ) return 0;
         string ans = q2(pos);
         if (ans != "EQUAL") return false;
     }
@@ -161,27 +167,41 @@ bool smallQuery(ll a, ll b) {
 }
 
 const int K = 5;
+pair<bool,bool> checkHist(VB& hist) {
+    if (sz(hist) < K) return {0,0};
+    if (sz(hist) >= 14) {
+        int c0 = 0, c1 = 1;
+        for (int i : hist) {
+            if (i == 0) ++c0; else ++c1;
+        }
+        if (c0 > c1) return {1,0}; else return {1,1};
+    }
+    rep(i,0,K-1) {
+        if (hist[sz(hist)-1-i] != hist[sz(hist)-2-i]) return {0,0};
+    }
+    return {1,hist[sz(hist)-1]};
+}
+
 bool query(ll a, ll b) {
     if (b-a+1 <= 7) return smallQuery(a,b);
-    vi answers{-2};
-    rep(i,0,K-1) answers.pb(-1);
-    while (true) {
+    VB answers;
+    pair<bool,bool> ch = {0,0};
+    while (!ch.F) {
+        if (numQueries >= MAXQ) return 0;
         string ans = q1(a,b);
         answers.pb(ans == "YES");
-        bool done = true;
-        rep(i,0,K-1) {
-            if (answers[sz(answers)-1-i] != answers[sz(answers)-2-i]) done=false;
-        }
-        if (done) break;
+        ch = checkHist(answers);
     }
-    return answers[sz(answers)-1];
+    return ch.S;
 }
 
 void run() {
-    ll lo = 0, hi = inf;
+    numQueries = 0;
+    ll lo = 0, hi = inf-1;
     while (lo < hi) {
         ll mid = lo + (hi-lo)/2;
         bool iseq = query(mid+1, hi);
+        if (numQueries >= MAXQ) break;
         if (iseq) hi = mid;
         else lo = mid+1;
     }
@@ -192,7 +212,6 @@ void run() {
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-
     ll t; cin >> t;
     rep(tests,0,t) run();
 

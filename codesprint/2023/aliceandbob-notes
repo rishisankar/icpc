@@ -31,6 +31,13 @@ idea: guess until kx the same in a row (seems kinda dumb but wtv)
     probability of success in approach: 0.9989924994025778
     probability of success over 250 cases: 0.7772430927801413
     probability of success in at least 248 cases: 0.9978142600707068
+
+heuristic (stop at 10):
+  pfail: 4.36e-05
+  exp: 6.1340254
+  stdev: 1.8311259902461217
+
+
   6x:
     p(failure in single query): basically 0
     expected # of queries per thing: 8.01 rip

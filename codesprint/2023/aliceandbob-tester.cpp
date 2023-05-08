@@ -56,55 +56,42 @@ const ll mod = 1000000007;
 // const ll mod = 998244353;
 const ll inf = 1000000000000000000LL;
 
+int numQueries;
+const int MAXQ = 419;
+
 /*
-testing tool
-*/
+//testing tool
 bool marioWin;
-vector<ull> onesM, onesL;
+vector<ull> diffs;
+VB marioHigher;
 int guessesMade;
 bool correct;
-
+const int numBits = 200000;
 void gen() {
     std::random_device rd;
     std::mt19937_64 eng(rd());
     std::uniform_int_distribution<unsigned long long> distr;
     set<ull> locss;
-    rep(i,0,1000) locss.insert(distr(eng) % inf);
-    onesM.clear();
-    for (ull u : locss) onesM.pb(u);
-    locss.clear();
-    rep(i,0,1000) locss.insert(distr(eng) % inf);
-    onesL.clear();
-    for (ull u : locss) onesL.pb(u);
-    int i = 0;
-    for (; i < min(sz(onesM), sz(onesL)); ++i) {
-        if (onesM[sz(onesM)-1-i] > onesL[sz(onesL)-1-i]) {
-            marioWin = true; break;
-        } else if (onesM[sz(onesM)-1-i] < onesL[sz(onesL)-1-i]) {
-            marioWin = false; break;
-        }
+    marioHigher.clear();
+    rep(i,0,numBits) {
+        ull z = distr(eng)%inf;
+        marioHigher.pb(z&1);
+        locss.insert(z>>1);
     }
-    dbg(marioWin);
-    dbg(i);
-    dbg(onesM[sz(onesM)-1-i], onesL[sz(onesL)-1-i]);
+    diffs.clear();
+    for (ull u : locss) diffs.pb(u);
+    marioHigher.resize(sz(diffs));
+    marioWin = marioHigher[sz(marioHigher)-1];
     guessesMade = 0;
     correct = false;
 }
 
 string q1(ll a, ll b) {
+    ++numQueries;
     ++guessesMade; assert(!correct);
-    auto it = upper_bound(all(onesM), b);
-    auto it2 = upper_bound(all(onesL), b);
-    int i1 = (it-onesM.begin())-1;
-    int i2 = (it2-onesL.begin())-1;
-    bool isEq = true;
-    while (i1 >= 0 && i2 >= 0 && onesM[i1] >= a && onesL[i2] >= a) {
-        if (onesM[i1] != onesL[i2]) isEq = false;
-        --i1;
-        --i2;
-    }
-    if (i1 != -1 && onesM[i1] >= a) isEq = false;
-    if (i2 != -1 && onesL[i2] >= a) isEq = false;
+    int i1 = (lower_bound(all(diffs),a))-diffs.begin();
+    int i2 = (upper_bound(all(diffs),b))-diffs.begin();
+    bool isEq = (i1==i2);
     std::random_device rd;
     std::mt19937_64 eng(rd());
     std::uniform_int_distribution<unsigned long long> distr;
@@ -114,14 +101,12 @@ string q1(ll a, ll b) {
 }
 
 string q2(ll x) {
+    ++numQueries;
     ++guessesMade; assert(!correct);
-    auto it = lower_bound(all(onesM), x);
-    auto it2 = lower_bound(all(onesL), x);
-    if (it == onesM.end() && it2 == onesL.end()) return "EQUAL";
-    dbg(x, *it, *it2);
-     if (it == onesM.end() && (*it2) == x) return "LUIGI";
-    else if (it2 == onesL.end() && (*it) == x) return "MARIO";
-    else return "EQUAL";
+    auto it = lower_bound(all(diffs), x);
+    if (it == diffs.end() || (*it) != x) return "EQUAL";
+     if (!marioHigher[(it-diffs.begin())]) return "LUIGI";
+    else return "MARIO";
 }
 
 void guess(string ans) {
@@ -134,15 +119,17 @@ void guess(string ans) {
         correct = true;
     }
 }
+*/
 
-/*
 string q1(ll a, ll b) {
+    ++numQueries;
     print(1,a,b); cout.flush();
     string ans; cin >> ans;
     return ans;
 }
 
 string q2(ll x) {
+    ++numQueries;
     print(2,x); cout.flush();
     string ans; cin >> ans;
     return ans;
@@ -152,46 +139,58 @@ void guess(string ans) {
     print("!", ans);
     cout.flush();
 }
-*/
-
 
 bool smallQuery(ll a, ll b) {
     for (ll pos = b; pos >= a; pos--) {
+        if (numQueries >= MAXQ) return 0;
         string ans = q2(pos);
-
         if (ans != "EQUAL") { dbg(ans); return false; }
     }
     return true;
 }
 
 const int K = 5;
+pair<bool,bool> checkHist(VB& hist) {
+    if (sz(hist) < 5) return {0,0};
+    if (sz(hist) >= 14) {
+        int c0 = 0, c1 = 1;
+        for (int i : hist) {
+            if (i == 0) ++c0; else ++c1;
+        }
+        if (c0 > c1) return {1,0}; else return {1,1};
+    }
+    rep(i,0,K-1) {
+        if (hist[sz(hist)-1-i] != hist[sz(hist)-2-i]) return {0,0};
+    }
+    return {1,hist[sz(hist)-1]};
+}
+
 bool query(ll a, ll b) {
     if (b-a+1 <= 7) return smallQuery(a,b);
-    vi answers{-2};
-    rep(i,0,K-1) answers.pb(-1);
-    while (true) {
+    VB answers;
+    pair<bool,bool> ch = {0,0};
+    while (!ch.F) {
+        if (numQueries >= MAXQ) return 0;
         string ans = q1(a,b);
         answers.pb(ans == "YES");
-        bool done = true;
-        rep(i,0,K-1) {
-            if (answers[sz(answers)-1-i] != answers[sz(answers)-2-i]) done=false;
-        }
-        if (done) break;
+        ch = checkHist(answers);
     }
-    return answers[sz(answers)-1];
+    return ch.S;
 }
 
 void run() {
+    numQueries = 0;
     ll lo = 0, hi = inf;
     while (lo < hi) {
         // dbg(lo,hi);
         ll mid = lo + (hi-lo)/2;
         bool iseq = query(mid+1, hi);
+        if (numQueries >= MAXQ) break;
         if (iseq) hi = mid;
         else lo = mid+1;
     }
     dbg("guess");
-    string ans = q2(lo);
+    string ans = (lo == hi ? q2(lo) : ((rand()&1) ? "YES" : "NO"));
     dbg(ans);
     guess(ans);
 }
@@ -199,15 +198,21 @@ void run() {
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
+    srand((unsigned) time(0));
 
-    // ll t; cin >> t;
-    // rep(tests,0,t) run();
+    ll t; cin >> t;
+    rep(tests,0,t) run();
 
-    int sm = 0;
-    rep(i,0,250) {
-        gen();
-        run();
-        sm += correct;
-    }
-    print(sm);
+    // int sm = 0;
+    // rep(i,0,250) {
+    //     gen();
+    //     print("gen"); cout.flush();
+    //     run();
+    //     print("run"); cout.flush();
+    //     if (!correct) {
+    //         print("error", guessesMade, marioWin);
+    //     }
+    //     sm += correct;
+    // }
+    // print(sm);
 }

@@ -1,5 +1,6 @@
 import random
 from math import comb
+import numpy as np
 
 # returns 1 with probability 12/13, 0 with probability 1/13
 def query():
@@ -8,20 +9,47 @@ def query():
 num_samples = 10000000
 fails = 0
 time = 0
+times = []
 k = 5
+
+
+"""
+all the last 5
+(returns True, val), or False, -1
+"""
+def check_history(hist):
+    if len(hist) < 5:
+        return False,-1
+    if sum([hist[-i] != hist[-i-1] for i in range(1,k)]) == 0:
+        return True,hist[-1]
+    if len(hist) >= 10:
+        ct0 = 0
+        ct1 = 0
+        for x in hist:
+            if x==True:
+                ct1+=1
+            else:
+                ct0+=1
+        if ct0 > ct1:
+            return True,0
+        else:
+            return True,1
+    return False,-1
+
+
 for s in range(num_samples):
-    x=[-2]
-    for i in range(k-1):
-        x.append(-1)
+    x=[]
     t = 0
-    while sum([x[-i] != x[-i-1] for i in range(1,k)]) != 0:
+    while not check_history(x)[0]:
         x.append(query())
         t += 1
-    if x[-1] == 0:
+    if check_history(x)[1] == 0:
         fails += 1
     time += t
+    times.append(t)
 print(fails/num_samples)
 print(time/num_samples)
+print(np.std(times))
 
 
 def success_rate(query_failure):
