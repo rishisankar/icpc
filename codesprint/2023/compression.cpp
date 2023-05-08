@@ -55,7 +55,6 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
-const int MAXN = 200005;
 void run() {
     ll n,p; cin >> n >> p;
     VLL tests(n);
