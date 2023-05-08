@@ -1,0 +1,41 @@
+10^18 bits total, differ by 200k
+420 guesses
+1) are bits in a range equal (lie w p=1/13)
+2) specific bits
+
+ur run on 250 cases and the goal is to pass 248 of them
+
+part 1: no lies
+- need to find first differing bit: binary search
+    req queries: 60 (log2(1e18))
+- check differingbit
+
+instead: 7 guesses per query (can do better with q2 for small ranges)
+- p(failure in single query): 0.0010133944679521275
+- expected # of queries per thing: 7
+- probability of success in approach: 0.9409789608291955
+- probability of success over 250 cases: 2.483 * 10e-7
+
+ideally want probability of success around 0.9999 to do well in 250 cases
+
+idea: guess until kx the same in a row (seems kinda dumb but wtv)
+  3x:
+    p(failure in single query): 0.00152
+    expected # of queries per thing: 3.5261
+  4x:
+    p(failure in single query): 0.00015
+    expected # of queries per thing: 4.90566
+  5x:
+    p(failure in single query): 0.0000168
+    expected # of queries per thing: 6.3980075
+    probability of success in approach: 0.9989924994025778
+    probability of success over 250 cases: 0.7772430927801413
+    probability of success in at least 248 cases: 0.9978142600707068
+  6x:
+    p(failure in single query): basically 0
+    expected # of queries per thing: 8.01 rip
+    
+
+untested:
+idea: only guess 4x for a query. if inconsistent, guess more than 7 times
+idea: can we overlap ranges?
