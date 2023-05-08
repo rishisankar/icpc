@@ -58,45 +58,43 @@ const ll mod = 1000000007;
 const int MAXN = 200005;
 void run() {
     ll n,p; cin >> n >> p;
-    VLL tests(n);
-    rep(i,0,n) {
-        char trash; cin >> trash;
-        cin >> tests[i];
-    }
+    string s; cin >> s;
     VLL costs(10); INP(costs,10);
-    vector<VVLL> dp(10, VVLL(10, VLL(10)));
-    VLL p10(10); p10[0]=1; rep(i,1,10) p10[i]=p10[i-1]*10;
+    VLL dp(MAXN);
+    VVLL dp2(10, VLL(10));
     rep(d,0,10) {
-        rep(x,0,10) {
-            rep(k,0,10) {
-                if (x == 0) {
-                    dp[d][x][k] = p*d*p10[k];
-                    continue;
-                }
-                dp[d][x][k] = costs[d];
-                rep(l,1,d+1) dp[d][x][k] = min(dp[d][x][k], p*l*p10[k]+dp[d-l][x][k]);
-                if (x>1) {
-                    rep(l,1,d) dp[d][x][k] = min(dp[d][x][k], costs[l] + dp[d-l][x-1][k]);
-                }
+        rep(x,1,10) {
+            dp2[d][x] = costs[d];
+            if (x>1) {
+                rep(l,1,d) dp2[d][x] = min(dp2[d][x], costs[l] + dp2[d-l][x-1]);
             }
         }
     }
+    dp[1] = p;
+    rep(i,2,MAXN) {
+        dp[i] = dp[i-1] + p;
+        rep(X,1,10) {
+            int j = i;
+            ll sm = 0;
+            while (j) {
+                sm += dp2[j%10][X];
+                j/=10;
+            }
+            dp[i] = min(dp[i], X*p + sm);
+        }
+    }
+
+    s += '#';
+    int ct = 1;
     ll ans = 0;
     rep(i,0,n) {
-        ll bst = tests[i]*p;
-        rep(j,1,10) {
-            int k = 0;
-            ll y = tests[i], sm = p*j;
-            while (y) {
-                sm += dp[y%10][j][k];
-                ++k;
-                y/=10;
-            }
-            bst = min(bst, sm);
-        }
-        ans += bst;
+        if (s[i] != s[i+1]) {
+            ans += dp[ct];
+            ct = 1;
+        } else ++ct;
     }
     print(ans);
+
 }
 
 int main() {

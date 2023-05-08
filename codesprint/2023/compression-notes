@@ -1,11 +1,12 @@
 dp[i] Cases:
 
+original version:
 1) you have at least one letter without compression: dp[i-1] + p
 2) the string is compressed into X things (1<=X<=9)
   each digit processed independently (assuming no carry)
   min over X 1..9:
     X*P + sum over each digit D {dp2[D][X]}
 
+new version:
 
-dp2[i][j]: smallest cost to compress digit i into at most j compressions (ignoring cost of P)
-  dp2[i][j]
+dp[i][j][k]: smallest cost to compress digit i into at most j compressions (ignoring cost of P) assuming k digits from right. using non-compressions doesn't count toward j.
