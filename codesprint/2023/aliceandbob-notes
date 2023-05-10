@@ -63,5 +63,9 @@ P(lie) = 1/12
   P(ac in 20 cases) = 0.9997097575285013
 
 
+  single bit 0: 31000/31000
+  single bit n-1: 20000/20000
+
+
 P(lie) = 1/11
   P(success) = 9988 / 10000 (too low)

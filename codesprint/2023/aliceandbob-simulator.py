@@ -70,4 +70,4 @@ def get_stats(case_success):
     for i in range(248,251):
         success_over_248 += comb(250,i) * case_success**i * (1-case_success)**(250-i)
     print("Probability of passing a case", success_over_248)
-    print("Probability of AC with 20 cases", success_over_248**20)
+    print("Probability of AC with 30 cases", success_over_248**30)
