@@ -23,3 +23,5 @@ __builtin_popcountll() // ll/ull
 #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt") // add the useful ones
 #pragma GCC optimize("O3") // can help
 #pragma GCC optimize("Ofast") // can help sometimes
+
+__int128_t x; // 128 bit number

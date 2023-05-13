@@ -13,6 +13,7 @@ typedef long long ll;
 typedef unsigned long long ull;
 typedef pair<int, int> pii;
 typedef vector<long long> vi;
+typedef long double ld;
 
 template<typename T> ostream& operator<<(ostream &os, const vector<T> &v) { os << '{'; string sep; for (const auto &x : v) os << sep << x, sep = ", "; return os << '}'; }
 template<typename A, typename B> ostream& operator<<(ostream &os, const pair<A, B> &p) { return os << '(' << p.first << ", " << p.second << ')'; }
@@ -31,6 +32,7 @@ template<typename Head, typename... Tail> void dbg_out(Head H, Tail... T) { cerr
 const ll INF = 1e14;
 const ll DINF = (ll)1e18;
 vector<vector<pair<ll, ll>>> adj;
+const ld eps = 1e-6;
 
 void dijkstra(ll s, vector<ll> &d, ll c) {
     ll n = adj.size();
@@ -79,6 +81,8 @@ void solve()
   vector<bool> on_some_shortest_path(n,false);
   on_some_shortest_path[0]=on_some_shortest_path[n-1]=true;
   dp[0]=0;
+  int cb = -1;
+  set<ld> vals2;
   rep(t,0,n)
   {
     vi ndp=dp;
@@ -87,8 +91,9 @@ void solve()
     ndp[a.F]=min(ndp[a.F],dp[i]+a.S);
     dp=ndp;
     best_path[t+1]=dp[n-1];
+    vals2.insert((best_path[t]-best_path[t+1])/(ld)(t-cb));
+    if (best_path[t] != best_path[t+1]) cb = t;
   }
-
   set<ll> vals;
   rep(i,1,n+1)
   {
@@ -96,16 +101,19 @@ void solve()
     vals.insert(best_path[i-1]-best_path[i]+1);
     vals.insert(max(0LL,best_path[i-1]-best_path[i]-1));
   }
-
   vals.insert(0);
   vals.insert(INF);
+  for (ld zz : vals2) {
+    vals.insert((ll)zz);
+    vals.insert((ll)(zz+1));
+    vals.insert((ll)(zz-1));
+  }
 
   trav(c,vals)
   {
-    vi d1,d2;
+    vector<ll> d1,d2;
     dijkstra(0,d1,c);
     dijkstra(n-1,d2,c);
-    assert(d1[n-1]==d2[0]);
     rep(j,0,n)
     if(d1[j]+d2[j]==d1[n-1] && d1[j] < DINF && d2[j] < DINF && d1[n-1] < DINF)
     on_some_shortest_path[j]=true;
