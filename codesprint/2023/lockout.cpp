@@ -55,6 +55,36 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+/*
+1. mario can win all but the first world
+2. mario can have 50% chance of winning first world, then win all but second
+
+
+what is the first world mario loses for sure? 
+1. none: then each world is 50/50
+2. kth: then mario wins rest, prev is 50/50
+
+consider world 1.
+
+if coins[1] > coins[rest]:
+    p(win) = 0.5
+
+if coins[1] = coins[rest]:
+    must tie first.
+    50% chance of win
+        - must win at least one of the remaining
+            - if more than two things, guaranteed
+            - if exactly two things, 50/50 tie vs win
+    50% chance of lose
+        - then impossible to beat luigi
+
+if coins[1] < coins[rest]:
+    give up first, win rest. p(win) = 1
+
+strategy 1: p=0 or 1
+strategy 2: 
+*/
+
 void run() {
     int n; cin >> n;
     VLL a(n), t(n), p(n);
@@ -64,10 +94,19 @@ void run() {
         print(1);
         rep(i,1,n) cout << p[i] << ' ';
         print(p[0]);
-    } else {
+    } else if (sm<a[p[0]-1]) {
         print(0.5);
         rep(i,0,n) cout << p[i] << ' ';
         cout << '\n';
+    } else if (sm==a[p[0]-1] && n==2) {
+        print(0.25);
+        rep(i,0,n) cout << p[i] << ' ';
+        cout << '\n';
+    } else {
+        print(0.5);
+        cout << p[0];
+        rep(i,2,n) cout << ' ' << p[i];
+        cout << ' ' << p[1] << '\n';
     }
 }
 
