@@ -69,3 +69,8 @@ P(lie) = 1/12
 
 P(lie) = 1/11
   P(success) = 9988 / 10000 (too low)
+
+
+
+Bayes approach (G=175): 4030466 / 4031000
+  ==> P(AC) = 0.9998249

@@ -56,7 +56,7 @@ const ll mod = 1000000007;
 // const ll mod = 998244353;
 
 const ll inf = 1000000000000000000LL;
-const int G = 421 - 2; // # type 1 queries
+const int G = 175 - 2; // # type 1 queries
 const int LIE = 13; 
 const int numBits = 2000;
 const bool TEST_MODE = true;
@@ -220,19 +220,29 @@ struct PC {
         // then compute using bayes rule
         // ex: P(i being FDB : query gives eq) = P(query gives eq : i being FDB) * P(i being FDB) / P(query gives eq)
         ld p_lie = 1/(ld)LIE;
-        ld p_diff = prange(0,x);
-        ld Peq = p_lie * p_diff + (1-p_lie) * (1-p_diff); // chance of query coming back as equal
+        // ld p_diff = prange(0,x);
+        // ld Peq = p_lie * p_diff + (1-p_lie) * (1-p_diff); // chance of query coming back as equal
+        // rep(i,0,sz(pc)-1) {
+        //     if (pc[i].F <= x) {
+        //         // first half
+        //         if (is_eq) pc[i].S = p_lie * pc[i].S / Peq;
+        //         else pc[i].S = (1-p_lie) * pc[i].S / (1-Peq);
+        //     } else {
+        //         // second half
+        //         if (is_eq) pc[i].S = (1-p_lie) * pc[i].S / Peq;
+        //         else pc[i].S = p_lie * pc[i].S / (1-Peq);
+        //     }
+        // }
         rep(i,0,sz(pc)-1) {
             if (pc[i].F <= x) {
-                // first half
-                if (is_eq) pc[i].S = p_lie * pc[i].S / Peq;
-                else pc[i].S = (1-p_lie) * pc[i].S / (1-Peq);
+                if (is_eq) pc[i].S *= p_lie;
+                else pc[i].S *= (1-p_lie);
             } else {
-                // second half
-                if (is_eq) pc[i].S = (1-p_lie) * pc[i].S / Peq;
-                else pc[i].S = p_lie * pc[i].S / (1-Peq);
+                if (is_eq) pc[i].S *= (1-p_lie);
+                else pc[i].S *= p_lie;
             }
         }
+        renorm();
     }
 
     // get bit position with max probability
@@ -244,8 +254,13 @@ struct PC {
                 bp = pc[i].S;
             }
         }
-        dbg(pc[bi].S, pc[bi+1].F-pc[bi].F);
+        // dbg(pc[bi].S, pc[bi+1].F-pc[bi].F);
         return pc[bi].F;
+    }
+
+    void renorm() {
+        ld cump = prange(0,inf-1);
+        rep(i,0,sz(pc)-1) pc[i].S /= cump;
     }
 };
 
@@ -253,9 +268,13 @@ void run() {
     PC pc;
     rep(_,0,G) {
         ll s = pc.getS();
-        ld p1 = pc.prange(s+1,inf), p2 = pc.prange(0,s-1);
-        ll qp = (p1 >= p2 ? s : s-1);
+        ll qp;
+        if (s == 0) qp = s;
+        else qp = (rand()&1 ? s : s-1);
         pc.save(qp, q1(0, qp));
+        // ld p1 = pc.prange(s+1,inf), p2 = pc.prange(0,s-1);
+        // pc.save(s,q1(0,s));
+        // pc.save(s,q1(0,s-1));
     }
     string ans = q2(pc.getMax());
     if (ans == "EQUAL") ans = ((rand()&1) ? "MARIO" : "LUIGI"); // choose randomly in case we fail
@@ -274,8 +293,8 @@ int main() {
             gen();
             run();
             if (!correct) {
-                // print("error", guessesMade, marioWin);
-                // cout.flush();
+                print("error", guessesMade, marioWin);
+                cout.flush();
             }
             sm += correct;
             i++;

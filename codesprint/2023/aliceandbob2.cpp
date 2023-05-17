@@ -59,6 +59,8 @@ const ll inf = 1000000000000000000LL;
 int numQueries;
 bool testPhase;
 
+const int G = 175;
+
 
 //testing tool
 bool marioWin;
@@ -98,9 +100,18 @@ void gen0() {
     correct = false;
 }
 
+string q2(ll x) {
+    ++numQueries;
+    ++guessesMade; assert(!correct);
+    auto it = lower_bound(all(diffs), x);
+    if (it == diffs.end() || (*it) != x) return "EQUAL";
+     if (!marioHigher[(it-diffs.begin())]) return "LUIGI";
+    else return "MARIO";
+}
+
 string q1(ll a, ll b) {
-    if (numQueries>=419-testPhase) return "";
-    if (a==b) return q2(a) == "EQUAL";
+    if (numQueries>=G-2-testPhase) return "";
+    if (a==b) return q2(a) == "EQUAL" ? "YES" : "NO";
     ++numQueries;
     ++guessesMade; assert(!correct);
     int i1 = (lower_bound(all(diffs),a))-diffs.begin();
@@ -114,19 +125,9 @@ string q1(ll a, ll b) {
     else return "NO";
 }
 
-string q2(ll x) {
-    ++numQueries;
-    ++guessesMade; assert(!correct);
-    auto it = lower_bound(all(diffs), x);
-    if (it == diffs.end() || (*it) != x) return "EQUAL";
-     if (!marioHigher[(it-diffs.begin())]) return "LUIGI";
-    else return "MARIO";
-}
-
 void guess(string ans) {
-    dbg(guessesMade);
     ++guessesMade; correct=false;
-    if (guessesMade > 421) {
+    if (guessesMade > G) {
         return;
     }
     if ((ans == "MARIO" && marioWin) || (ans == "LUIGI" && !marioWin)) {
@@ -137,8 +138,8 @@ void guess(string ans) {
 
 /*
 string q1(ll a, ll b) {
-    if (numQueries>=419-testPhase) return "";
-    if (a==b) return q2(a) == "EQUAL";
+    if (numQueries>=G-2-testPhase) return "";
+    //if (a==b) return q2(a) == "EQUAL";
     ++numQueries;
     print(1,a,b); cout.flush();
     string ans; cin >> ans;
@@ -161,7 +162,7 @@ void run() {
     numQueries = 0;
     ll lo = 0, hi = inf-1;
     stack<pll> ranges;
-    while (numQueries < 419) {
+    while (numQueries < G-2) {
         testPhase = 1;
         if ((hi != inf-1 && q1(hi+1, inf-1) == "NO") || (lo != 0 && q1(lo, hi) == "YES")) {
             lo = ranges.top().F;
@@ -175,7 +176,7 @@ void run() {
             ll mid = lo + (hi-lo)/2;
             if (q1(mid+1, hi) == "YES") hi = mid;
             else lo = mid+1;
-        } else if (numQueries == 418) break;
+        } else if (numQueries == G-3) break;
     }
     guess(q2(hi));
 }
