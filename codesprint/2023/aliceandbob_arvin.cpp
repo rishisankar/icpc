@@ -59,7 +59,7 @@ typedef vector<vector<pair<int, int>>> VVPII;
 // testing tool:
 const bool TEST_MODE = true;
 const ll inf = 1000000000000000000LL;
-const int G = 421 - 2; // # type 1 queries
+const int G = 175 - 2; // # type 1 queries
 const int LIE = 13; 
 const int numBits = 2000;
 bool marioWin;
@@ -172,7 +172,7 @@ void run() {
 		vector<tuple<ll, ll, double>> probs;
 		//probs sum up to 1e18
 		probs.push_back( { 0, maxB, 1 });
-		for (ll query = 0; query < 200; query++) {
+		for (ll query = 0; query < G; query++) {
 			ll median = 0;
 			ld cumulative_prob = 0;
 			for (auto interv : probs) {
