@@ -56,7 +56,7 @@ const ll mod = 1000000007;
 // const ll mod = 998244353;
 
 const ll inf = 1000000000000000000LL;
-const int G = 175 - 2; // # type 1 queries
+const int G = 160 - 2; // # type 1 queries
 const int LIE = 13; 
 const int numBits = 2000;
 const bool TEST_MODE = true;
@@ -173,6 +173,7 @@ struct PC {
         rep(i,0,sz(pc)-1) {
             ld extra = pc[i].S * (pc[i+1].F-pc[i].F);
             if (cump + extra >= 0.5) {
+                // if(true)return pc[i].F + (pc[i+1].F-pc[i].F)/2;
                 // split point somewhere here
                 // cump + pc[i].S * z >= 0.5
                 ll quant = (0.5-cump)/pc[i].S;

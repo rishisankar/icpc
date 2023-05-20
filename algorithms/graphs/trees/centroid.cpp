@@ -3,6 +3,15 @@ Build centroid tree from tree (adj). Store adjacency list in centroid_tree, pare
 pointers in par, root of tree in r (par[r] = -1).
 Time: O(nlogn)
 
+Root is centroid of original tree, then recurse...
+Properties:
+- Height of centroid tree is O(logn)
+- Each subtree of centroid tree is a connected component in original tree
+- LCA of two nodes in centroid tree is on path between two nodes in actual tree too
+
+Example problem: two query types: color a vertex; find dist from vertex to closest colored vertex
+Sol: let x be closest colored node to v. path must pass through lca(x,v), so only consider logn ancestors of v.
+
 Tested on https://codeforces.com/problemset/problem/342/E
 Based on: https://codeforces.com/blog/entry/81661
 */
