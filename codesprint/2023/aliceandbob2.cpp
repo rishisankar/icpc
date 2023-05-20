@@ -59,7 +59,7 @@ const ll inf = 1000000000000000000LL;
 int numQueries;
 bool testPhase;
 
-const int G = 175;
+const int G = 180;
 
 
 //testing tool
@@ -68,7 +68,7 @@ vector<ull> diffs;
 VB marioHigher;
 int guessesMade;
 bool correct;
-const int numBits = 20;
+const int numBits = 2000;
 void gen() {
     std::random_device rd;
     std::mt19937_64 eng(rd());

@@ -62,7 +62,7 @@ Visualize problem as a full binary search tree of height 61
 Need to be at d=60 at least
 */
 
-const int G = 419;  // number of BS guesses
+const int G = 191;  // number of BS guesses
 const ld P = 1/13.L; // probability of lie
 const ld PB = 1-(1-P)*(1-P); // probability of backtracking up incorrectly
 const ld PC = 1-P*P; // probability of backtracking up correctly (check?)
