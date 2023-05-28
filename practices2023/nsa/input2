@@ -1,0 +1,17 @@
+P a
+P b
+L c
+N B1
+SET c = a - b
+CE -> B2 if a != 7
+CE -> B4 if a == 7
+N B2
+UE -> B3
+N B3
+RET
+N B4
+CE -> B3 if 3 < c
+CE -> B5 if c <= 3
+N B5
+BUG
+UE -> B3
