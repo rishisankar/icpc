@@ -25,3 +25,6 @@ __builtin_popcountll() // ll/ull
 #pragma GCC optimize("Ofast") // can help sometimes
 
 __int128_t x; // 128 bit number
+
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+shuffle(permutation.begin(), permutation.end(), rng);
