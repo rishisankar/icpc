@@ -7,3 +7,4 @@ input
 /test.cpp
 /test.py
 *.txt
+tmp/
