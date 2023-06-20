@@ -62,8 +62,38 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+unordered_set<ll> ach,ach2;
+vector<vector<pair<int,ll>>> adj;
+int n,A,B;
+
+void dfs(ll c, int t, int p, bool block, unordered_set<ll>& ac) {
+    if (block && t==B) return;
+    if (!(!block&&c==0&&t==B))
+    ac.insert(c);
+    for (auto x : adj[t]) if (x.F!=p) {
+        dfs(c^x.S, x.F,t,block,ac);
+    }
+}
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    cin >> n >> A >> B; --A; --B;
+    adj.clear();
+    ach.clear();
+    ach2.clear();
+    adj.resize(n);
+    rep(i,0,n-1) {
+        ll a,b,c; cin >> a >> b >> c; --a; --b;
+        adj[a].pb({b,c});
+        adj[b].pb({a,c});
+    }
+    dfs(0,A,-1,true, ach);
+    dfs(0,B,-1,false, ach2);
+    for (int l : ach) {
+        if (ach2.count(l)) {
+            print("YES");
+            return;
+        }
+    }
+    print("NO");
 }
 
 int main() {
@@ -72,7 +102,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(15);
-    // ll t; cin >> t;
-    ll t=1;
+    ll t; cin >> t;
+    // ll t=1;
     rep(tests,0,t) run();
 }

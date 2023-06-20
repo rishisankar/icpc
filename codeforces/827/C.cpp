@@ -15,13 +15,6 @@ using namespace std;
 template<typename T> inline T maxe(vector<T> &vec) { return *max_element(all(vec)); }
 template<typename T> inline T mine(vector<T> &vec) { return *min_element(all(vec)); }
 
-struct custom_hash { // https://codeforces.com/blog/entry/62393
-    static uint64_t splitmix64(uint64_t x) { x += 0x9e3779b97f4a7c15; x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9; x = (x ^ (x >> 27)) * 0x94d049bb133111eb; return x ^ (x >> 31); }
-    size_t operator()(uint64_t x) const { static const uint64_t FIXED_RANDOM = chrono::steady_clock::now().time_since_epoch().count(); return splitmix64(x + FIXED_RANDOM); }
-};
-template<typename T, typename U> struct safe_map : public std::unordered_map<T,U,custom_hash> {};
-template<typename T> struct safe_set : public std::unordered_set<T,custom_hash> {};
-
 template<typename T> ostream& operator<<(ostream &os, const vector<T> &v) 
 { os << '{'; string sep; for (const auto &x: v) os << sep << x, sep = ", "; return os << '}';}
 template<typename A, typename B> ostream& operator<<(ostream &os, const pair<A, B> &p) 
@@ -63,7 +56,13 @@ const ll mod = 1000000007;
 // const ll mod = 998244353;
 
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n;
+    vector<string> g(8);
+    rep(i,0,8) cin  >> g[i];
+    rep(i,0,8) if (g[i] == "RRRRRRRR") {
+        print("R"); return;
+    }
+    print("B");
 }
 
 int main() {
@@ -72,7 +71,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(15);
-    // ll t; cin >> t;
-    ll t=1;
+    ll t; cin >> t;
+    // ll t=1;
     rep(tests,0,t) run();
 }
