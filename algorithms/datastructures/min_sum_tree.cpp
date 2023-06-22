@@ -5,6 +5,8 @@ Answers queries of sum in range [L,R] of min(vi, C)
 O(logn) query, O(nlogn) space/build time, update not supported
 
 uses persistent segtree and updates value by value (at most n distinct values)
+
+tested on kattis/palindromes
 */
 
 
