@@ -1,0 +1,5 @@
+Longest Stick
+
+Alice has a 1-dimensional plot of land with length N with M sticks placed horizontally on it (each stick's endpoints are at integers). Bob is looking to buy part of this land, but when he buys a section Alice will place fence posts at the endpoints which will cut through any sticks that crossed those endpoints (and separate them into multiple sticks). Bob wants a long stick but is not very smart and doesn't know what plot of land to buy to get the longest stick. So, he uniformly randomly picks a plot of land out of all possible plots (non-empty with integer endpoints). What is the expected length of the longest stick in his plot of land?
+
+N,M <= 10^6
