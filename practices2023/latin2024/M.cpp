@@ -64,8 +64,74 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+// O( (m+n) log n )
+// define VLL d, VI p; (don't size)
+// d gives distances to each point, p gives parent in path
+// from cp-algorithms.com
+
+const ll INF = 10000000000000000LL;
+void dijkstra(int s, vector<ll>& d, vector<vector<pair<int,ll>>>& adj) {
+    int n = adj.size();
+    d.assign(n, INF);
+
+    d[s] = 0;
+    using pii = pair<ll, int>;
+    priority_queue<pii, vector<pii>, greater<pii>> q;
+    q.push({0, s});
+    while (!q.empty()) {
+        int v = q.top().second;
+        ll d_v = q.top().first;
+        q.pop();
+        if (d_v != d[v])
+            continue;
+
+        for (auto edge : adj[v]) {
+            int to = edge.first;
+            ll len = edge.second;
+
+            if (d[v] + len < d[to]) {
+                d[to] = d[v] + len;
+                q.push({d[to], to});
+            }
+        }
+    }
+}
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n,m; cin >> n >> m;
+    int p,g; cin >> p >> g; --p; --g;
+    vector<vector<pair<int,ll>>> adj(n);
+    vector<vector<pair<int,ll>>> adj_nog(n);
+    rep(i,0,m) {
+        int a,b; ll c;
+        cin >> a >> b >> c;
+        --a; --b;
+        adj[a].pb({b,c});
+        adj[b].pb({a,c});
+        if (a != g && b != g) {
+            adj_nog[a].pb({b,c});
+            adj_nog[b].pb({a,c});
+        }
+    }
+    VLL d, dnog;
+    dijkstra(p,d,adj);
+    dijkstra(p,dnog,adj_nog);
+    vi ans;
+    rep(i,0,n) {
+        if (i == p || i == g) continue;
+        if (d[i] == 2 * d[g]) {
+            if (dnog[i] > d[i]) {
+                ans.pb(i);
+            }
+        }
+    }
+    if (sz(ans) == 0) {
+        print("*");
+    } else {
+        for (int i : ans) cout << (i+1) << ' ';
+        cout << "\n";
+    }
+
 }
 
 int main() {

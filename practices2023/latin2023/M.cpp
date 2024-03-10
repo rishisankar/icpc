@@ -32,14 +32,14 @@ template<typename Head, typename... Tail> void dbg_out(Head H, Tail... T) { cerr
 
 #ifdef TTL
 #define dbg(...) cerr << "(" << #__VA_ARGS__ << "):", dbg_out(__VA_ARGS__)
+const int B = 30;
 #else
 #define dbg(...)
+const int B = 205;
 #endif
 
 template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 template<typename T, typename... Args> inline void print(T t, Args... args) { cout << t << " "; print(args...); }
-
-template<typename T> inline T ceildiv(T a, T b) {return (a+b-1)/b;}
 
 typedef long long ll;
 typedef long double ld;
@@ -64,8 +64,51 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
-void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+bool run(int r, int c, string nutS, vector<string> rows) {
+    bitset<B> nut(nutS);
+    vector<vector<bool>> valid(r, VB(c));
+    // dbg(nut.to_string());
+    rep(i,0,r) {
+        string s = rows[i]; s += s; bitset<B> bolt(s);
+        rep(j,0,c) {
+            if ((bolt ^ (nut<<j)) == (bolt | (nut<<j))) {
+                valid[i][j] = 1;
+            }
+        }
+    }
+    // dbg(valid);
+
+    stack<pii> s;
+    vector<VB> vis(r,VB(c));
+    rep(i,0,c) {
+        if (valid[0][i]) s.push({0,i});
+        vis[0][i] = 1;
+    }
+    while (!s.empty()) {
+        pii t = s.top();
+        s.pop();
+        
+        vector<pii> adjs;
+        // rotations
+        pii r1 = {t.F, (t.S+1)%c};
+        pii r2 = {t.F, (t.S+c-1)%c};
+        adjs.pb(r1);
+        adjs.pb(r2);
+        // go up a row
+        if (t.F>0) adjs.pb({t.F-1,t.S});
+        // or down
+        if (t.F < r-1) adjs.pb({t.F+1,t.S});
+
+        for (pii p : adjs) {
+            if (!valid[p.F][p.S]) continue;
+            if (vis[p.F][p.S]) continue;
+            vis[p.F][p.S] = 1;
+            s.push(p);
+        }
+    }
+    rep(i,0,c) if (vis[r-1][i]) return true;
+
+    return false;
 }
 
 int main() {
@@ -74,7 +117,20 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(15);
-    // ll t; cin >> t;
-    ll t=1;
-    rep(tests,0,t) run();
+
+    int r,c; cin >> r >> c;
+    string nutS; cin >> nutS;
+    vector<string> maze(r); rep(i,0,r) cin >> maze[i];
+    if (run(r,c,nutS,maze)) {
+        print("Y");
+        return 0;
+    }
+    reverse(all(nutS));
+    if (run(r,c,nutS,maze)) {
+        print("Y");
+        return 0;
+    }
+    print("N");
+
+
 }

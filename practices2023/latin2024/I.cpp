@@ -64,8 +64,61 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+struct FT {
+vector<ll> s;
+FT(int n) : s(n) {}
+void update(int pos, ll dif) { // a[pos] += dif
+for (; pos < sz(s); pos |= pos + 1) s[pos] += dif;
+}
+ll query(int pos) { // sum of values in [0, pos)
+ll res = 0;
+for (; pos > 0; pos &= pos - 1) res += s[pos-1];
+return res;
+}
+};
+
+
+ll inv(vector<int> &v)
+{
+int MX=500;
+FT ft(MX);
+ll ans=0;
+rep(i,0,sz(v))
+{
+ans+=ft.query(MX)-ft.query(v[i]+1);
+ft.update(v[i],1);
+}
+return ans;
+}
+
+
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    string s; cin >> s;
+    ll n; cin >> n;
+    vector<int> v;
+    rep(i,0,sz(s)) v.pb(s[i]);
+    __uint128_t ans = inv(v);
+    dbg((ll)ans);
+    dbg(v);
+    ans *= n;
+    ans %= mod;
+    vector<int> cts(26);
+    rep(i,0,sz(s)) {
+        cts[s[i]-'a']++;
+    }
+    rep(i,0,sz(s)) {
+        __uint128_t ct = 0;
+        for (int x = 0; x < (s[i]-'a'); ++x) ct += cts[x];
+        __uint128_t z = n-1;
+        z = z * (z+1) / 2;
+        z %= mod;
+        z *= ct;
+        z %= mod;
+        ans += z;
+        ans %= mod;
+    }
+    print((ll)ans);
 }
 
 int main() {

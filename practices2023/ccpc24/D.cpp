@@ -65,7 +65,36 @@ const ll mod = 1000000007;
 // const ll mod = 998244353;
 
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    ll l, n; cin >> l >> n;
+    vector<pair<pll,pll>> inp(n);
+    ll st = 0;
+    rep(i,0,n) {
+        cin >> inp[i].F.F >> inp[i].F.S >> inp[i].S.F >> inp[i].S.S;
+        st = max(st, inp[i].F.F);
+    }
+    vector<pll> swp;
+    rep(i,0,n) {
+        auto in = inp[i];
+        ll t = in.F.F, x = in.F.S, y = in.S.F, w = in.S.S;
+        ll tt = st + y;
+        ll pl = x - (tt-t), pr = pl + w;
+        ll invL = pl - l, invR = pr;
+        invL = max(invL, 0LL);
+        swp.pb({invL, 0});
+        swp.pb({invR, 1});
+    }
+    swp.pb({LLONG_MAX / 2, 0});
+    sort(all(swp));
+    int prv = -1, ct = 0;
+    for (auto p : swp) {
+        if (p.S == 0 && ct == 0 && p.F - prv >= 2) {
+            print(prv+1);
+            return;
+        }
+        if (p.S == 0) ++ct;
+        else --ct;
+        prv = p.F;
+    }
 }
 
 int main() {

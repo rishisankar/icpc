@@ -64,8 +64,70 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+vi topoSort(const vector<vi>& gr) {
+	vi indeg(sz(gr)), ret;
+	for (auto& li : gr) for (int x : li) indeg[x]++;
+	queue<int> q; // use priority_queue for lexic. largest ans.
+	rep(i,0,sz(gr)) if (indeg[i] == 0) q.push(i);
+	while (!q.empty()) {
+		int i = q.front(); // top() for priority queue
+		ret.push_back(i);
+		q.pop();
+		for (int x : gr[i])
+			if (--indeg[x] == 0) q.push(x);
+	}
+	return ret;
+}
+const int C = 101;
+
+vi comb(vi &x, vi &y) {
+    vi ans(C);
+    rep(i,0,C) {
+        rep(j,0,i+1) {
+            ans[i] = max(ans[i], x[j] + y[i-j]);
+        }
+    }
+    return ans;
+}
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    __float128 x = 23;
+    int n; cin >> n;
+    vector<vi> gr(n+1);
+    VLL req(n+1), cap(n+1), par(n+1);
+    rep(i,0,n) {
+        ll a,b,c; cin >> a >> b >> c;
+        gr[a].pb(i+1);
+        par[i+1] = a;
+        req[i+1] = b;
+        cap[i+1] = c;
+    }
+    vi nds = topoSort(gr);
+    reverse(all(nds));
+
+    // dp[i][j] = amt of houses u can satisfy in the subtree rooted at node i assuming u have flow j
+    vector<vector<int>> dp(n+1, vi(C));
+
+    for (int x : nds) {
+        if (x == 0) continue;
+        vi chd(C);
+        for (int y : gr[x]) {
+            chd = comb(chd, dp[y]);
+        }
+        rep(i, 0, cap[x] + 1) {
+            dp[x][i] = chd[i];
+            if (i >= req[x]) {
+                dp[x][i] = max(dp[x][i], 1 + chd[i-req[x]]);
+            }
+        }
+        rep(i, cap[x]+1, C) dp[x][i] = dp[x][cap[x]];
+    }
+
+    int ans = 0;
+    for (int x : gr[0]) {
+        ans += dp[x][C-1];
+    }
+    print(ans);
 }
 
 int main() {

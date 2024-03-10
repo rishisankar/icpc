@@ -39,8 +39,6 @@ template<typename Head, typename... Tail> void dbg_out(Head H, Tail... T) { cerr
 template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 template<typename T, typename... Args> inline void print(T t, Args... args) { cout << t << " "; print(args...); }
 
-template<typename T> inline T ceildiv(T a, T b) {return (a+b-1)/b;}
-
 typedef long long ll;
 typedef long double ld;
 typedef unsigned long long ull;
@@ -64,8 +62,92 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+struct UF {
+	vi e;
+	UF(int n) : e(n, -1) {}
+	bool sameSet(int a, int b) { return find(a) == find(b); }
+	int size(int x) { return -e[find(x)]; }
+	int find(int x) { return e[x] < 0 ? x : e[x] = find(e[x]); }
+	bool join(int a, int b) {
+		a = find(a), b = find(b);
+		if (a == b) return false;
+		if (e[a] > e[b]) swap(a, b);
+		e[a] += e[b]; e[b] = a;
+		return true;
+	}
+};
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int r,c; cin >> r >> c;
+    vector<vector<int>> grid(r, vi(c));
+    vector<pii> pos(r*c);
+    rep(i,0,r) {
+        rep(j,0,c) {
+            int x; cin >> x; --x;
+            grid[i][j] = x;
+            pos[x] = {i,j};
+        }
+    }
+    int lo = 1, hi = r*c - 1, bst = 0;
+    dbg(pos[0]);
+    while (lo <= hi) {
+        int mid = (lo+hi)/2;
+        dbg("test",mid);
+        vector<vector<bool>> vis(r, VB(c));
+        vis[pos[0].F][pos[0].S] = 1;
+            
+        stack<pii> s; s.push(pos[0]);
+        while (!s.empty()) {
+            pii t = s.top();
+            s.pop();
+            for (pii dir : dirs) {
+                pii nx = {t.F + dir.F, t.S+dir.S};
+                if (nx.F >= r || nx.F < 0 || nx.S >= c || nx.S < 0) continue;
+                if (vis[nx.F][nx.S]) continue;
+                if (grid[nx.F][nx.S] <= mid) continue;
+                vis[nx.F][nx.S] = 1;
+                dbg("vis", nx);
+                s.push(nx);
+            }
+        }
+        bool worked = true;
+        rep(i,1,mid+1) {
+            bool test = false;
+            for (pii dir : dirs) {
+                pii nx = {dir.F + pos[i].F, dir.S + pos[i].S};
+                if (nx.F >= r || nx.F < 0 || nx.S >= c || nx.S < 0) continue;
+                if (vis[nx.F][nx.S]) test = true;
+            }
+            if (!test) {
+                worked = false;
+                dbg("fail", i);
+                break;
+            }
+            stack<pii> st;
+            st.push(pos[i]);
+            while (!st.empty()) {
+                pii t = st.top();
+                st.pop();
+                for (pii dir : dirs) {
+                    pii nx = {t.F + dir.F, t.S+dir.S};
+                    if (nx.F >= r || nx.F < 0 || nx.S >= c || nx.S < 0) continue;
+                    if (vis[nx.F][nx.S]) continue;
+                    if (grid[nx.F][nx.S] > i && grid[nx.F][nx.S] <= mid) continue;
+                    vis[nx.F][nx.S] = 1;
+                    dbg("vis2", i, nx);
+                    st.push(nx);
+                }
+            }
+        }
+        dbg(mid,worked);
+        if (worked) {
+            bst = mid;
+            lo = mid+1;
+        } else {
+            hi = mid-1;
+        }
+    }
+    print(bst + 1);
 }
 
 int main() {

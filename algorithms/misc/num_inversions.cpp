@@ -1,8 +1,39 @@
+// works with dups
+
+struct FT {
+vector<ll> s;
+FT(int n) : s(n) {}
+void update(int pos, ll dif) { // a[pos] += dif
+for (; pos < sz(s); pos |= pos + 1) s[pos] += dif;
+}
+ll query(int pos) { // sum of values in [0, pos)
+ll res = 0;
+for (; pos > 0; pos &= pos - 1) res += s[pos-1];
+return res;
+}
+};
+
+
+ll inv(vector<int> &v)
+{
+int MX=500;
+FT ft(MX);
+ll ans=0;
+rep(i,0,sz(v))
+{
+ans+=ft.query(MX)-ft.query(v[i]+1);
+ft.update(v[i],1);
+}
+return ans;
+}
+
+
 /**
  * count number of inversions in O(nlogn)
  * inversions = number of pairs (i,j) s.t. a[i] > a[j]
  * ll numInversions(vector<T>& arr);
  * example: math/camels.cpp
+ * DOES NOT WORK WITH DUPLICATE VALS IN a
  */
 
 typedef int T;

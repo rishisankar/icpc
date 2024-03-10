@@ -65,7 +65,35 @@ const ll mod = 1000000007;
 // const ll mod = 998244353;
 
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n; cin >> n;
+    string ans;
+    vector<string> d;
+    rep(i,0,n) {
+        string s; cin >> s;
+        if (i == 0) {
+            ans = s;
+        }
+        d.pb(s);
+    }
+    unordered_set<char> chars;
+    rep(i,0,sz(ans)) {
+        chars.insert(ans[i]);
+    }
+    int g; cin >> g;
+    rep(i,0,g) {
+        string s; cin >> s;
+        int ct = 0;
+        for (string word : d) {
+            string res = "";
+            rep(i,0,sz(ans)) {
+                if (ans[i] == word[i]) res += '*';
+                else if (chars.count(word[i])) res += '!';
+                else res += 'X';
+            }
+            if (res == s) ++ct;
+        }
+        print(ct);
+    }
 }
 
 int main() {

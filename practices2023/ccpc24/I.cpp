@@ -65,7 +65,59 @@ const ll mod = 1000000007;
 // const ll mod = 998244353;
 
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int w,h,n; cin >> w >> h >> n;
+    vector<vector<int>> l(w);
+    vector<set<int>> ls(w);
+    vi v(n);
+    VVI rowIndices(n);
+    VLL rowTime(n);
+    rep(i,0,n) {
+        cin >> v[i];
+        int rw = sz(l[v[i]]);
+        rowIndices[rw].pb(v[i]);
+        l[v[i]].pb(i);
+        ls[v[i]].insert(i);
+    }
+    dbg(l);
+    int ctr = 0;
+    for (int i = 0; i < n; ++i) {
+        ll minTime = 0; // time must be >= minTime
+        if (sz(rowIndices[i]) == 0)  break;
+        if (i - h >= 0) {
+            if (sz(rowIndices[i-h]) != w) {
+                print(-1);
+                return;
+            }
+            minTime = rowTime[i-h] + 1;
+        }
+        for (int ind : rowIndices[i]) {
+            ll bt0 = minTime % n;
+            ll t0;
+            auto it = ls[ind].lower_bound(bt0);
+            if (it != ls[ind].end()) {
+                t0 = (*it);
+                ls[ind].erase(it);
+            } else {
+                t0 = *(ls[ind].begin());
+                ls[ind].erase(ls[ind].begin());
+            }
+
+            // ll t0 = l[ind][i];
+            ll xm = (minTime - t0) / n;
+            ll ans = xm + 5;
+            for (ll xs = xm - 3; xs <= xm + 4; ++xs) {
+                if (xs < 0) continue;
+                if (t0 + n * xs >= minTime) {
+                    ans = xs;
+                    break;
+                }
+            }
+            ctr += ans;
+            rowTime[i] = max(rowTime[i], t0 + ans * n);
+        }
+    }
+    dbg(rowTime);
+    print(ctr);
 }
 
 int main() {

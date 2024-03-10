@@ -64,8 +64,41 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+const vector<string> words{
+    "be",
+    "our",
+    "rum",
+    "will",
+    "dead",
+    "hook",
+    "ship",
+    "blood",
+    "sable",
+    "avenge",
+    "parrot",
+    "captain"
+};
+
+const int k = 12;
+const int K = (1<<k);
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    VVI poss(26);
+    rep(i,0,K) {
+        vector<bool> seen(26);
+        rep(j,0,k) {
+            if ((i >> j)&1) {
+                for (char c : words[j]) {
+                    seen[(c-'a')] = 1;
+                }
+            }
+        }
+        int ct = 0;
+        rep(j,0,26) ct += seen[j];
+        poss[ct].pb(i);
+    }
+    rep(i,0,26) dbg(i, sz(poss[i]));
+
 }
 
 int main() {

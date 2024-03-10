@@ -65,7 +65,36 @@ const ll mod = 1000000007;
 // const ll mod = 998244353;
 
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n,h,l; cin >> n >> h >> l;
+    VVI adj(n);
+    VI hi(n,INT_MAX);
+    queue<int> q;
+    rep(i,0,h) {
+        int x; cin >> x;
+        q.push(x);
+        hi[x] = 0;
+    }
+    rep(i,0,l) {
+        int a,b; cin >> a >> b;
+        adj[a].pb(b);
+        adj[b].pb(a);
+    }
+    while (!q.empty()) {
+        int t = q.front();
+        q.pop();
+        for (int x : adj[t]) {
+            if (hi[x] == INT_MAX) {
+                hi[x] = hi[t] + 1;
+                q.push(x);
+            }
+        }
+    }
+    dbg(hi);
+    int bsti = 0;
+    rep(i,1,n) {
+        if (hi[i] > hi[bsti]) bsti = i;
+    }
+    print(bsti);
 }
 
 int main() {

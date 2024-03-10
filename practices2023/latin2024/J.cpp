@@ -65,7 +65,35 @@ const ll mod = 1000000007;
 // const ll mod = 998244353;
 
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int n; cin >> n;
+    vector<vector<int>> adj(n);
+    rep(i,0,n-1) {
+        int a,b; cin >> a >> b; --a; --b;
+        adj[a].pb(b);
+        adj[b].pb(a);
+    }
+    rep(i,0,n-2) {
+        queue<pii> q;
+        q.push({i,-1});
+        int ans = INT_MAX;
+        while(true) {
+            queue<pii> qnew;
+            while (!q.empty()) {
+                pii t = q.front();
+                q.pop();
+                for (int x : adj[t.F]) {
+                    if (x == t.S) continue;
+                    if (x > i) ans = min(x,ans);
+                    qnew.push({x,t.F});
+                }
+            }
+            if (ans != INT_MAX) break;
+            swap(qnew,q);
+        }
+        cout << (ans+1) << ' ';
+    }
+    if (n > 1) cout << n << ' ';
+    cout << n << "\n";
 }
 
 int main() {

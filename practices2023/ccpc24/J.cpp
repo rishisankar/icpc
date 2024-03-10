@@ -64,8 +64,120 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+int h,w;
+
+typedef string T;
+// 0 = up, 1 = down, 2 = left, 3 = right
+
+T hsh(VVI &grid) {
+    T ans = "";
+    rep(i,0,h) {
+        rep(j,0,w) {
+            if (grid[i][j] <= 9) {
+                ans += '0';
+            }
+            ans += to_string(grid[i][j]);
+        }
+    }
+    return ans;
+}
+
+// T hsh(VVI &grid) {
+//     vector<ull> v(7);
+//     int ctr = 0, ind = 0;
+//     rep(i,0,h) {
+//         rep(j,0,w) {
+//             if (ctr == 10) {
+//                 ctr = 0;
+//                 ind++;
+//             }
+//             v[ind] += grid[i][j];
+//             v[ind] <<= 6;
+//             ++ctr;
+//         }
+//     }
+//     // T ans = "";
+//     // rep(i,0,7) ans += to_string(v[i]);
+//     T ans = 0;
+//     ull scl = 1;
+//     rep(i,0,7) {
+//         ans += (v[i] * scl);
+//         scl *= 37;
+//     }
+//     return ans;
+// }
+
+unordered_map<T,int> bfs(vector<vector<int>> start) {
+    unordered_map<T,int> m;
+    queue<pair<pair<pii,pii>, VVI>> q; // {{dist, invalid move}, pos of 0}
+    int sx,sy;
+    rep(i,0,h) {
+        rep(j,0,w) {
+            if (start[i][j] == 0) {
+                sx = i; sy = j;
+            }
+        }
+    }
+    q.push({ {{0,4}, {sx,sy}} , start});
+    while (!q.empty()) {
+        auto &t = q.front();
+        T ky = hsh(t.S);
+        // int &val = m[ky];
+        // if (!val) val = t.F.F.F+1;
+        if (!m.count(ky)) m[ky] = t.F.F.F;
+        if (t.F.F.F < 10) {
+            rep(mv,0,4) {
+                if (mv == t.F.F.S) continue;
+                int x = t.F.S.F;
+                int y = t.F.S.S;
+                int nx = x + dirs[mv].F;
+                int ny = y + dirs[mv].S;
+                if (nx < 0 || ny < 0 || nx >= h || ny >= w) {
+                    continue;
+                }
+                int bmv;
+                if (mv == 0) bmv = 1;
+                else if (mv == 1) bmv = 0;
+                else if (mv == 2) bmv = 3;
+                else if (mv == 3) bmv = 2;
+                swap(t.S[x][y], t.S[nx][ny]);
+                q.push({ {{t.F.F.F+1,bmv}, {nx,ny}} , t.S});
+                swap(t.S[x][y], t.S[nx][ny]);
+            }
+        }
+        q.pop();
+    }
+    return m;
+}
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    cin >> h >> w;
+    VVI grid(h, VI(w));
+    rep(i,0,h) {
+        rep(j,0,w) {
+            cin >> grid[i][j];
+        }
+    }
+    VVI ans(h, VI(w));
+    int ct = 1;
+    rep(i,0,h) {
+        rep(j,0,w) {
+            ans[i][j] = ct++;
+        }
+    }
+    ans[h-1][w-1] = 0;
+    unordered_map<T,int> smap = bfs(grid);
+    unordered_map<T,int> emap = bfs(ans);
+    dbg(sz(smap));
+    int bst = 20;
+    for (auto& p : smap) {
+        auto it = emap.find(p.F);
+        if (it != emap.end()) {
+            int cst = p.S + it->S ;
+            bst = min(bst,cst);
+        }
+    }
+    print(bst);
 }
 
 int main() {
@@ -74,7 +186,7 @@ int main() {
     cin.exceptions(cin.failbit);
     // cout.setf(ios::fixed);
     // cout.precision(15);
-    // ll t; cin >> t;
-    ll t=1;
+    ll t; cin >> t;
+    // ll t=1;
     rep(tests,0,t) run();
 }

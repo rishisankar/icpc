@@ -39,8 +39,6 @@ template<typename Head, typename... Tail> void dbg_out(Head H, Tail... T) { cerr
 template<typename T> inline void print(T obj) { cout << obj << '\n'; }
 template<typename T, typename... Args> inline void print(T t, Args... args) { cout << t << " "; print(args...); }
 
-template<typename T> inline T ceildiv(T a, T b) {return (a+b-1)/b;}
-
 typedef long long ll;
 typedef long double ld;
 typedef unsigned long long ull;
@@ -64,8 +62,64 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
+struct UF {
+	vi e;
+	UF(int n) : e(n, -1) {}
+	bool sameSet(int a, int b) { return find(a) == find(b); }
+	int size(int x) { return -e[find(x)]; }
+	int find(int x) { return e[x] < 0 ? x : e[x] = find(e[x]); }
+	bool join(int a, int b) {
+		a = find(a), b = find(b);
+		if (a == b) return false;
+		if (e[a] > e[b]) swap(a, b);
+		e[a] += e[b]; e[b] = a;
+		return true;
+	}
+};
+
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int r,c; cin >> r >> c;
+    vector<vector<int>> grid(r, vi(c));
+    vector<pii> pos(r*c);
+    rep(i,0,r) {
+        rep(j,0,c) {
+            int x; cin >> x; --x;
+            grid[i][j] = x;
+            pos[x] = {i,j};
+        }
+    }
+    int bst = 1;
+    rep(i,0,r*c) {
+        vector<vector<bool>> vis(r, VB(c));
+        int cur = i;
+        int ct = 1;
+        vis[pos[i].F][pos[i].S] = 1;
+        priority_queue<int, vi, greater<int>> pq;
+        for (pii dir : dirs) {
+            pii nx = {dir.F+pos[i].F,dir.S+pos[i].S};
+            if (nx.F >= 0 && nx.F < r && nx.S >= 0 && nx.S < c) {
+                pq.push(grid[nx.F][nx.S]);
+                vis[nx.F][nx.S] = 1;
+            }
+        }
+        while (!pq.empty()) {
+            int t = pq.top(); pq.pop();
+            if (t < cur) continue;
+            cur = t; ++ct;
+            for (pii dir : dirs) {
+                pii nx = {dir.F+pos[t].F,dir.S+pos[t].S};
+                if (nx.F >= 0 && nx.F < r && nx.S >= 0 && nx.S < c) {
+                    if (!vis[nx.F][nx.S]) {
+                        pq.push(grid[nx.F][nx.S]);
+                        vis[nx.F][nx.S] = 1;
+                    }
+                }
+            }
+        }
+        if (ct > bst) bst = ct;
+
+    }
+    print(bst);
 }
 
 int main() {

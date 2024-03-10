@@ -65,7 +65,34 @@ const ll mod = 1000000007;
 // const ll mod = 998244353;
 
 void run() {
-    // int n; cin >> n; VLL v(n); INP(v,n);
+    int c,n,m,d; cin >> c >> n >> m >> d;
+    int bst = INT_MAX;
+    for (int nt = n; nt <= 101; ++nt) {
+        int tp = 0, tmp = 0, day = 0, cur = c;
+        queue<int> matur;
+        while (true) {
+            if (!matur.empty() && matur.front() == day) {
+                matur.pop();
+                tmp++;
+            }
+            cur += tmp;
+
+            if (tmp >= n && cur >= m) {
+                break;
+            }
+
+            if (cur > 0 && tp < nt) {
+                --cur;
+                tp++;
+                matur.push(day + d);
+            }
+
+
+            day++;
+        }
+        bst = min(bst, day);
+    }
+    print(bst);
 }
 
 int main() {
