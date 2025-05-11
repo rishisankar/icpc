@@ -64,79 +64,39 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
-vector<int> BuildDominatorTree(vector<vector<int>> g, int s) {
-  int N = g.size();
-  vector<vector<int>> rdom(N), r(N);
-  vector<int> dfn(N, -1), rev(N, -1), fa(N, -1), sdom(N, -1), dom(N, -1), val(N, -1), rp(N, -1);
-  int stamp = 0;
-  auto Dfs = [&](auto dfs, int x) -> void {
-    rev[dfn[x] = stamp] = x;
-    fa[stamp] = sdom[stamp] = val[stamp] = stamp;
-    stamp++;
-    for (int u : g[x]) {
-      if (dfn[u] == -1) {
-        dfs(dfs, u);
-        rp[dfn[u]] = dfn[x];
-      }
-      r[dfn[u]].push_back(dfn[x]);
-    }
-  };
-  function<int(int, int)> Find = [&](int x, int c) {
-    if (fa[x] == x) return c ? -1 : x;
-    int p = Find(fa[x], 1);
-    if (p == -1) return c ? fa[x] : val[x];
-    if (sdom[val[x]] > sdom[val[fa[x]]]) val[x] = val[fa[x]];
-    fa[x] = p;
-    return c ? p : val[x];
-  };
-  auto Merge = [&](int x, int y) { fa[x] = y; };
-  Dfs(Dfs, s);
-  for (int i = stamp - 1; i >= 0; --i) {
-    for (int u : r[i]) sdom[i] = min(sdom[i], sdom[Find(u, 0)]);
-    if (i) rdom[sdom[i]].push_back(i);
-    for (int u : rdom[i]) {
-      int p = Find(u, 0);
-      if (sdom[p] == i) dom[u] = i;
-      else dom[u] = p;
-    }
-    if (i) Merge(i, rp[i]);
-  }
-  vector<int> res(N, -2);
-  res[s] = -1;
-  for (int i = 1; i < stamp; ++i) {
-    if (sdom[i] != dom[i]) dom[i] = dom[dom[i]];
-  }
-  for (int i = 1; i < stamp; ++i) res[rev[i]] = rev[dom[i]];
-  return res;
+int n;
+ld gp(int x, vector<ld>& p) {
+    if (x < 0 || x >= n) return 1;
+    return p[x];
 }
-
 void run() {
-    int n,m; cin >> n >> m;
-    VVI adj(n);
-    rep(i,0,m) {
-        int a,b; cin >> a >> b; --a; --b;
-        adj[a].pb(b);
+    cin >> n;
+    vector<ld> v(n);
+    rep(i,0,n) cin >> v[i];
+    ld tot = 0;
+    vector<ld> pref(n,1), suff(n,1);
+    pref[0] = v[0];
+    suff[n-1] = (1-v[n-1]);
+    rep(i,1,n) {
+        pref[i] = pref[i-1] * v[i];
     }
-    vi dt = BuildDominatorTree(adj, 0);
-    dbg(dt);
-    int x = n-1;
-    vi vals;
-    while (x != -1) {
-        vals.pb(x+1);
-        x = dt[x];
+    for (int i = n-2; i >= 0; --i) suff[i] = suff[i+1] * (1-v[i]);
+
+    rep(i,0,n) {
+        rep(j,i+1,n) {
+            ld prob = gp(i-1,pref) * (1-v[i]) * v[j] * gp(j+1,suff);
+            tot += prob * (j-i+1);
+        }
     }
-    sort(all(vals));
-    print(sz(vals));
-    for (int i : vals) cout << i << ' ';
-    cout << "\n";
+    print(tot);
 }
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cin.exceptions(cin.failbit);
-    // cout.setf(ios::fixed);
-    // cout.precision(15);
+    cout.setf(ios::fixed);
+    cout.precision(15);
     // ll t; cin >> t;
     ll t=1;
     rep(tests,0,t) run();

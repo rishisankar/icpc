@@ -64,71 +64,108 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
-vector<int> BuildDominatorTree(vector<vector<int>> g, int s) {
-  int N = g.size();
-  vector<vector<int>> rdom(N), r(N);
-  vector<int> dfn(N, -1), rev(N, -1), fa(N, -1), sdom(N, -1), dom(N, -1), val(N, -1), rp(N, -1);
-  int stamp = 0;
-  auto Dfs = [&](auto dfs, int x) -> void {
-    rev[dfn[x] = stamp] = x;
-    fa[stamp] = sdom[stamp] = val[stamp] = stamp;
-    stamp++;
-    for (int u : g[x]) {
-      if (dfn[u] == -1) {
-        dfs(dfs, u);
-        rp[dfn[u]] = dfn[x];
-      }
-      r[dfn[u]].push_back(dfn[x]);
+// O(log(min(a,b))), can use __gcd instead
+ll gcd(ll a, ll b) {
+    if (a == 0) return b; 
+    return gcd(b % a, a); 
+} 
+
+// note that lcm(i, j) = ij / gcd(i,j)
+ll lcm(ll a, ll b) {
+  return a*b/gcd(a,b);
+}
+
+ll euclid(ll a, ll b, ll &x, ll &y) {
+	if (!b) return x = 1, y = 0, a;
+	ll d = euclid(b, a % b, y, x);
+	return y -= a/b * x, d;
+}
+
+ll crt(ll a, ll m, ll b, ll n) {
+	if (n > m) swap(a, b), swap(m, n);
+	ll x, y, g = euclid(m, n, x, y);
+    if((a - b) % g != 0)return -1;
+    // assert((a - b) % g == 0); // else no solution
+	x = (b - a) % n * x % n / g * m + a;
+	return x < 0 ? x + m*n/g : x;
+}
+
+
+ll n,t;
+VVI adj;
+VLL death; // last time that can cross edge going into each node
+vector<pair<pll,ll>> state; // a mod b, max reachable time c
+
+VLL ans;
+VLL sumans;
+
+// return number of vals x <= M s.t. x = a mod b (#s of form a+bi)
+ll nvals(ll a, ll b, ll M) {
+    a%=b;
+    if (a > M) return 0;
+    ll lb = min(M / b - 5,0LL), ub = M / b + 5;
+    for (ll i = ub; i >= lb; --i) {
+        if (a + b * i <= M) return i+1;
     }
-  };
-  function<int(int, int)> Find = [&](int x, int c) {
-    if (fa[x] == x) return c ? -1 : x;
-    int p = Find(fa[x], 1);
-    if (p == -1) return c ? fa[x] : val[x];
-    if (sdom[val[x]] > sdom[val[fa[x]]]) val[x] = val[fa[x]];
-    fa[x] = p;
-    return c ? p : val[x];
-  };
-  auto Merge = [&](int x, int y) { fa[x] = y; };
-  Dfs(Dfs, s);
-  for (int i = stamp - 1; i >= 0; --i) {
-    for (int u : r[i]) sdom[i] = min(sdom[i], sdom[Find(u, 0)]);
-    if (i) rdom[sdom[i]].push_back(i);
-    for (int u : rdom[i]) {
-      int p = Find(u, 0);
-      if (sdom[p] == i) dom[u] = i;
-      else dom[u] = p;
+    return 0;
+
+}
+
+void dfs(int t) {
+    ll l = lcm(state[t].F.S, sz(adj[t]));
+
+    ll kids = 0;
+
+    rep(i,0,sz(adj[t])) {
+        int x = adj[t][i];
+        state[x] = {{crt(state[t].F.F, state[t].F.S, i, sz(adj[t])), l}, min(state[t].S, death[x])};
+        if (state[x].F.F == -1) {
+            dbg(t,x);
+            state[x] = {{0,1},-1};
+        }
+        dfs(x);
+
+        kids += sumans[x];
     }
-    if (i) Merge(i, rp[i]);
-  }
-  vector<int> res(N, -2);
-  res[s] = -1;
-  for (int i = 1; i < stamp; ++i) {
-    if (sdom[i] != dom[i]) dom[i] = dom[dom[i]];
-  }
-  for (int i = 1; i < stamp; ++i) res[rev[i]] = rev[dom[i]];
-  return res;
+
+    ll tot = nvals(state[t].F.F, state[t].F.S, state[t].S);
+
+    dbg(t+1, tot, kids, tot-kids, state[t]);
+
+    ans[t] = tot - kids;
+    sumans[t] = tot;
 }
 
 void run() {
-    int n,m; cin >> n >> m;
-    VVI adj(n);
-    rep(i,0,m) {
-        int a,b; cin >> a >> b; --a; --b;
-        adj[a].pb(b);
+    cin >> n >> t;
+    adj.resize(n);
+    ans.resize(n);
+    sumans.resize(n);
+    set<pii> edges;
+    rep(i,0,n) {
+        int k; cin >> k;
+        rep(j,0,k) {
+            int c; cin >> c; --c;
+            adj[i].pb(c);
+            edges.insert({i,c});
+        }
     }
-    vi dt = BuildDominatorTree(adj, 0);
-    dbg(dt);
-    int x = n-1;
-    vi vals;
-    while (x != -1) {
-        vals.pb(x+1);
-        x = dt[x];
+
+    death.resize(n);
+    rep(i,0,n-1) {
+        int a,b,ti; cin >> a >> b >> ti; --a; --b;
+        if (!edges.count({a,b}))swap(a,b);
+        death[b] = ti - 2;
     }
-    sort(all(vals));
-    print(sz(vals));
-    for (int i : vals) cout << i << ' ';
-    cout << "\n";
+
+    state.resize(n);
+    state[0] = {{0,1}, t-1};
+    dfs(0);
+    dbg(state);
+    
+    for (ll x : ans) cout << x << ' ';
+    cout << '\n';
+
 }
 
 int main() {

@@ -64,71 +64,89 @@ const ld pi = 3.1415926535897932384626433832795;
 const ll mod = 1000000007;
 // const ll mod = 998244353;
 
-vector<int> BuildDominatorTree(vector<vector<int>> g, int s) {
-  int N = g.size();
-  vector<vector<int>> rdom(N), r(N);
-  vector<int> dfn(N, -1), rev(N, -1), fa(N, -1), sdom(N, -1), dom(N, -1), val(N, -1), rp(N, -1);
-  int stamp = 0;
-  auto Dfs = [&](auto dfs, int x) -> void {
-    rev[dfn[x] = stamp] = x;
-    fa[stamp] = sdom[stamp] = val[stamp] = stamp;
-    stamp++;
-    for (int u : g[x]) {
-      if (dfn[u] == -1) {
-        dfs(dfs, u);
-        rp[dfn[u]] = dfn[x];
-      }
-      r[dfn[u]].push_back(dfn[x]);
+vector<vector<ll>> jmpD;
+VLL pos;
+ll n,k,D,q;
+vector<vi> treeJump(vi& P){
+    int N = sz(P);
+	int on = 1, d = 1;
+	while(on < sz(P)) on *= 2, d++;
+	vector<vi> jmp(d, P);
+    jmpD.resize(d,vector<ll>(N));
+	rep(i,1,d) rep(j,0,sz(P)) {
+		jmp[i][j] = jmp[i-1][jmp[i-1][j]];
     }
-  };
-  function<int(int, int)> Find = [&](int x, int c) {
-    if (fa[x] == x) return c ? -1 : x;
-    int p = Find(fa[x], 1);
-    if (p == -1) return c ? fa[x] : val[x];
-    if (sdom[val[x]] > sdom[val[fa[x]]]) val[x] = val[fa[x]];
-    fa[x] = p;
-    return c ? p : val[x];
-  };
-  auto Merge = [&](int x, int y) { fa[x] = y; };
-  Dfs(Dfs, s);
-  for (int i = stamp - 1; i >= 0; --i) {
-    for (int u : r[i]) sdom[i] = min(sdom[i], sdom[Find(u, 0)]);
-    if (i) rdom[sdom[i]].push_back(i);
-    for (int u : rdom[i]) {
-      int p = Find(u, 0);
-      if (sdom[p] == i) dom[u] = i;
-      else dom[u] = p;
+    rep(i,0,N) {
+        jmpD[0][i] = (D+D+pos[P[i]]-pos[i])%D;
     }
-    if (i) Merge(i, rp[i]);
-  }
-  vector<int> res(N, -2);
-  res[s] = -1;
-  for (int i = 1; i < stamp; ++i) {
-    if (sdom[i] != dom[i]) dom[i] = dom[dom[i]];
-  }
-  for (int i = 1; i < stamp; ++i) res[rev[i]] = rev[dom[i]];
-  return res;
+    rep(i,1,d) rep(j,0,sz(P)) {
+        jmpD[i][j] = jmpD[i-1][j] + jmpD[i-1][jmp[i-1][j]];
+    }
+	return jmp;
 }
 
+ll jmp(vector<vi>& tbl, int nod, int steps){
+    ll ans = 0;
+	rep(i,0,sz(tbl)) {
+		if(steps&(1<<i)) {
+            ans += jmpD[i][nod];
+            nod = tbl[i][nod];
+        }
+    }
+	return ans;
+}
+
+
 void run() {
-    int n,m; cin >> n >> m;
-    VVI adj(n);
-    rep(i,0,m) {
-        int a,b; cin >> a >> b; --a; --b;
-        adj[a].pb(b);
+    cin >> n >> k >> D >> q;
+    pos.resize(n);
+    VLL type(n);
+    INP(pos,n); INP(type,n);
+    vector<set<pii>> posByType(k);
+    rep(i,0,n) {
+        posByType[type[i]].insert({pos[i],i});
     }
-    vi dt = BuildDominatorTree(adj, 0);
-    dbg(dt);
-    int x = n-1;
-    vi vals;
-    while (x != -1) {
-        vals.pb(x+1);
-        x = dt[x];
+    vi nxt(n);
+    rep(i,0,n) {
+        auto& s = posByType[(type[i] + 1)%k];
+        int p = pos[i];
+        auto it = s.lower_bound({p,-1});
+        if (it == s.end()) {
+            nxt[i] = (*(s.begin())).S;
+        } else {
+            nxt[i] = it->S;
+        }
     }
-    sort(all(vals));
-    print(sz(vals));
-    for (int i : vals) cout << i << ' ';
-    cout << "\n";
+    dbg(nxt);
+    dbg(pos);
+    vector<vi> tbl = treeJump(nxt);
+    dbg(jmpD[0]);
+    dbg(tbl[0]);
+    rep(Q,0,q) {
+        int dq,kq,nq; cin >> dq >> kq >> nq;
+        if (nq == 0) {
+            print(0);
+            continue;
+        }
+
+        int sp;
+
+        auto& s = posByType[kq];
+        auto it = s.lower_bound({dq,-1});
+        if (it == s.end()) {
+            sp = (*(s.begin())).S;
+        } else {
+            sp = it->S;
+        }
+        ll st = (D+D+pos[sp]-dq)%D;
+        dbg(Q, sp, st);
+        if (nq>1) {
+            ll xtr = jmp(tbl, sp, nq-1);
+            dbg(xtr);
+            st += xtr;
+        }
+        print(st);
+    }
 }
 
 int main() {
